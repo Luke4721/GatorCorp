@@ -45,12 +45,15 @@
 
     <section class="roof-breach"></section>
 
-    <section class="diorama-section" style="background: transparent;">
-      <div class="diorama-container" id="diorama">
-        <h2 class="diorama-title" style="top: 5%;">Unrivaled Comfort.</h2>
-        <!-- 3D Seat Model is rendered underneath via Canvas -->
-        <p class="diorama-caption" style="bottom: 15%;">Drag or Hover to explore the physics of comfort.</p>
-        <a href="#" class="cta-btn diorama-cta" style="bottom: 5%;">View Product Catalog</a>
+    <section class="apple-sequence-section" style="position: relative; width: 100%; height: 300vh; background: transparent; z-index: 10;">
+      <!-- Sticky container for the scrubbing animation -->
+      <div class="sequence-sticky" style="position: sticky; top: 0; width: 100%; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;">
+        <h2 class="diorama-title" style="position: absolute; top: 10%; z-index: 12;">Unrivaled Comfort.</h2>
+        
+        <canvas id="seat-sequence" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); max-width: 100%; max-height: 100vh; z-index: 11;"></canvas>
+        
+        <p class="diorama-caption" style="position: absolute; bottom: 15%; z-index: 12;">Scroll down to inspect.</p>
+        <a href="#" class="cta-btn diorama-cta" style="position: absolute; bottom: 5%; z-index: 12;">View Product Catalog</a>
       </div>
     </section>
 

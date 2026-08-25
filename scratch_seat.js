@@ -35,23 +35,17 @@ const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
 
 const truckGroup = new THREE.Group();
-const seatGroup = new THREE.Group();
 scene.add(truckGroup);
-scene.add(seatGroup);
 
 camera.position.set(0, 35, 0); 
 camera.lookAt(0, 0, 0); 
 
-let truckModel, seatModel;
+let truckModel;
 
-Promise.all([
-  gltfLoader.loadAsync('/assets/Truck_draco.glb'),
-  gltfLoader.loadAsync('/assets/Seat_draco.glb')
-]).then(([truckGltf, seatGltf]) => {
+// WE ONLY LOAD THE TRUCK 3D MODEL NOW - MASSIVE RAM SAVINGS
+gltfLoader.loadAsync('/assets/Truck_draco.glb').then((truckGltf) => {
   truckModel = truckGltf.scene;
-  seatModel = seatGltf.scene;
 
-  // Setup Truck
   truckModel.rotation.y = -Math.PI / 2;
   const truckBox = new THREE.Box3().setFromObject(truckModel);
   const truckSize = truckBox.getSize(new THREE.Vector3());
@@ -62,23 +56,12 @@ Promise.all([
   truckGroup.add(truckModel);
   truckGroup.position.set(0, 0, 20); 
 
-  // Setup Seat
-  const seatBox = new THREE.Box3().setFromObject(seatModel);
-  const seatSize = seatBox.getSize(new THREE.Vector3());
-  const seatCenter = seatBox.getCenter(new THREE.Vector3());
-  const seatScale = 10 / seatSize.y; // Make it large and proud
-  seatModel.scale.set(seatScale, seatScale, seatScale);
-  seatModel.position.set(-seatCenter.x * seatScale, -seatCenter.y * seatScale, -seatCenter.z * seatScale);
-  seatGroup.add(seatModel);
-  
-  // Hide seat initially by pushing it way down on Y (away from camera)
-  seatGroup.position.set(0, -50, 0);
-
   const tlPreload = gsap.timeline({ onComplete: () => { if(loader) loader.remove(); } });
   if(bar) tlPreload.fromTo(bar, { scaleX: 0 }, { scaleX: 1, duration: 1.2, ease: "power3.inOut" });
   if(loader) tlPreload.to(loader, { yPercent: -100, duration: 1, ease: "power4.inOut" }, "+=0.2");
 
   initScrollAnimations();
+  initAppleSequence();
 });
 
 function initScrollAnimations() {
@@ -94,7 +77,7 @@ function initScrollAnimations() {
   arrivalTl.to(truckGroup.position, { z: 2, ease: "power2.out" });
   arrivalTl.to('.specs-content', { opacity: 1, stagger: 0.2, ease: "power2.out" }, "-=0.5");
 
-  // The Zoom & Breach Transition (Now swaps to 3D Seat)
+  // The Zoom & Breach Transition
   const zoomTl = gsap.timeline({
     scrollTrigger: {
       trigger: ".roof-breach",
@@ -104,55 +87,64 @@ function initScrollAnimations() {
     }
   });
 
-  // Fade in the transition mask
-  zoomTl.to('.transition-mask', {
-    opacity: 1,
-    ease: "power2.out",
-    duration: 0.4
+  // Fade out 3D Canvas
+  zoomTl.to('#bg', {
+    opacity: 0,
+    ease: "power1.in",
+    duration: 0.5
   });
 
-  // Plunge camera while masking
+  // Plunge camera
   zoomTl.to(camera.position, {
     y: 5,
     ease: "power1.in",
-    duration: 0.5
+    duration: 1
   }, 0);
+}
 
-  // During the blackout mask: Move truck away, Move seat in, Reset camera to look at seat
-  zoomTl.add(() => {
-    truckGroup.position.set(0, -100, 0);
-    seatGroup.position.set(0, 0, 0); // Seat takes center stage
-    
-    // Change camera from top-down to a front-perspective for the seat
-    camera.position.set(0, 2, 18);
-    camera.lookAt(0, 0, 0);
-  }, 0.5);
+function initAppleSequence() {
+  const canvas = document.getElementById("seat-sequence");
+  if(!canvas) return;
+  const context = canvas.getContext("2d");
 
-  // Fade mask out to reveal the 3D Seat
-  zoomTl.to('.transition-mask', {
-    opacity: 0,
-    ease: "power2.in",
-    duration: 0.4
-  }, 0.6);
+  // Based on your original image dimensions
+  canvas.width = 1024;
+  canvas.height = 903;
 
-  // 3D Seat Rotation on MouseMove
-  const dioramaSection = document.querySelector('.diorama-section');
-  if(dioramaSection) {
-    document.addEventListener('mousemove', (e) => {
-      // Only rotate seat if we are scrolled down to it
-      if (window.scrollY > document.querySelector('.roof-breach').offsetTop) {
-        const x = (e.clientX / window.innerWidth - 0.5) * 2;
-        const y = (e.clientY / window.innerHeight - 0.5) * 2;
+  const frameCount = 60;
+  const currentFrame = index => /assets/seat_sequence/seat_.png;
 
-        gsap.to(seatGroup.rotation, {
-          y: x * 0.5,
-          x: y * 0.2,
-          ease: "power2.out",
-          duration: 1
-        });
-      }
-    });
+  const images = [];
+  const seatSequence = { frame: 0 };
+
+  // Preload frames
+  for (let i = 0; i < frameCount; i++) {
+    const img = new Image();
+    img.src = currentFrame(i);
+    images.push(img);
   }
+
+  // Initial draw
+  images[0].onload = render;
+
+  function render() {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.drawImage(images[seatSequence.frame], 0, 0);
+  }
+
+  // Link scroll to frame sequence
+  gsap.to(seatSequence, {
+    frame: frameCount - 1,
+    snap: "frame",
+    ease: "none",
+    scrollTrigger: {
+      trigger: ".apple-sequence-section",
+      start: "top top",
+      end: "bottom bottom",
+      scrub: 0.5
+    },
+    onUpdate: render
+  });
 }
 
 function animate() {
