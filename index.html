@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GatorCorp - The Backbone of Industry</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="preloader" data-preloader>
+    <div class="preloader__bar" data-preloader-bar></div>
+  </div>
+
+  <canvas id="bg"></canvas>
+  
+  <div id="scroll-container">
+    <section class="hero">
+      <div class="hero-content">
+        <h1 class="left-text">GATOR</h1>
+        <h1 class="right-text">CORP</h1>
+      </div>
+      <p class="scroll-prompt">Scroll to explore</p>
+    </section>
+
+    <section class="truck-intro">
+      <div class="intro-content">
+        <h2 data-split-reveal>The Backbone of Industry.</h2>
+        <p data-split-reveal="words">Uncompromising power on the outside.</p>
+      </div>
+    </section>
+
+    <section class="seat-transition">
+      <div class="intro-content">
+        <h2 data-split-reveal>Absolute Control.</h2>
+        <p data-split-reveal="words">True comfort starts from the inside.</p>
+      </div>
+    </section>
+
+    <section class="features-section" id="features-pin">
+      <div class="features-left">
+        <!-- Injected via JS -->
+      </div>
+      <div class="features-right">
+        <!-- Empty right side to leave space for the 3D model which will be pinned here -->
+      </div>
+    </section>
+
+    <footer class="footer">
+      <h2 data-split-reveal>Experience GatorCorp.</h2>
+      <a href="#" class="cta-btn">View Products</a>
+    </footer>
+  </div>
+  <script type="module" src="/main.js"></script>
+</body>
+</html>
