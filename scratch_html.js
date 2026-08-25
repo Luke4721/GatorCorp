@@ -43,15 +43,26 @@
       </div>
     </section>
 
-    <section class="apple-sequence-section" style="position: relative; width: 100%; height: 300vh; background: transparent; z-index: 10;">
+    <section class="apple-sequence-section" style="position: relative; width: 100%; height: 500vh; background: transparent; z-index: 10;">
       <!-- Sticky container for the scrubbing animation -->
-      <div class="sequence-sticky" style="position: sticky; top: 0; width: 100%; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;">
-        <h2 class="diorama-title" style="position: absolute; top: 10%; z-index: 12;">Unrivaled Comfort.</h2>
+      <div class="sequence-sticky" style="position: sticky; top: 0; width: 100%; height: 100vh; display: flex; align-items: center; justify-content: space-between; overflow: hidden; padding: 0 5vw;">
         
-        <canvas id="seat-sequence" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); max-width: 100%; max-height: 100vh; z-index: 11;"></canvas>
+        <div class="features-container" style="width: 40%; height: 100%; position: relative; z-index: 12; display: flex; align-items: center;">
+          <h2 class="feature-text f-0">Integrated 3 Point Seat Belt</h2>
+          <h2 class="feature-text f-1">Adjustable Armrest</h2>
+          <h2 class="feature-text f-2">Seat Back Recliner Lever</h2>
+          <h2 class="feature-text f-3">Lumbar Support Mechanical</h2>
+          <h2 class="feature-text f-4">7 step-Height adjustment</h2>
+          <h2 class="feature-text f-5">Shock Absorber Adjustment</h2>
+          <h2 class="feature-text f-6">Quick dump lever</h2>
+          <h2 class="feature-text f-7">Seat Sliding with towel bar</h2>
+          <h2 class="feature-text f-8">Patented Pneumatic Suspension System</h2>
+        </div>
         
-        <p class="diorama-caption" style="position: absolute; bottom: 15%; z-index: 12;">Scroll down to inspect.</p>
-        <a href="#" class="cta-btn diorama-cta" style="position: absolute; bottom: 5%; z-index: 12;">View Product Catalog</a>
+        <div class="canvas-container" style="width: 60%; height: 100%; position: relative; display: flex; align-items: center; justify-content: center;">
+          <canvas id="seat-sequence" style="max-width: 100%; max-height: 90vh; z-index: 11;"></canvas>
+        </div>
+        
       </div>
     </section>
 

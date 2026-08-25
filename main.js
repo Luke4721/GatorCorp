@@ -108,24 +108,45 @@ function initAppleSequence() {
   const masterTl = gsap.timeline({
     scrollTrigger: {
       trigger: ".apple-sequence-section",
-      start: "top bottom", // Starts as soon as section enters screen
+      start: "top bottom", 
       end: "bottom bottom",
-      scrub: 0.5
+      scrub: 1 // Increased scrub slightly for more fluidity
     }
   });
 
   // 1. Zoom into the truck and fade out 3D canvas (Happens quickly at start)
-  masterTl.to('#bg', { opacity: 0, duration: 0.1, ease: "none" }, 0);
-  masterTl.to(camera.position, { y: 5, duration: 0.1, ease: "power1.in" }, 0);
+  masterTl.to('#bg', { opacity: 0, duration: 0.05, ease: "none" }, 0);
+  masterTl.to(camera.position, { y: 5, duration: 0.05, ease: "power1.in" }, 0);
 
   // 2. Play the Seat Image Sequence over the rest of the scroll
   masterTl.to(seatSequence, {
     frame: frameCount - 1,
     snap: "frame",
     ease: "none",
-    duration: 0.9,
+    duration: 0.95,
     onUpdate: render
-  }, 0.1); // Starts right after the zoom fade completes
+  }, 0.05);
+
+  // 3. Sync the 9 Features text to fade in and out alongside the frames
+  const featureCount = 9;
+  const durationPerFeature = 0.95 / featureCount;
+  
+  for(let i=0; i<featureCount; i++) {
+    const startTime = 0.05 + (i * durationPerFeature);
+    
+    // Fade in and slide up slightly
+    masterTl.fromTo(`.f-${i}`, 
+      { opacity: 0, y: 50 },
+      { opacity: 1, y: 0, duration: durationPerFeature * 0.3, ease: "power2.out" },
+      startTime
+    );
+    
+    // Hold it, then fade out and slide up
+    masterTl.to(`.f-${i}`, 
+      { opacity: 0, y: -50, duration: durationPerFeature * 0.3, ease: "power2.in" },
+      startTime + (durationPerFeature * 0.7)
+    );
+  }
 }
 
 function animate() {
