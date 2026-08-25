@@ -91,7 +91,7 @@
                 const base64Data = dataUrl.replace(/^data:image\/png;base64,/, "");
                 
                 // Add to zip
-                const filename = seat_.png;
+                const filename = `seat_${String(i + 1).padStart(4, '0')}.png`;
                 folder.file(filename, base64Data, {base64: true});
             }
             
