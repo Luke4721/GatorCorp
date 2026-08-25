@@ -43,8 +43,6 @@
       </div>
     </section>
 
-    <section class="roof-breach"></section>
-
     <section class="apple-sequence-section" style="position: relative; width: 100%; height: 300vh; background: transparent; z-index: 10;">
       <!-- Sticky container for the scrubbing animation -->
       <div class="sequence-sticky" style="position: sticky; top: 0; width: 100%; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;">
