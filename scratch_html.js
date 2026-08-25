@@ -4,9 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GatorCorp - Heavy Duty Engineering</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
@@ -36,8 +33,8 @@
 
     <!-- OVERLAY 1: HERO TEXT -->
     <div class="hero-overlay">
-      <h1 class="hero-title">HEAVY<br>DUTY.</h1>
-      <div class="hero-subtitle">Scroll to Ignite</div>
+      <h1 class="hero-title">Heavy Duty.<br>Redefined.</h1>
+      <div class="hero-subtitle">Scroll to explore the GatorCorp fleet.</div>
     </div>
 
     <!-- OVERLAY 2: TRUCK SPECS -->
@@ -80,6 +77,7 @@
   <!-- FOOTER -->
   <footer class="footer">
     <h2>The Backbone of Industry.</h2>
+    <p>Engineered for the extreme.</p>
   </footer>
 
   <script type="module" src="/main.js"></script>

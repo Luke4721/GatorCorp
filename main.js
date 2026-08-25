@@ -83,7 +83,7 @@ function initMasterTimeline() {
   canvas.width = 1200;
   canvas.height = 1000;
   
-  const frameCount = 60;
+  const frameCount = 90;
   const currentFrame = index => `/assets/seat_sequence/seat_${(index + 1).toString().padStart(4, '0')}.png`;
   const images = [];
   const seatSequence = { frame: 0 };
