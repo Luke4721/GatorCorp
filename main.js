@@ -42,7 +42,6 @@ camera.lookAt(0, 0, 0);
 
 let truckModel;
 
-// WE ONLY LOAD THE TRUCK 3D MODEL NOW - MASSIVE RAM SAVINGS
 gltfLoader.loadAsync('/assets/Truck_draco.glb').then((truckGltf) => {
   truckModel = truckGltf.scene;
 
@@ -77,7 +76,6 @@ function initScrollAnimations() {
   arrivalTl.to(truckGroup.position, { z: 2, ease: "power2.out" });
   arrivalTl.to('.specs-content', { opacity: 1, stagger: 0.2, ease: "power2.out" }, "-=0.5");
 
-  // The Zoom & Breach Transition
   const zoomTl = gsap.timeline({
     scrollTrigger: {
       trigger: ".roof-breach",
@@ -87,14 +85,12 @@ function initScrollAnimations() {
     }
   });
 
-  // Fade out 3D Canvas
   zoomTl.to('#bg', {
     opacity: 0,
     ease: "power1.in",
     duration: 0.5
   });
 
-  // Plunge camera
   zoomTl.to(camera.position, {
     y: 5,
     ease: "power1.in",
@@ -107,24 +103,21 @@ function initAppleSequence() {
   if(!canvas) return;
   const context = canvas.getContext("2d");
 
-  // Based on your original image dimensions
   canvas.width = 1024;
   canvas.height = 903;
 
   const frameCount = 60;
-  const currentFrame = index => /assets/seat_sequence/seat_.png;
+  const currentFrame = index => `/assets/seat_sequence/seat_${(index + 1).toString().padStart(4, '0')}.png`;
 
   const images = [];
   const seatSequence = { frame: 0 };
 
-  // Preload frames
   for (let i = 0; i < frameCount; i++) {
     const img = new Image();
     img.src = currentFrame(i);
     images.push(img);
   }
 
-  // Initial draw
   images[0].onload = render;
 
   function render() {
@@ -132,7 +125,6 @@ function initAppleSequence() {
     context.drawImage(images[seatSequence.frame], 0, 0);
   }
 
-  // Link scroll to frame sequence
   gsap.to(seatSequence, {
     frame: frameCount - 1,
     snap: "frame",

@@ -16,9 +16,8 @@ const loader = document.querySelector("[data-preloader]");
 const bar = document.querySelector("[data-preloader-bar]");
 
 const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x050505, 0.0); // Match background color for smooth fade
+scene.fog = new THREE.FogExp2(0x050505, 0.0);
 
-// Top-Down Camera Setup
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ canvas: document.querySelector('#bg'), antialias: true, alpha: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -38,31 +37,22 @@ gltfLoader.setDRACOLoader(dracoLoader);
 const truckGroup = new THREE.Group();
 scene.add(truckGroup);
 
-// Initial Camera Top-Down View
-camera.position.set(0, 35, 0); // High up on Y axis
-camera.lookAt(0, 0, 0); // Looking straight down
+camera.position.set(0, 35, 0); 
+camera.lookAt(0, 0, 0); 
 
 let truckModel;
 
 gltfLoader.loadAsync('/assets/Truck_draco.glb').then((truckGltf) => {
   truckModel = truckGltf.scene;
 
-  // Fix Rotation: Flip 180 degrees so hood points up
   truckModel.rotation.y = -Math.PI / 2;
-  
   const truckBox = new THREE.Box3().setFromObject(truckModel);
   const truckSize = truckBox.getSize(new THREE.Vector3());
   const truckCenter = truckBox.getCenter(new THREE.Vector3());
-
-  // Fix Size: Scale down from 12 to 8.5 for more breathing room
   const truckScale = 8.5 / truckSize.x; 
   truckModel.scale.set(truckScale, truckScale, truckScale);
-  
   truckModel.position.set(-truckCenter.x * truckScale, -truckCenter.y * truckScale, -truckCenter.z * truckScale);
-
   truckGroup.add(truckModel);
-  
-  // Initial Truck Position: Off-screen at the "bottom"
   truckGroup.position.set(0, 0, 20); 
 
   const tlPreload = gsap.timeline({ onComplete: () => { if(loader) loader.remove(); } });
@@ -70,10 +60,10 @@ gltfLoader.loadAsync('/assets/Truck_draco.glb').then((truckGltf) => {
   if(loader) tlPreload.to(loader, { yPercent: -100, duration: 1, ease: "power4.inOut" }, "+=0.2");
 
   initScrollAnimations();
+  initAppleSequence();
 });
 
 function initScrollAnimations() {
-  // 1. Truck drives up from the bottom to the center nav
   const arrivalTl = gsap.timeline({
     scrollTrigger: {
       trigger: ".truck-arrival",
@@ -83,20 +73,9 @@ function initScrollAnimations() {
     }
   });
   
-  // Move truck into view
-  arrivalTl.to(truckGroup.position, {
-    z: 2, // Move up screen (hood is now pointing negative Z)
-    ease: "power2.out"
-  });
-  
-  // Fade in specs
-  arrivalTl.to('.specs-content', {
-    opacity: 1,
-    stagger: 0.2,
-    ease: "power2.out"
-  }, "-=0.5");
+  arrivalTl.to(truckGroup.position, { z: 2, ease: "power2.out" });
+  arrivalTl.to('.specs-content', { opacity: 1, stagger: 0.2, ease: "power2.out" }, "-=0.5");
 
-  // 2. The Zoom & Breach Transition
   const zoomTl = gsap.timeline({
     scrollTrigger: {
       trigger: ".roof-breach",
@@ -106,50 +85,58 @@ function initScrollAnimations() {
     }
   });
 
-  // Fade the canvas to 0 much earlier so we never see the clipping inside the roof
   zoomTl.to('#bg', {
     opacity: 0,
-    ease: "power2.out",
+    ease: "power1.in",
     duration: 0.5
   });
 
-  // Plunge camera down through the roof (happens while fading)
   zoomTl.to(camera.position, {
-    y: 5, // Stop before clipping inside the model
+    y: 5,
     ease: "power1.in",
     duration: 1
   }, 0);
+}
 
+function initAppleSequence() {
+  const canvas = document.getElementById("seat-sequence");
+  if(!canvas) return;
+  const context = canvas.getContext("2d");
 
-  // 3. 2.5D Diorama Interaction
-  const dioramaScene = document.querySelector('.diorama-scene');
-  const layers = document.querySelectorAll('.diorama-layer');
-  
-  if(dioramaScene) {
-    document.addEventListener('mousemove', (e) => {
-      const x = (e.clientX / window.innerWidth - 0.5) * 2;
-      const y = (e.clientY / window.innerHeight - 0.5) * 2;
+  canvas.width = 1024;
+  canvas.height = 903;
 
-      // Rotate the whole scene slightly for Magnetic Tilt
-      gsap.to(dioramaScene, {
-        rotationY: x * 10,
-        rotationX: -y * 10,
-        ease: "power2.out",
-        duration: 1
-      });
+  const frameCount = 60;
+  const currentFrame = index => `/assets/seat_sequence/seat_${(index + 1).toString().padStart(4, '0')}.png`;
 
-      // Shift the sliced layers for Parallax Depth
-      layers.forEach(layer => {
-        const speed = parseFloat(layer.getAttribute('data-speed')) || 0;
-        gsap.to(layer, {
-          x: -x * speed * 500,
-          y: -y * speed * 500,
-          ease: "power2.out",
-          duration: 1
-        });
-      });
-    });
+  const images = [];
+  const seatSequence = { frame: 0 };
+
+  for (let i = 0; i < frameCount; i++) {
+    const img = new Image();
+    img.src = currentFrame(i);
+    images.push(img);
   }
+
+  images[0].onload = render;
+
+  function render() {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.drawImage(images[seatSequence.frame], 0, 0);
+  }
+
+  gsap.to(seatSequence, {
+    frame: frameCount - 1,
+    snap: "frame",
+    ease: "none",
+    scrollTrigger: {
+      trigger: ".apple-sequence-section",
+      start: "top top",
+      end: "bottom bottom",
+      scrub: 0.5
+    },
+    onUpdate: render
+  });
 }
 
 function animate() {
