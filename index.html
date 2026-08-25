@@ -25,32 +25,41 @@
       <p class="scroll-prompt">Scroll to explore</p>
     </section>
 
-    <section class="truck-intro">
-      <div class="intro-content">
-        <h2 data-split-reveal>The Backbone of Industry.</h2>
-        <p data-split-reveal="words">Uncompromising power on the outside.</p>
+    <section class="truck-arrival">
+      <div class="specs-content specs-left">
+        <h3 class="spec-label">Chassis Design</h3>
+        <p class="spec-value">Heavy-Duty</p>
+        <h3 class="spec-label">Payload Capacity</h3>
+        <p class="spec-value">120,000 lbs</p>
+      </div>
+      
+      <div class="specs-content specs-right">
+        <h3 class="spec-label">Suspension</h3>
+        <p class="spec-value">Active Air-Ride</p>
+        <h3 class="spec-label">Drive</h3>
+        <p class="spec-value">All-Wheel 6x6</p>
       </div>
     </section>
 
-    <section class="seat-transition">
-      <div class="intro-content">
-        <h2 data-split-reveal>Absolute Control.</h2>
-        <p data-split-reveal="words">True comfort starts from the inside.</p>
-      </div>
-    </section>
+    <section class="roof-breach"></section>
 
-    <section class="features-section" id="features-pin">
-      <div class="features-left">
-        <!-- Injected via JS -->
-      </div>
-      <div class="features-right">
-        <!-- Empty right side to leave space for the 3D model which will be pinned here -->
+    <section class="diorama-section" id="diorama-section">
+      <div class="diorama-container" id="diorama">
+        <h2 class="diorama-title">Unrivaled Comfort.</h2>
+        <div class="diorama-scene">
+          <!-- Sliced elements for Idea 3 (2.5D Diorama) -->
+          <img src="/assets/seat-base.png" class="diorama-layer base-layer" data-speed="-0.08" alt="Seat Base">
+          <img src="/assets/seat-cushion.png" class="diorama-layer cushion-layer" data-speed="0" alt="Seat Cushion">
+          <img src="/assets/seat-back.png" class="diorama-layer backrest-layer" data-speed="0.05" alt="Seat Backrest">
+        </div>
+        <p class="diorama-caption">Hover to explore the physics of comfort.</p>
+        <br/>
+        <a href="#" class="cta-btn diorama-cta">View Product Catalog</a>
       </div>
     </section>
 
     <footer class="footer">
-      <h2 data-split-reveal>Experience GatorCorp.</h2>
-      <a href="#" class="cta-btn">View Products</a>
+      <h2>Experience GatorCorp.</h2>
     </footer>
   </div>
   <script type="module" src="/main.js"></script>

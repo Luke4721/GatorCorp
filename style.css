@@ -1,88 +1,121 @@
-
 :root {
-  --bg-color: #0a0a0c;
-  --text-main: #ffffff;
-  --text-muted: #888888;
-  --accent: #2979ff;
+  --bg-color: #050505;
+  --text-color: #ffffff;
+  --accent: #E53935;
+  --font-main: 'Inter', sans-serif;
 }
 
-* { box-sizing: border-box; }
-body { 
-  margin: 0; 
-  overflow-x: hidden; 
-  font-family: 'Inter', sans-serif; 
-  background-color: var(--bg-color); 
-  color: var(--text-main); 
-  -webkit-font-smoothing: antialiased;
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: var(--font-main);
+  overflow-x: hidden;
+  overscroll-behavior: none;
 }
 
-/* Preloader */
 .preloader {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+  background: var(--bg-color); z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+}
+.preloader__bar {
+  width: 200px; height: 2px; background: rgba(255,255,255,0.2);
+  transform-origin: left; transform: scaleX(0);
+}
+
+#bg {
   position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-  background: #000; z-index: 9999; display: flex; align-items: center;
-}
-.preloader__bar { height: 2px; background: var(--text-main); width: 100%; transform-origin: left; transform: scaleX(0); }
-
-/* Canvas */
-#bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; }
-
-#scroll-container { position: relative; z-index: 10; }
-
-section { 
-  position: relative;
-  min-height: 100vh; 
-  display: flex; 
-  flex-direction: column; 
-  justify-content: center; 
-  padding: 0 10vw;
+  z-index: -1; pointer-events: none;
 }
 
-/* Hero */
-.hero { align-items: center; text-align: center; }
-.hero-content { display: flex; gap: 2vw; font-size: 8vw; font-weight: 900; letter-spacing: -0.04em; line-height: 1; }
-.hero-content h1 { margin: 0; overflow: hidden; }
-.scroll-prompt { position: absolute; bottom: 5vh; font-size: 0.9rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.2em; color: var(--text-muted); }
-
-/* Typography reveals */
-.intro-content { max-width: 60vw; }
-h2 { font-size: 5vw; font-weight: 700; margin: 0 0 2vh 0; letter-spacing: -0.02em; line-height: 1.1; }
-p { font-size: 1.5vw; font-weight: 300; color: var(--text-muted); margin: 0; line-height: 1.5; }
-
-.split-word-mask { display: inline-block; overflow: hidden; vertical-align: top; }
-.split-word { display: inline-block; will-change: transform, opacity, filter; }
-
-/* Features Section (Pinned Layout) */
-.features-section { 
-  display: flex; 
-  flex-direction: row; 
-  align-items: flex-start;
-  padding: 0;
-  min-height: 200vh; /* Long enough to scroll through */
+#scroll-container {
+  position: relative; width: 100%; z-index: 1;
 }
 
-.features-left { 
-  width: 50%; 
-  padding: 10vh 5vw 10vh 10vw; 
-  display: flex;
-  flex-direction: column;
+section {
+  position: relative; width: 100%; min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
 }
 
-.features-right {
-  width: 50%;
-  height: 100vh; /* Matches screen height, model will live here */
+/* HERO */
+.hero { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.hero-content {
+  display: flex; justify-content: space-between; width: 90%; max-width: 1400px;
+  position: absolute; top: 30%;
+}
+.hero h1 { font-size: 8vw; font-weight: 900; letter-spacing: -0.02em; text-transform: uppercase; line-height: 1; margin: 0; }
+.left-text { text-align: left; }
+.right-text { text-align: right; }
+.scroll-prompt {
+  position: absolute; bottom: 50px; font-size: 0.9rem;
+  text-transform: uppercase; letter-spacing: 0.2em; opacity: 0.5;
 }
 
-.feature-item { 
-  padding: 30vh 0; /* Huge spacing to force scrolling */
-  opacity: 0.2; 
-  transition: opacity 0.4s ease; 
+/* TRUCK ARRIVAL */
+.truck-arrival {
+  justify-content: space-between; padding: 0 10%; pointer-events: none;
 }
-.feature-item.active { opacity: 1; }
-.feature-item h3 { font-size: 3vw; font-weight: 500; margin: 0 0 1vh 0; letter-spacing: -0.01em; color: var(--text-main); }
-.feature-item p { font-size: 1.2vw; color: var(--text-muted); }
-.feature-item .spec-line { height: 1px; width: 40px; background: var(--accent); margin-bottom: 2vh; display: block;}
+.specs-content {
+  display: flex; flex-direction: column; width: 300px; opacity: 0; 
+}
+.specs-left { align-items: flex-start; text-align: left; }
+.specs-right { align-items: flex-end; text-align: right; }
+.spec-label {
+  font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em;
+  color: #888; margin-bottom: 5px; margin-top: 30px;
+}
+.spec-value {
+  font-size: 1.5rem; font-weight: 700;
+}
 
-/* Footer */
-.footer { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: #050505; }
-.cta-btn { margin-top: 4vh; padding: 1.2em 2.5em; background: var(--text-main); color: var(--bg-color); text-decoration: none; font-weight: 700; border-radius: 50px; text-transform: uppercase; letter-spacing: 0.1em; transition: transform 0.3s ease; }
+/* ROOF BREACH (Transition padding) */
+.roof-breach { min-height: 150vh; }
+
+/* 2.5D DIORAMA */
+.diorama-section {
+  background-color: var(--bg-color); /* Hides the canvas */
+  z-index: 10;
+  display: flex; flex-direction: column; align-items: center;
+  overflow: hidden;
+}
+.diorama-container {
+  position: relative; width: 100vw; height: 100vh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  perspective: 1000px; /* Crucial for 3D tilt */
+}
+.diorama-title {
+  position: absolute; top: 15%; font-size: 4rem; font-weight: 900; z-index: 5;
+  text-transform: uppercase; letter-spacing: -0.02em;
+}
+.diorama-scene {
+  position: relative; width: 800px; height: 800px;
+  transform-style: preserve-3d;
+  display: flex; align-items: center; justify-content: center;
+}
+.diorama-layer {
+  position: absolute; 
+  will-change: transform;
+}
+.backrest-layer { top: -50px; left: 0; width: 100%; height: auto; z-index: 1; }
+.cushion-layer { top: 350px; left: 0; width: 100%; height: auto; z-index: 2; }
+.base-layer { top: 550px; left: 0; width: 100%; height: auto; z-index: 3; }
+
+.diorama-caption {
+  position: absolute; bottom: 15%; font-size: 1rem; color: #888; z-index: 5;
+}
+.diorama-cta {
+  position: absolute; bottom: 8%; z-index: 5;
+}
+
+/* FOOTER */
+.footer { background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.footer h2 { font-size: 4vw; margin-bottom: 2rem; font-weight: 700; letter-spacing: -0.02em; }
+.cta-btn {
+  padding: 1rem 3rem; background: var(--text-color); color: var(--bg-color);
+  text-decoration: none; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.1em; border-radius: 50px; transition: transform 0.3s ease;
+}
 .cta-btn:hover { transform: scale(1.05); }
+
+/* Overwrite style.css at root */
