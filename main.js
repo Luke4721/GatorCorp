@@ -53,41 +53,25 @@ gltfLoader.loadAsync('/assets/Truck_draco.glb').then((truckGltf) => {
   truckModel.scale.set(truckScale, truckScale, truckScale);
   truckModel.position.set(-truckCenter.x * truckScale, -truckCenter.y * truckScale, -truckCenter.z * truckScale);
   truckGroup.add(truckModel);
+  
+  // Start offscreen bottom
   truckGroup.position.set(0, 0, 20); 
 
   const tlPreload = gsap.timeline({ onComplete: () => { if(loader) loader.remove(); } });
   if(bar) tlPreload.fromTo(bar, { scaleX: 0 }, { scaleX: 1, duration: 1.2, ease: "power3.inOut" });
   if(loader) tlPreload.to(loader, { yPercent: -100, duration: 1, ease: "power4.inOut" }, "+=0.2");
 
-  initScrollAnimations();
-  initAppleSequence();
+  initMasterTimeline();
 });
 
-function initScrollAnimations() {
-  const arrivalTl = gsap.timeline({
-    scrollTrigger: {
-      trigger: ".truck-arrival",
-      start: "top bottom",
-      end: "top top",
-      scrub: 1
-    }
-  });
-  
-  arrivalTl.to(truckGroup.position, { z: 2, ease: "power2.out" });
-  arrivalTl.to('.specs-content', { opacity: 1, stagger: 0.2, ease: "power2.out" }, "-=0.5");
-}
-
-function initAppleSequence() {
+function initMasterTimeline() {
+  // Setup Sequence Canvas
   const canvas = document.getElementById("seat-sequence");
-  if(!canvas) return;
   const context = canvas.getContext("2d");
-
   canvas.width = 1024;
   canvas.height = 903;
-
   const frameCount = 60;
   const currentFrame = index => `/assets/seat_sequence/seat_${(index + 1).toString().padStart(4, '0')}.png`;
-
   const images = [];
   const seatSequence = { frame: 0 };
 
@@ -96,52 +80,60 @@ function initAppleSequence() {
     img.src = currentFrame(i);
     images.push(img);
   }
-
-  images[0].onload = render;
-
-  function render() {
+  images[0].onload = renderSeat;
+  function renderSeat() {
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.drawImage(images[seatSequence.frame], 0, 0);
   }
 
-  // Master timeline for the entire sequence section
+  // CREATE MASTER TIMELINE
   const masterTl = gsap.timeline({
     scrollTrigger: {
-      trigger: ".apple-sequence-section",
-      start: "top bottom", 
-      end: "bottom bottom",
-      scrub: 1 // Increased scrub slightly for more fluidity
+      trigger: "#master-pin-container",
+      start: "top top",
+      end: "+=6000", // Massive scroll area for maximum fluidity
+      pin: true,
+      scrub: 1
     }
   });
 
-  // 1. Zoom into the truck and fade out 3D canvas (Happens quickly at start)
-  masterTl.to('#bg', { opacity: 0, duration: 0.05, ease: "none" }, 0);
-  masterTl.to(camera.position, { y: 5, duration: 0.05, ease: "power1.in" }, 0);
+  // 0.0 - 0.1: Hero fades out, Truck drives in
+  masterTl.to(".hero-overlay", { opacity: 0, duration: 0.1 }, 0);
+  masterTl.to(truckGroup.position, { z: 2, duration: 0.15, ease: "power1.inOut" }, 0);
 
-  // 2. Play the Seat Image Sequence over the rest of the scroll
+  // 0.15 - 0.25: Specs fade in
+  masterTl.to(".truck-specs-overlay", { opacity: 1, duration: 0.05 }, 0.15);
+  
+  // 0.25 - 0.35: Specs fade out, Truck drives UP (exits screen)
+  masterTl.to(".truck-specs-overlay", { opacity: 0, duration: 0.05 }, 0.25);
+  masterTl.to(truckGroup.position, { z: -20, duration: 0.15, ease: "power1.inOut" }, 0.25);
+
+  // 0.25 - 0.35: CONVEYOR BELT HANDOFF
+  // The Seat Canvas and Features slide UP from the bottom at the exact same time
+  masterTl.to("#seat-sequence", { top: "0%", duration: 0.15, ease: "power1.inOut" }, 0.25);
+  masterTl.to(".seat-features-overlay", { top: "0%", duration: 0.15, ease: "power1.inOut" }, 0.25);
+
+  // 0.35 - 1.0: Apple Sequence Scrub & Feature Text Highlights
   masterTl.to(seatSequence, {
     frame: frameCount - 1,
     snap: "frame",
     ease: "none",
-    duration: 0.95,
-    onUpdate: render
-  }, 0.05);
+    duration: 0.65, // takes up remaining scroll
+    onUpdate: renderSeat
+  }, 0.35);
 
-  // 3. Sync the 9 Features text to fade in and out alongside the frames
   const featureCount = 9;
-  const durationPerFeature = 0.95 / featureCount;
+  const durationPerFeature = 0.65 / featureCount;
   
   for(let i=0; i<featureCount; i++) {
-    const startTime = 0.05 + (i * durationPerFeature);
+    const startTime = 0.35 + (i * durationPerFeature);
     
-    // Fade in and slide up slightly
     masterTl.fromTo(`.f-${i}`, 
       { opacity: 0, y: 50 },
       { opacity: 1, y: 0, duration: durationPerFeature * 0.3, ease: "power2.out" },
       startTime
     );
     
-    // Hold it, then fade out and slide up
     masterTl.to(`.f-${i}`, 
       { opacity: 0, y: -50, duration: durationPerFeature * 0.3, ease: "power2.in" },
       startTime + (durationPerFeature * 0.7)
