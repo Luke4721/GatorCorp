@@ -47,57 +47,40 @@ scene.add(truckGroup);
 camera.position.set(0, 40, 0); 
 camera.lookAt(0, 0, 0); 
 
+window.solidMaterials = [];
+window.wireMaterials = [];
+  
+// -- SHOCKWAVE EFFECT SETUP --
+const waveGroup = new THREE.Group();
+
+const waveGeo = new THREE.TorusGeometry(8, 0.1, 16, 100);
+window.waveMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0 });
+const shockwave = new THREE.Mesh(waveGeo, window.waveMat);
+shockwave.rotation.x = Math.PI / 2;
+waveGroup.add(shockwave);
+
+const waveGeo2 = new THREE.TorusGeometry(6, 0.05, 16, 100);
+window.waveMat2 = new THREE.MeshBasicMaterial({ color: 0x00aaff, transparent: true, opacity: 0 });
+const shockwave2 = new THREE.Mesh(waveGeo2, window.waveMat2);
+shockwave2.rotation.x = Math.PI / 2;
+shockwave2.position.y = 1;
+waveGroup.add(shockwave2);
+
+scene.add(waveGroup);
+
+// Impact Flash
+window.impactLight = new THREE.PointLight(0x00aaff, 0, 200);
+window.impactLight.position.set(0, 5, 0); // At the point of impact
+scene.add(window.impactLight);
+// ----------------------------
+
 let truckModel, spinGroup, shakeGroup;
-window.solidMaterials = []; // Collect materials for diagram fade
 
-  // Global uniforms for our particle data simulation
-  window.particleUniforms = {
-      uTime: { value: 0 },
-      uVibration: { value: 0 }, 
-      uOpacity: { value: 1 }
-  };
-
-  const particleMaterial = new THREE.ShaderMaterial({
-      uniforms: window.particleUniforms,
-      transparent: true,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending,
-      vertexShader: `
-          uniform float uTime;
-          uniform float uVibration;
-          void main() {
-              vec3 pos = position;
-              // Fluid wave simulating vibration isolation data
-              float wave = sin(position.y * 5.0 + uTime * 5.0) * sin(position.x * 5.0 + uTime * 7.0);
-              pos.x += wave * uVibration * 0.15;
-              pos.z += wave * uVibration * 0.15;
-              
-              vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
-              gl_PointSize = 3.0 * (10.0 / -mvPosition.z);
-              gl_Position = projectionMatrix * mvPosition;
-          }
-      `,
-      fragmentShader: `
-          uniform float uOpacity;
-          void main() {
-              vec2 c = gl_PointCoord - vec2(0.5);
-              float dist = length(c);
-              if (dist > 0.5) discard;
-              float strength = pow(1.0 - (dist * 2.0), 1.5);
-              // Silver-blue noise color
-              gl_FragColor = vec4(0.5, 0.7, 0.9, strength * uOpacity * 0.4);
-          }
-      `
-  });
-
-  window.noiseClouds = [];
-
-  gltfLoader.loadAsync('/assets/Meshy_AI_truck_cab_front_untex_0826175627_generate.glb').then((truckGltf) => {
+gltfLoader.loadAsync('/assets/Meshy_AI_truck_cab_front_untex_0826175627_generate.glb').then((truckGltf) => {
     truckModel = truckGltf.scene;
   
     truckModel.traverse((child) => {
         if (child.isMesh) {
-            // Re-enable the perfectly solid, stable glossy black truck
             child.material = new THREE.MeshStandardMaterial({
                 color: 0x111111, 
                 roughness: 0.1,
@@ -107,10 +90,13 @@ window.solidMaterials = []; // Collect materials for diagram fade
             });
             window.solidMaterials.push(child.material);
             
-            // Overlay the chaotic data noise shell on top of it
-            const points = new THREE.Points(child.geometry, particleMaterial);
-            window.noiseClouds.push(points);
-            child.add(points);
+            const edges = new THREE.EdgesGeometry(child.geometry, 45);
+            const line = new THREE.LineSegments(
+                edges, 
+                new THREE.LineBasicMaterial({ color: 0x0088ff, transparent: true, opacity: 0.0 })
+            );
+            window.wireMaterials.push(line.material);
+            child.add(line);
         }
     });
 
@@ -207,18 +193,29 @@ function initMasterTimeline() {
   masterTl.to("#road-lines", { opacity: 0.12, duration: 0.05 }, 0.0);
   masterTl.to("#road-lines-strip", { y: "0%", ease: "none", duration: 0.35 }, 0.0); 
 
-  // Fluid Particle Vibration Simulation (Replaces the broken toy shake)
-  masterTl.to(window.particleUniforms.uVibration, { value: 1.5, duration: 0.15, ease: "power2.inOut" }, 0.0);
-  masterTl.to(window.particleUniforms.uVibration, { value: 3.5, duration: 0.20, ease: "none" }, 0.15);
+  // Shockwave Animation Setup
+  waveGroup.position.y = 35; // Start near the camera
+  waveGroup.scale.set(0.1, 0.1, 0.1);
   
-  // Phase 2: The Layered Peel (Stripping the Noise)
-  // The pristine solid truck shoots safely forward into the camera
+  // Phase 1.5: The Shockwave Approach (0.15 to 0.30)
+  // Shockwave becomes visible and dives toward the truck
+  masterTl.to(window.waveMat, { opacity: 0.8, duration: 0.05, ease: "power2.out" }, 0.15);
+  masterTl.to(window.waveMat2, { opacity: 0.5, duration: 0.05, ease: "power2.out" }, 0.15);
+  masterTl.to(waveGroup.position, { y: 15, duration: 0.15, ease: "power2.in" }, 0.15);
+  masterTl.to(waveGroup.scale, { x: 3, y: 3, z: 3, duration: 0.15, ease: "power2.in" }, 0.15);
+  
+  // Phase 2: The Impact & Isolation
+  // The moment the shockwave hits the truck (y=15), it shatters/dissipates instantly.
+  masterTl.to(waveGroup.scale, { x: 8, y: 8, z: 8, duration: 0.05, ease: "power3.out" }, 0.30);
+  masterTl.to([window.waveMat, window.waveMat2], { opacity: 0, duration: 0.05, ease: "power2.out" }, 0.30);
+  
+  // Flash of energy dissipation
+  masterTl.to(window.impactLight, { intensity: 500, duration: 0.02, ease: "power2.out" }, 0.30);
+  masterTl.to(window.impactLight, { intensity: 0, duration: 0.08, ease: "power2.out" }, 0.32);
+
+  // 0.35 -> The truck, unharmed, zooms safely into the camera
   masterTl.to(truckGroup.scale, { x: 15, y: 15, z: 15, duration: 0.10, ease: "power2.in" }, 0.35);
   masterTl.to(truckGroup.rotation, { z: 0.1, duration: 0.10, ease: "power1.inOut" }, 0.35); 
-  
-  // The chaotic noise shell is violently blown backwards off the truck and fades out
-  masterTl.to(window.noiseClouds.map(c => c.position), { z: -200, duration: 0.10, ease: "power2.in" }, 0.35);
-  masterTl.to(window.particleUniforms.uOpacity, { value: 0, duration: 0.10, ease: "power2.out" }, 0.35);
   
   // Fade the solid truck right before the text appears
   masterTl.to(window.solidMaterials, { opacity: 0, duration: 0.05, ease: "power2.out" }, 0.40);
