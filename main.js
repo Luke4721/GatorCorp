@@ -125,13 +125,14 @@ gltfLoader.loadAsync('/assets/Seat.glb').then((seatGltf) => {
     const seatSize = seatBox.getSize(new THREE.Vector3());
     const seatCenter = seatBox.getCenter(new THREE.Vector3());
     
-    // The truck scale is about 9 units total. Let's make the seat about 4 units tall.
-    const seatScale = 4 / Math.max(seatSize.x, seatSize.y, seatSize.z); 
+    // The truck scale is about 9 units total. Let's make the seat about 5 units tall so it fills the cab.
+    const seatScale = 5 / Math.max(seatSize.x, seatSize.y, seatSize.z); 
     seatModel.scale.set(seatScale, seatScale, seatScale);
+    
     seatModel.position.set(
-        -seatCenter.x * seatScale, 
-        (-seatCenter.y * seatScale) - 0.5, // slightly lowered
-        (-seatCenter.z * seatScale) + 0.5  // pushed slightly forward in the cab
+        (-seatCenter.x * seatScale) + 1.8,  // Move right in X (Top-right of screen)
+        (-seatCenter.y * seatScale) - 0.5,  // Slightly lowered in Y
+        (-seatCenter.z * seatScale) - 1.5   // Move forward in Z (Top of screen)
     );
     
     window.stableSeat.add(seatModel);
@@ -303,12 +304,20 @@ function animate() {
       window.seatMaterials.forEach(m => m.opacity = window.seatOpacity.value);
   }
   
-  // Apply physical wobble to the truck (but NOT the seat)
+  // Apply realistic heavy machinery physics to the truck (but NOT the seat)
   if (typeof shakeGroup !== 'undefined' && shakeGroup && window.particleUniforms) {
       const vib = window.particleUniforms.uVibration.value;
-      shakeGroup.position.x = Math.sin(t * 40) * 0.08 * vib;
-      shakeGroup.position.y = Math.cos(t * 45) * 0.08 * vib;
-      shakeGroup.rotation.z = Math.sin(t * 35) * 0.02 * vib;
+      
+      // 1. Low frequency suspension heave
+      const heave = Math.sin(t * 8) * 0.15;
+      // 2. Mid frequency frame bounce
+      const bounce = Math.sin(t * 18) * Math.cos(t * 12) * 0.1;
+      // 3. High frequency engine/road rattle
+      const rattle = Math.sin(t * 50) * 0.05;
+      
+      shakeGroup.position.x = (heave + rattle) * vib;
+      shakeGroup.position.y = (bounce + rattle) * vib;
+      shakeGroup.rotation.z = (Math.sin(t * 14) * 0.03) * vib; // Slight chassis roll
   }
   
   renderer.render(scene, camera);
