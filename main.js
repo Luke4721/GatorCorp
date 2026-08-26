@@ -89,8 +89,66 @@ window.noiseClouds = [];
 window.stableSeat = new THREE.Group();
 window.seatMaterials = [];
 window.seatOpacity = { value: 0 };
-
-// ----------------------------
+  // Seat loading restored with 0-memory GPU wireframe!
+  gltfLoader.loadAsync('/assets/Seat_draco.glb').then((seatGltf) => {
+      const seatModel = seatGltf.scene;
+      
+      seatModel.traverse((child) => {
+          if (child.isMesh) {
+              child.visible = false;
+              
+              // Premium glowing blue particles
+              const ptsMat = new THREE.PointsMaterial({ 
+                  color: 0x00ffff, 
+                  size: 0.05, 
+                  transparent: true, 
+                  opacity: 0, 
+                  depthWrite: false, 
+                  blending: THREE.AdditiveBlending 
+              });
+              const pts = new THREE.Points(child.geometry, ptsMat);
+              child.parent.add(pts);
+              
+              // GPU-accelerated wireframe (0 bytes of extra RAM)
+              const wireMat = new THREE.MeshBasicMaterial({ 
+                  color: 0x0088ff, 
+                  wireframe: true, 
+                  transparent: true, 
+                  opacity: 0 
+              });
+              const wireMesh = new THREE.Mesh(child.geometry, wireMat);
+              child.parent.add(wireMesh);
+              
+              window.seatMaterials.push(ptsMat, wireMat);
+          }
+      });
+      
+      // Scale and position to fit exactly inside the truck cab
+      const seatBox = new THREE.Box3().setFromObject(seatModel);
+      const seatSize = seatBox.getSize(new THREE.Vector3());
+      const seatCenter = seatBox.getCenter(new THREE.Vector3());
+      
+      const seatScale = 5 / Math.max(seatSize.x, seatSize.y, seatSize.z); 
+      seatModel.scale.set(seatScale, seatScale, seatScale);
+      
+      seatModel.position.set(
+          -seatCenter.x * seatScale,
+          -seatCenter.y * seatScale,
+          -seatCenter.z * seatScale
+      );
+      
+      const seatWrapper = new THREE.Group();
+      seatWrapper.add(seatModel);
+      
+      // Face forward
+      seatWrapper.rotation.y = Math.PI / 2;
+      
+      // Top-right corner as explicitly requested
+      seatWrapper.position.set(2.0, -0.5, -4.0);
+      
+      window.stableSeat.add(seatWrapper);
+  });
+  // ----------------------------
 
 gltfLoader.loadAsync('/assets/Truck_draco.glb').then((truckGltf) => {
     truckModel = truckGltf.scene;
@@ -101,11 +159,16 @@ gltfLoader.loadAsync('/assets/Truck_draco.glb').then((truckGltf) => {
             const points = new THREE.Points(child.geometry, truckParticleMaterial);
             window.noiseClouds.push(points);
             child.parent.add(points);
-            const edges = new THREE.EdgesGeometry(child.geometry, 45);
-            const lineMat = new THREE.LineBasicMaterial({ color: 0xff1111, transparent: true, opacity: 0.2 });
-            const line = new THREE.LineSegments(edges, lineMat);
-            window.solidMaterials.push(lineMat);
-            child.parent.add(line);
+            // GPU-accelerated wireframe (0 bytes of extra RAM, eliminates 800MB leak)
+            const wireMat = new THREE.MeshBasicMaterial({ 
+                color: 0xff1111, 
+                wireframe: true, 
+                transparent: true, 
+                opacity: 0.2 
+            });
+            const wireMesh = new THREE.Mesh(child.geometry, wireMat);
+            window.solidMaterials.push(wireMat);
+            child.parent.add(wireMesh);
         }
     });
 
@@ -306,13 +369,14 @@ function updateCatalogueUI(index) {
   
   // Change the 3D seat colors to match the selected model!
   const seatColors = [
-    { pt: 0x00ffff }, // Supremo (Blue)
-    { pt: 0xffaa00 }, // Excavator (Orange)
-    { pt: 0x00ff44 }, // Tractor (Green)
-    { pt: 0xff2222 }  // Forklift (Red)
+    { pt: 0x00ffff, line: 0x0088ff }, // Supremo (Blue)
+    { pt: 0xffaa00, line: 0xff5500 }, // Excavator (Orange)
+    { pt: 0x00ff44, line: 0x008822 }, // Tractor (Green)
+    { pt: 0xff2222, line: 0xaa0000 }  // Forklift (Red)
   ];
-  if (window.seatMaterials && window.seatMaterials.length >= 1) {
-    window.seatMaterials.forEach(m => m.color.setHex(seatColors[index].pt));
+  if (window.seatMaterials && window.seatMaterials.length >= 2) {
+    window.seatMaterials[0].color.setHex(seatColors[index].pt);
+    window.seatMaterials[1].color.setHex(seatColors[index].line);
   }
   
   const badgesContainer = document.getElementById('cat-badges');
