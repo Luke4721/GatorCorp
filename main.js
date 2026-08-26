@@ -86,33 +86,55 @@ const truckParticleMaterial = new THREE.ShaderMaterial({
 window.noiseClouds = [];
 
 // -- BLUE STABLE SEAT SETUP --
-function createSeat() {
-    const seatGroup = new THREE.Group();
-    window.seatMaterials = [];
+window.stableSeat = new THREE.Group();
+window.seatMaterials = [];
+
+gltfLoader.loadAsync('/assets/Seat.glb').then((seatGltf) => {
+    const seatModel = seatGltf.scene;
     
-    const buildPart = (w, h, d, x, y, z) => {
-        const geo = new THREE.BoxGeometry(w, h, d, 8, 8, 8);
-        geo.translate(x, y, z);
-        
-        const ptsMat = new THREE.PointsMaterial({ color: 0x00ffff, size: 0.08, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
-        seatGroup.add(new THREE.Points(geo, ptsMat));
-        
-        const lineMat = new THREE.LineBasicMaterial({ color: 0x0088ff, transparent: true, opacity: 0 });
-        seatGroup.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo), lineMat));
-        
-        window.seatMaterials.push(ptsMat, lineMat);
-    };
+    seatModel.traverse((child) => {
+        if (child.isMesh) {
+            child.visible = false;
+            
+            // Premium glowing blue particles
+            const ptsMat = new THREE.PointsMaterial({ 
+                color: 0x00ffff, 
+                size: 0.05, 
+                transparent: true, 
+                opacity: 0, 
+                depthWrite: false, 
+                blending: THREE.AdditiveBlending 
+            });
+            const pts = new THREE.Points(child.geometry, ptsMat);
+            child.parent.add(pts);
+            
+            // Premium sharp blue wireframe
+            const edges = new THREE.EdgesGeometry(child.geometry, 30);
+            const lineMat = new THREE.LineBasicMaterial({ color: 0x0088ff, transparent: true, opacity: 0 });
+            const lines = new THREE.LineSegments(edges, lineMat);
+            child.parent.add(lines);
+            
+            window.seatMaterials.push(ptsMat, lineMat);
+        }
+    });
     
-    buildPart(2.2, 0.4, 2.2, 0, 0, 0); // Base cushion
-    buildPart(2.2, 3.0, 0.4, 0, 1.7, -0.9); // Backrest
-    buildPart(0.4, 0.2, 1.8, -1.3, 0.8, 0.2); // Left arm
-    buildPart(0.4, 0.2, 1.8,  1.3, 0.8, 0.2); // Right arm
-    buildPart(0.8, 0.6, 0.4, 0, 3.5, -0.9); // Headrest
+    // Scale and position to fit exactly inside the truck cab
+    // We will auto-center and scale it based on bounding box
+    const seatBox = new THREE.Box3().setFromObject(seatModel);
+    const seatSize = seatBox.getSize(new THREE.Vector3());
+    const seatCenter = seatBox.getCenter(new THREE.Vector3());
     
-    seatGroup.scale.set(0.6, 0.6, 0.6);
-    seatGroup.position.set(0, -0.2, 0.5); // Placed right inside the cab
-    return seatGroup;
-}
+    // The truck scale is about 9 units total. Let's make the seat about 4 units tall.
+    const seatScale = 4 / Math.max(seatSize.x, seatSize.y, seatSize.z); 
+    seatModel.scale.set(seatScale, seatScale, seatScale);
+    seatModel.position.set(
+        -seatCenter.x * seatScale, 
+        (-seatCenter.y * seatScale) - 0.5, // slightly lowered
+        (-seatCenter.z * seatScale) + 0.5  // pushed slightly forward in the cab
+    );
+    
+    window.stableSeat.add(seatModel);
+});
 // ----------------------------
 
 gltfLoader.loadAsync('/assets/Meshy_AI_truck_cab_front_untex_0826175627_generate.glb').then((truckGltf) => {
@@ -150,7 +172,6 @@ gltfLoader.loadAsync('/assets/Meshy_AI_truck_cab_front_untex_0826175627_generate
   pivotGroup.add(shakeGroup);
   
   // Add the perfectly stable blue seat inside the cab (it avoids the shakeGroup!)
-  window.stableSeat = createSeat();
   pivotGroup.add(window.stableSeat);
 
   // 1. Point the roof at the camera, and windshield to the LEFT (User dialed)
