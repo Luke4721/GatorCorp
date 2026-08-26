@@ -53,8 +53,9 @@ window.solidMaterials = []; // Collect materials for diagram fade
   // Global uniforms for our particle data simulation
   window.particleUniforms = {
       uTime: { value: 0 },
-      uVibration: { value: 0 }, // GSAP will animate this
-      uOpacity: { value: 1 }
+      uVibration: { value: 0 }, 
+      uOpacity: { value: 1 },
+      uFlatten: { value: 0 } // Morphs truck into a flatline
   };
 
   const particleMaterial = new THREE.ShaderMaterial({
@@ -65,12 +66,25 @@ window.solidMaterials = []; // Collect materials for diagram fade
       vertexShader: `
           uniform float uTime;
           uniform float uVibration;
+          uniform float uFlatten;
           void main() {
               vec3 pos = position;
+              
+              // Morph into a flat line
+              pos.y = mix(pos.y, 0.0, uFlatten);
+              pos.z = mix(pos.z, 0.0, uFlatten);
+
               // Fluid wave simulating vibration isolation data
-              float wave = sin(pos.y * 5.0 + uTime * 5.0) * sin(pos.x * 5.0 + uTime * 7.0);
-              pos.x += wave * uVibration * 0.15;
-              pos.z += wave * uVibration * 0.15;
+              float wave = sin(position.y * 5.0 + uTime * 5.0) * sin(position.x * 5.0 + uTime * 7.0);
+              
+              // When it's a truck, vibrate in X/Z. When flattened, vibrate in Y like an oscilloscope.
+              float vibX = mix(wave * uVibration * 0.15, 0.0, uFlatten);
+              float vibZ = mix(wave * uVibration * 0.15, 0.0, uFlatten);
+              float vibY = mix(0.0, wave * uVibration * 0.5, uFlatten);
+              
+              pos.x += vibX;
+              pos.y += vibY;
+              pos.z += vibZ;
               
               vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
               gl_PointSize = 4.0 * (10.0 / -mvPosition.z);
@@ -200,27 +214,28 @@ function initMasterTimeline() {
   masterTl.to(window.particleUniforms.uVibration, { value: 1.5, duration: 0.15, ease: "power2.inOut" }, 0.0);
   masterTl.to(window.particleUniforms.uVibration, { value: 3.5, duration: 0.20, ease: "none" }, 0.15);
   
-  // Phase 2: Massive Zoom In + Chaotic Particle Dispersion
-  masterTl.to(truckGroup.scale, { x: 12, y: 12, z: 12, duration: 0.10, ease: "power2.inIn" }, 0.35);
-  masterTl.to(truckGroup.rotation, { z: 0.2, duration: 0.10, ease: "power1.inOut" }, 0.35); 
+  // Phase 2: The Oscilloscope Flatline
+  // Morph into a chaotic 2D line and stretch it across the screen
+  masterTl.to(truckGroup.scale, { x: 40, duration: 0.10, ease: "power2.inOut" }, 0.35);
+  masterTl.to(window.particleUniforms.uFlatten, { value: 1.0, duration: 0.10, ease: "power2.inOut" }, 0.35);
+  masterTl.to(window.particleUniforms.uVibration, { value: 10.0, duration: 0.10, ease: "power2.in" }, 0.35);
   
-  // The particles violently fly apart right before "Isolating Vibrations" appears
-  masterTl.to(window.particleUniforms.uVibration, { value: 50.0, duration: 0.10, ease: "power3.in" }, 0.35);
-  masterTl.to(window.particleUniforms.uOpacity, { value: 0, duration: 0.10, ease: "power2.out" }, 0.35);
-
   masterTl.to("#hero-text-left", { x: -300, opacity: 0, duration: 0.10 }, 0.35);
   masterTl.to("#hero-text-right", { x: 300, opacity: 0, duration: 0.10 }, 0.35);
   masterTl.to(["#hero-sub-left", "#hero-sub-right"], { opacity: 0, y: 50, duration: 0.10 }, 0.35);
   
-  // Fade out the 3D canvas so we transition smoothly into Section 2
-  masterTl.to("#plane-container", { opacity: 0, duration: 0.05, ease: "power2.inOut" }, 0.42);
-
   // Phase 3: Isolating Vibration
+  // Snap the chaotic line to a perfectly flat, silent line
+  masterTl.to(window.particleUniforms.uVibration, { value: 0.0, duration: 0.01, ease: "none" }, 0.45);
+  
   masterTl.to("#section-1", { opacity: 0, duration: 0.05, ease: "power1.inOut" }, 0.45);
   masterTl.to("#section-2", { opacity: 1, duration: 0.05, ease: "power1.inOut" }, 0.45);
-  masterTl.to("#tease-text-1", { y: "0%", duration: 0.1, ease: "power3.out" }, 0.46);
-  masterTl.to("#tease-text-2", { y: "0%", duration: 0.1, ease: "power3.out" }, 0.48);
-  masterTl.to("#tease-sub", { y: "0%", opacity: 1, duration: 0.1, ease: "power3.out" }, 0.50);
+  masterTl.to("#tease-text-1", { y: "0%", duration: 0.2, ease: "power3.out" }, 0.45);
+  masterTl.to("#tease-text-2", { y: "0%", duration: 0.2, ease: "power3.out" }, 0.48);
+  masterTl.to("#tease-sub", { scale: 1, opacity: 1, duration: 0.2, ease: "power3.out" }, 0.52);
+
+  // Fade out the 3D canvas smoothly after the text is fully revealed
+  masterTl.to("#plane-container", { opacity: 0, duration: 0.10, ease: "power2.inOut" }, 0.52);
 
   // Phase 4: Environments
   masterTl.to("#section-2", { opacity: 0, duration: 0.1 }, 0.65);
