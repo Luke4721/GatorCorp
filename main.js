@@ -247,19 +247,6 @@ function initMasterTimeline() {
   gsap.set("#section-3", { opacity: 0 });
   gsap.set("#catalogue-ui", { y: "20vh", scale: 0.9, filter: "blur(20px)", opacity: 0, pointerEvents: "none" });
 
-  // Drive into the scene automatically on load, completely independent of scroll
-  gsap.to(truckGroup.position, {
-      z: 0,
-      duration: 2.5,
-      ease: "power3.out"
-  });
-  
-  // Give it a realistic suspension settle as it brakes into position
-  gsap.fromTo(truckGroup.rotation, 
-      { x: -0.1 },
-      { x: 0, duration: 2.5, ease: "elastic.out(1, 0.3)" }
-  );
-
   const masterTl = gsap.timeline({
     scrollTrigger: {
       trigger: "#scroll-container",
@@ -269,8 +256,9 @@ function initMasterTimeline() {
     }
   });
 
-  // Phase 1: Wait / Idle (The truck is already here, just shaking based on velocity physics)
-
+  // Phase 1: Drive to the top (center) from the bottom
+  masterTl.to(truckGroup.position, { z: 0, duration: 0.15, ease: "power2.out" }, 0.0);
+  
   // Acceleration Pitch & Bank: The truck leans back and tilts slightly as it drives, simulating suspension momentum
   masterTl.to(truckGroup.rotation, { x: -0.05, z: 0.03, duration: 0.07, ease: "power2.out" }, 0.07);
   masterTl.to(truckGroup.rotation, { x: 0, z: 0, duration: 0.08, ease: "power2.inOut" }, 0.07);
@@ -300,7 +288,7 @@ function initMasterTimeline() {
   masterTl.to(["#hero-sub-left", "#hero-sub-right"], { opacity: 0, y: 50, duration: 0.10 }, 0.35);
   
   // Phase 3: Isolating Vibration
-  masterTl.to("#section-1", { opacity: 0, duration: 0.05, ease: "power1.inOut" }, 0.45);
+  masterTl.to("#section-1", { opacity: 0, pointerEvents: "none", duration: 0.05, ease: "power1.inOut" }, 0.45);
   masterTl.to("#section-2", { opacity: 1, duration: 0.05, ease: "power1.inOut" }, 0.45);
   masterTl.to("#tease-text-1", { y: "0%", duration: 0.2, ease: "power3.out" }, 0.45);
   masterTl.to("#tease-text-2", { y: "0%", duration: 0.2, ease: "power3.out" }, 0.48);
@@ -319,32 +307,12 @@ function initMasterTimeline() {
 }
 
 // --- SCROLL VELOCITY PHYSICS ---
-let lastScrollY = window.scrollY;
-let smoothedVelocity = 0;
-let lastTime = performance.now();
+// (Reverted to basic linear GSAP scroll as requested)
 
 function animate() {
   requestAnimationFrame(animate);
   const now = performance.now();
   const t = now / 1000;
-  
-  // Calculate Delta Time (clamp to avoid physics explosion on tab switch)
-  let dt = (now - lastTime) / 1000;
-  if (dt <= 0) dt = 0.016; // Prevent division by zero on the very first frame
-  dt = Math.min(dt, 0.05); // Clamp max step
-  lastTime = now;
-  
-  // 1. Calculate Instantaneous Scroll Velocity
-  const currentScroll = window.scrollY;
-  const rawVelocity = Math.abs(currentScroll - lastScrollY) / dt;
-  lastScrollY = currentScroll;
-  
-  // 2. Framerate-Independent Exponential Decay Smoothing (The Heavy Mass effect)
-  // lambda = 5 means it takes about 0.2s to settle, simulating heavy momentum
-  smoothedVelocity = smoothedVelocity + (rawVelocity - smoothedVelocity) * (1.0 - Math.exp(-5.0 * dt));
-  
-  // 3. Map velocity to a physics multiplier (Idle = 1.0, Max Speed = ~4.0)
-  const velocityMultiplier = 1.0 + Math.min(smoothedVelocity * 0.0015, 3.0);
   
   if (window.particleUniforms) {
       window.particleUniforms.uTime.value = t;
@@ -357,8 +325,7 @@ function animate() {
   
   // Apply realistic heavy machinery physics to the truck (but NOT the seat)
   if (typeof shakeGroup !== 'undefined' && shakeGroup && window.particleUniforms) {
-      // The base vibration is controlled by GSAP, we multiply it by the scroll velocity!
-      const activeVib = window.particleUniforms.uVibration.value * velocityMultiplier;
+      const activeVib = window.particleUniforms.uVibration.value;
       
       // 1. Low frequency suspension heave
       const heave = Math.sin(t * 8) * 0.15;
@@ -398,6 +365,18 @@ function updateCatalogueUI(index) {
   titleEl.textContent = data.title;
   document.getElementById('cat-desc').textContent = data.desc;
   document.getElementById('cat-img').src = data.img;
+  
+  // Change the 3D seat colors to match the selected model!
+  const seatColors = [
+    { pt: 0x00ffff, line: 0x0088ff }, // Supremo (Blue)
+    { pt: 0xffaa00, line: 0xff5500 }, // Excavator (Orange)
+    { pt: 0x00ff44, line: 0x008822 }, // Tractor (Green)
+    { pt: 0xff2222, line: 0xaa0000 }  // Forklift (Red)
+  ];
+  if (window.seatMaterials && window.seatMaterials.length >= 2) {
+    window.seatMaterials[0].color.setHex(seatColors[index].pt);
+    window.seatMaterials[1].color.setHex(seatColors[index].line);
+  }
   
   const badgesContainer = document.getElementById('cat-badges');
   badgesContainer.innerHTML = '';
