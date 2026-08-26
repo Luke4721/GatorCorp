@@ -50,31 +50,58 @@ camera.lookAt(0, 0, 0);
 let truckModel, spinGroup, shakeGroup;
 window.solidMaterials = []; // Collect materials for diagram fade
 
-gltfLoader.loadAsync('/assets/Meshy_AI_truck_cab_front_untex_0826175627_generate.glb').then((truckGltf) => {
-  truckModel = truckGltf.scene;
+  // Global uniforms for our particle data simulation
+  window.particleUniforms = {
+      uTime: { value: 0 },
+      uVibration: { value: 0 }, // GSAP will animate this
+      uOpacity: { value: 1 }
+  };
 
-  truckModel.traverse((child) => {
-      if (child.isMesh) {
-          child.material = new THREE.MeshStandardMaterial({
-              color: 0xe5e0d8, 
-              roughness: 1.0,
-              metalness: 0.0,
-              polygonOffset: true,
-              polygonOffsetFactor: 1, 
-              polygonOffsetUnits: 1,
-              transparent: true,
-              opacity: 1
-          });
-          window.solidMaterials.push(child.material);
-          
-          const edges = new THREE.EdgesGeometry(child.geometry, 45);
-          const line = new THREE.LineSegments(
-              edges, 
-              new THREE.LineBasicMaterial({ color: 0x111111, transparent: true, opacity: 0.4 })
-          );
-          child.add(line);
-      }
+  const particleMaterial = new THREE.ShaderMaterial({
+      uniforms: window.particleUniforms,
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      vertexShader: `
+          uniform float uTime;
+          uniform float uVibration;
+          void main() {
+              vec3 pos = position;
+              // Fluid wave simulating vibration isolation data
+              float wave = sin(pos.y * 5.0 + uTime * 5.0) * sin(pos.x * 5.0 + uTime * 7.0);
+              pos.x += wave * uVibration * 0.15;
+              pos.z += wave * uVibration * 0.15;
+              
+              vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+              gl_PointSize = 3.0 * (10.0 / -mvPosition.z);
+              gl_Position = projectionMatrix * mvPosition;
+          }
+      `,
+      fragmentShader: `
+          uniform float uOpacity;
+          void main() {
+              vec2 c = gl_PointCoord - vec2(0.5);
+              float dist = length(c);
+              if (dist > 0.5) discard;
+              float strength = pow(1.0 - (dist * 2.0), 1.5);
+              gl_FragColor = vec4(0.0, 0.8, 1.0, strength * uOpacity);
+          }
+      `
   });
+
+  gltfLoader.loadAsync('/assets/Meshy_AI_truck_cab_front_untex_0826175627_generate.glb').then((truckGltf) => {
+    truckModel = truckGltf.scene;
+  
+    truckModel.traverse((child) => {
+        if (child.isMesh) {
+            // Hide the solid mesh completely
+            child.visible = false;
+            
+            // Create the particle cloud using the raw AI geometry
+            const points = new THREE.Points(child.geometry, particleMaterial);
+            child.parent.add(points);
+        }
+    });
 
   // Remove the previous Z rotation so the windshield points UP
   truckModel.rotation.set(0, 0, 0);
@@ -169,44 +196,14 @@ function initMasterTimeline() {
   masterTl.to("#road-lines", { opacity: 0.12, duration: 0.05 }, 0.0);
   masterTl.to("#road-lines-strip", { y: "0%", ease: "none", duration: 0.35 }, 0.0); 
 
-  // Violent Vibration (X and Z axis for screen shake + Suspension Rotation)
-  const shakeFrames = [];
-  const rotFrames = [];
-  for(let i=0; i<45; i++) {
-      shakeFrames.push({
-          x: (Math.random() - 0.5) * 0.4, // Reduced XY a bit so it doesn't look like a toy
-          z: (Math.random() - 0.5) * 0.4,
-          duration: 0.35 / 45
-      });
-      rotFrames.push({
-          x: (Math.random() - 0.5) * 0.08, // Pitch bounce
-          z: (Math.random() - 0.5) * 0.08, // Roll bounce
-          duration: 0.35 / 45
-      });
-  }
-  shakeFrames.push({ x: 0, z: 0, duration: 0.01 }); // Reset
-  rotFrames.push({ x: 0, z: 0, duration: 0.01 });
-
-  masterTl.to(spinGroup.position, {
-      keyframes: shakeFrames,
-      ease: "none",
-      duration: 0.35
-  }, 0.0);
-
-  masterTl.to(shakeGroup.rotation, {
-      keyframes: rotFrames,
-      ease: "none",
-      duration: 0.35
-  }, 0.0);
-
-  // --- GHOST SECTION --- 
-  // Between 0.15 and 0.35, the truck just sits in the gap, vibrating violently.
-
-  // Phase 2: Massive Zoom In + Diagram dissolve
+  // Fluid Particle Vibration Simulation (Replaces the broken toy shake)
+  masterTl.to(window.particleUniforms.uVibration, { value: 1.5, duration: 0.15, ease: "power2.inOut" }, 0.0);
+  masterTl.to(window.particleUniforms.uVibration, { value: 3.5, duration: 0.20, ease: "none" }, 0.15);
+  
+  // Phase 2: Massive Zoom In + Data dissolve
   masterTl.to(truckGroup.scale, { x: 8, y: 8, z: 8, duration: 0.10, ease: "power2.inIn" }, 0.35);
-  // Optional: Add a slight rotation during zoom in to give it 3D depth
   masterTl.to(truckGroup.rotation, { z: 0.2, duration: 0.10, ease: "power1.inOut" }, 0.35); 
-  masterTl.to(window.solidMaterials, { opacity: 0.05, duration: 0.10, ease: "power2.out" }, 0.35);
+  masterTl.to(window.particleUniforms.uOpacity, { value: 0, duration: 0.10, ease: "power2.out" }, 0.35);
 
   masterTl.to("#hero-text-left", { x: -300, opacity: 0, duration: 0.10 }, 0.35);
   masterTl.to("#hero-text-right", { x: 300, opacity: 0, duration: 0.10 }, 0.35);
@@ -237,6 +234,9 @@ function initMasterTimeline() {
 
 function animate() {
   requestAnimationFrame(animate);
+  if (window.particleUniforms) {
+      window.particleUniforms.uTime.value = performance.now() / 1000;
+  }
   renderer.render(scene, camera);
 }
 animate();
