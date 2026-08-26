@@ -129,13 +129,28 @@ gltfLoader.loadAsync('/assets/Seat.glb').then((seatGltf) => {
     const seatScale = 5 / Math.max(seatSize.x, seatSize.y, seatSize.z); 
     seatModel.scale.set(seatScale, seatScale, seatScale);
     
+    // 1. Perfectly center the raw model to 0,0,0
     seatModel.position.set(
-        (-seatCenter.x * seatScale) + 1.8,  // Move right in X (Top-right of screen)
-        (-seatCenter.y * seatScale) - 0.5,  // Slightly lowered in Y
-        (-seatCenter.z * seatScale) - 1.5   // Move forward in Z (Top of screen)
+        -seatCenter.x * seatScale,
+        -seatCenter.y * seatScale,
+        -seatCenter.z * seatScale
     );
     
-    window.stableSeat.add(seatModel);
+    const seatWrapper = new THREE.Group();
+    seatWrapper.add(seatModel);
+    
+    // 2. Rotate the centered seat to face forward (towards windshield / top of screen)
+    // The previous screenshot showed it facing left, so we rotate -90 degrees around Y.
+    seatWrapper.rotation.y = -Math.PI / 2;
+    
+    // 3. Position the seat in the top-right driver's slot
+    seatWrapper.position.set(
+        1.5,   // Move right in X (Driver side)
+        -0.5,  // Slightly lowered in Y
+        -2.5   // Move further up/forward in Z (closer to windshield)
+    );
+    
+    window.stableSeat.add(seatWrapper);
 });
 // ----------------------------
 
