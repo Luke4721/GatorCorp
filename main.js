@@ -64,17 +64,8 @@ const truckParticleMaterial = new THREE.ShaderMaterial({
     depthWrite: false,
     blending: THREE.AdditiveBlending,
     vertexShader: `
-        uniform float uTime;
-        uniform float uVibration;
         void main() {
-            vec3 pos = position;
-            // Jagged violent wave for the truck chassis
-            float wave = sin(position.y * 10.0 + uTime * 20.0) * cos(position.x * 10.0 + uTime * 25.0);
-            pos.x += wave * uVibration * 0.15;
-            pos.y += wave * uVibration * 0.15;
-            pos.z += wave * uVibration * 0.15;
-            
-            vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+            vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
             gl_PointSize = 3.0 * (10.0 / -mvPosition.z);
             gl_Position = projectionMatrix * mvPosition;
         }
