@@ -247,6 +247,19 @@ function initMasterTimeline() {
   gsap.set("#section-3", { opacity: 0 });
   gsap.set("#catalogue-ui", { y: "20vh", scale: 0.9, filter: "blur(20px)", opacity: 0, pointerEvents: "none" });
 
+  // Drive into the scene automatically on load, completely independent of scroll
+  gsap.to(truckGroup.position, {
+      z: 0,
+      duration: 2.5,
+      ease: "power3.out"
+  });
+  
+  // Give it a realistic suspension settle as it brakes into position
+  gsap.fromTo(truckGroup.rotation, 
+      { x: -0.1 },
+      { x: 0, duration: 2.5, ease: "elastic.out(1, 0.3)" }
+  );
+
   const masterTl = gsap.timeline({
     scrollTrigger: {
       trigger: "#scroll-container",
@@ -256,9 +269,8 @@ function initMasterTimeline() {
     }
   });
 
-  // Phase 1: Drive to the top (center) from the bottom
-  masterTl.to(truckGroup.position, { z: 0, duration: 0.15, ease: "power2.out" }, 0.0);
-  
+  // Phase 1: Wait / Idle (The truck is already here, just shaking based on velocity physics)
+
   // Acceleration Pitch & Bank: The truck leans back and tilts slightly as it drives, simulating suspension momentum
   masterTl.to(truckGroup.rotation, { x: -0.05, z: 0.03, duration: 0.07, ease: "power2.out" }, 0.07);
   masterTl.to(truckGroup.rotation, { x: 0, z: 0, duration: 0.08, ease: "power2.inOut" }, 0.07);
