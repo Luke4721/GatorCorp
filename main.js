@@ -47,56 +47,97 @@ scene.add(truckGroup);
 camera.position.set(0, 40, 0); 
 camera.lookAt(0, 0, 0); 
 
+let truckModel, spinGroup, shakeGroup;
 window.solidMaterials = [];
 window.wireMaterials = [];
-  
-// -- SHOCKWAVE EFFECT SETUP --
-const waveGroup = new THREE.Group();
 
-const waveGeo = new THREE.TorusGeometry(8, 0.1, 16, 100);
-window.waveMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0 });
-const shockwave = new THREE.Mesh(waveGeo, window.waveMat);
-shockwave.rotation.x = Math.PI / 2;
-waveGroup.add(shockwave);
+// -- RED PARTICLE TRUCK SETUP --
+window.particleUniforms = {
+    uTime: { value: 0 },
+    uVibration: { value: 0 }, 
+    uOpacity: { value: 1 }
+};
 
-const waveGeo2 = new THREE.TorusGeometry(6, 0.05, 16, 100);
-window.waveMat2 = new THREE.MeshBasicMaterial({ color: 0x00aaff, transparent: true, opacity: 0 });
-const shockwave2 = new THREE.Mesh(waveGeo2, window.waveMat2);
-shockwave2.rotation.x = Math.PI / 2;
-shockwave2.position.y = 1;
-waveGroup.add(shockwave2);
+const truckParticleMaterial = new THREE.ShaderMaterial({
+    uniforms: window.particleUniforms,
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    vertexShader: `
+        uniform float uTime;
+        uniform float uVibration;
+        void main() {
+            vec3 pos = position;
+            // Jagged violent wave for the truck chassis
+            float wave = sin(position.y * 10.0 + uTime * 20.0) * cos(position.x * 10.0 + uTime * 25.0);
+            pos.x += wave * uVibration * 0.15;
+            pos.y += wave * uVibration * 0.15;
+            pos.z += wave * uVibration * 0.15;
+            
+            vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+            gl_PointSize = 3.0 * (10.0 / -mvPosition.z);
+            gl_Position = projectionMatrix * mvPosition;
+        }
+    `,
+    fragmentShader: `
+        uniform float uOpacity;
+        void main() {
+            vec2 c = gl_PointCoord - vec2(0.5);
+            float dist = length(c);
+            if (dist > 0.5) discard;
+            float strength = pow(1.0 - (dist * 2.0), 1.5);
+            // Aggressive Red chaotic color
+            gl_FragColor = vec4(1.0, 0.2, 0.1, strength * uOpacity * 0.6);
+        }
+    `
+});
 
-scene.add(waveGroup);
+window.noiseClouds = [];
 
-// Impact Flash
-window.impactLight = new THREE.PointLight(0x00aaff, 0, 200);
-window.impactLight.position.set(0, 5, 0); // At the point of impact
-scene.add(window.impactLight);
+// -- BLUE STABLE SEAT SETUP --
+function createSeat() {
+    const seatGroup = new THREE.Group();
+    window.seatMaterials = [];
+    
+    const buildPart = (w, h, d, x, y, z) => {
+        const geo = new THREE.BoxGeometry(w, h, d, 8, 8, 8);
+        geo.translate(x, y, z);
+        
+        const ptsMat = new THREE.PointsMaterial({ color: 0x00ffff, size: 0.08, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
+        seatGroup.add(new THREE.Points(geo, ptsMat));
+        
+        const lineMat = new THREE.LineBasicMaterial({ color: 0x0088ff, transparent: true, opacity: 0 });
+        seatGroup.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo), lineMat));
+        
+        window.seatMaterials.push(ptsMat, lineMat);
+    };
+    
+    buildPart(2.2, 0.4, 2.2, 0, 0, 0); // Base cushion
+    buildPart(2.2, 3.0, 0.4, 0, 1.7, -0.9); // Backrest
+    buildPart(0.4, 0.2, 1.8, -1.3, 0.8, 0.2); // Left arm
+    buildPart(0.4, 0.2, 1.8,  1.3, 0.8, 0.2); // Right arm
+    buildPart(0.8, 0.6, 0.4, 0, 3.5, -0.9); // Headrest
+    
+    seatGroup.scale.set(0.6, 0.6, 0.6);
+    seatGroup.position.set(0, -0.2, 0.5); // Placed right inside the cab
+    return seatGroup;
+}
 // ----------------------------
-
-let truckModel, spinGroup, shakeGroup;
 
 gltfLoader.loadAsync('/assets/Meshy_AI_truck_cab_front_untex_0826175627_generate.glb').then((truckGltf) => {
     truckModel = truckGltf.scene;
   
     truckModel.traverse((child) => {
         if (child.isMesh) {
-            child.material = new THREE.MeshStandardMaterial({
-                color: 0x111111, 
-                roughness: 0.1,
-                metalness: 0.9,
-                transparent: true,
-                opacity: 1
-            });
-            window.solidMaterials.push(child.material);
-            
+            child.visible = false;
+            const points = new THREE.Points(child.geometry, truckParticleMaterial);
+            window.noiseClouds.push(points);
+            child.parent.add(points);
             const edges = new THREE.EdgesGeometry(child.geometry, 45);
-            const line = new THREE.LineSegments(
-                edges, 
-                new THREE.LineBasicMaterial({ color: 0x0088ff, transparent: true, opacity: 0.0 })
-            );
-            window.wireMaterials.push(line.material);
-            child.add(line);
+            const lineMat = new THREE.LineBasicMaterial({ color: 0xff1111, transparent: true, opacity: 0.2 });
+            const line = new THREE.LineSegments(edges, lineMat);
+            window.solidMaterials.push(lineMat);
+            child.parent.add(line);
         }
     });
 
@@ -116,6 +157,10 @@ gltfLoader.loadAsync('/assets/Meshy_AI_truck_cab_front_untex_0826175627_generate
   // Center the pivot
   const pivotGroup = new THREE.Group();
   pivotGroup.add(shakeGroup);
+  
+  // Add the perfectly stable blue seat inside the cab (it avoids the shakeGroup!)
+  window.stableSeat = createSeat();
+  pivotGroup.add(window.stableSeat);
 
   // 1. Point the roof at the camera, and windshield to the LEFT (User dialed)
   pivotGroup.rotation.set(-0.02, -0.02, 0.28);
@@ -193,32 +238,21 @@ function initMasterTimeline() {
   masterTl.to("#road-lines", { opacity: 0.12, duration: 0.05 }, 0.0);
   masterTl.to("#road-lines-strip", { y: "0%", ease: "none", duration: 0.35 }, 0.0); 
 
-  // Shockwave Animation Setup
-  waveGroup.position.y = 35; // Start near the camera
-  waveGroup.scale.set(0.1, 0.1, 0.1);
+  // Fluid Particle Vibration Simulation (Red Truck is violently shaking)
+  masterTl.to(window.particleUniforms.uVibration, { value: 1.5, duration: 0.15, ease: "power2.inOut" }, 0.0);
+  masterTl.to(window.particleUniforms.uVibration, { value: 3.5, duration: 0.20, ease: "none" }, 0.15);
   
-  // Phase 1.5: The Shockwave Approach (0.15 to 0.30)
-  // Shockwave becomes visible and dives toward the truck
-  masterTl.to(window.waveMat, { opacity: 0.8, duration: 0.05, ease: "power2.out" }, 0.15);
-  masterTl.to(window.waveMat2, { opacity: 0.5, duration: 0.05, ease: "power2.out" }, 0.15);
-  masterTl.to(waveGroup.position, { y: 15, duration: 0.15, ease: "power2.in" }, 0.15);
-  masterTl.to(waveGroup.scale, { x: 3, y: 3, z: 3, duration: 0.15, ease: "power2.in" }, 0.15);
+  // Phase 2: The Core Isolation (0.30 - 0.40)
+  // The camera zooms in on the violently shaking truck
+  masterTl.to(truckGroup.scale, { x: 12, y: 12, z: 12, duration: 0.10, ease: "power2.in" }, 0.30);
+  masterTl.to(truckGroup.rotation, { z: 0.1, duration: 0.10, ease: "power1.inOut" }, 0.30); 
   
-  // Phase 2: The Impact & Isolation
-  // The moment the shockwave hits the truck (y=15), it shatters/dissipates instantly.
-  masterTl.to(waveGroup.scale, { x: 8, y: 8, z: 8, duration: 0.05, ease: "power3.out" }, 0.30);
-  masterTl.to([window.waveMat, window.waveMat2], { opacity: 0, duration: 0.05, ease: "power2.out" }, 0.30);
+  // The red chaotic truck fades completely away
+  masterTl.to(window.particleUniforms.uOpacity, { value: 0, duration: 0.10, ease: "power2.out" }, 0.30);
+  masterTl.to(window.solidMaterials, { opacity: 0, duration: 0.10, ease: "power2.out" }, 0.30);
   
-  // Flash of energy dissipation
-  masterTl.to(window.impactLight, { intensity: 500, duration: 0.02, ease: "power2.out" }, 0.30);
-  masterTl.to(window.impactLight, { intensity: 0, duration: 0.08, ease: "power2.out" }, 0.32);
-
-  // 0.35 -> The truck, unharmed, zooms safely into the camera
-  masterTl.to(truckGroup.scale, { x: 15, y: 15, z: 15, duration: 0.10, ease: "power2.in" }, 0.35);
-  masterTl.to(truckGroup.rotation, { z: 0.1, duration: 0.10, ease: "power1.inOut" }, 0.35); 
-  
-  // Fade the solid truck right before the text appears
-  masterTl.to(window.solidMaterials, { opacity: 0, duration: 0.05, ease: "power2.out" }, 0.40);
+  // ... Revealing the perfectly stable, pristine blue seat inside
+  masterTl.to(window.seatMaterials, { opacity: 1, duration: 0.10, ease: "power2.in" }, 0.30);
   
   masterTl.to("#hero-text-left", { x: -300, opacity: 0, duration: 0.10 }, 0.35);
   masterTl.to("#hero-text-right", { x: 300, opacity: 0, duration: 0.10 }, 0.35);
@@ -249,9 +283,20 @@ function initMasterTimeline() {
 
 function animate() {
   requestAnimationFrame(animate);
+  const t = performance.now() / 1000;
+  
   if (window.particleUniforms) {
-      window.particleUniforms.uTime.value = performance.now() / 1000;
+      window.particleUniforms.uTime.value = t;
   }
+  
+  // Apply physical wobble to the truck (but NOT the seat)
+  if (typeof shakeGroup !== 'undefined' && shakeGroup && window.particleUniforms) {
+      const vib = window.particleUniforms.uVibration.value;
+      shakeGroup.position.x = Math.sin(t * 40) * 0.08 * vib;
+      shakeGroup.position.y = Math.cos(t * 45) * 0.08 * vib;
+      shakeGroup.rotation.z = Math.sin(t * 35) * 0.02 * vib;
+  }
+  
   renderer.render(scene, camera);
 }
 animate();
