@@ -306,9 +306,31 @@ function initMasterTimeline() {
   masterTl.to("#catalogue-ui", { y: "0vh", scale: 1, opacity: 1, filter: "blur(0px)", pointerEvents: "auto", duration: 0.1, ease: "power3.out" }, 0.90);
 }
 
+// --- SCROLL VELOCITY PHYSICS ---
+let lastScrollY = window.scrollY;
+let smoothedVelocity = 0;
+let lastTime = performance.now();
+
 function animate() {
   requestAnimationFrame(animate);
-  const t = performance.now() / 1000;
+  const now = performance.now();
+  const t = now / 1000;
+  
+  // Calculate Delta Time (clamp to avoid physics explosion on tab switch)
+  const dt = Math.min((now - lastTime) / 1000, 0.05);
+  lastTime = now;
+  
+  // 1. Calculate Instantaneous Scroll Velocity
+  const currentScroll = window.scrollY;
+  const rawVelocity = Math.abs(currentScroll - lastScrollY) / dt;
+  lastScrollY = currentScroll;
+  
+  // 2. Framerate-Independent Exponential Decay Smoothing (The Heavy Mass effect)
+  // lambda = 5 means it takes about 0.2s to settle, simulating heavy momentum
+  smoothedVelocity = smoothedVelocity + (rawVelocity - smoothedVelocity) * (1.0 - Math.exp(-5.0 * dt));
+  
+  // 3. Map velocity to a physics multiplier (Idle = 1.0, Max Speed = ~4.0)
+  const velocityMultiplier = 1.0 + Math.min(smoothedVelocity * 0.0015, 3.0);
   
   if (window.particleUniforms) {
       window.particleUniforms.uTime.value = t;
@@ -321,7 +343,8 @@ function animate() {
   
   // Apply realistic heavy machinery physics to the truck (but NOT the seat)
   if (typeof shakeGroup !== 'undefined' && shakeGroup && window.particleUniforms) {
-      const vib = window.particleUniforms.uVibration.value;
+      // The base vibration is controlled by GSAP, we multiply it by the scroll velocity!
+      const activeVib = window.particleUniforms.uVibration.value * velocityMultiplier;
       
       // 1. Low frequency suspension heave
       const heave = Math.sin(t * 8) * 0.15;
@@ -330,9 +353,9 @@ function animate() {
       // 3. High frequency engine/road rattle
       const rattle = Math.sin(t * 50) * 0.05;
       
-      shakeGroup.position.x = (heave + rattle) * vib;
-      shakeGroup.position.y = (bounce + rattle) * vib;
-      shakeGroup.rotation.z = (Math.sin(t * 14) * 0.03) * vib; // Slight chassis roll
+      shakeGroup.position.x = (heave + rattle) * activeVib;
+      shakeGroup.position.y = (bounce + rattle) * activeVib;
+      shakeGroup.rotation.z = (Math.sin(t * 14) * 0.03) * activeVib; // Slight chassis roll
   }
   
   renderer.render(scene, camera);
