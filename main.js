@@ -140,14 +140,14 @@ gltfLoader.loadAsync('/assets/Seat.glb').then((seatGltf) => {
     seatWrapper.add(seatModel);
     
     // 2. Rotate the centered seat to face forward (towards windshield / top of screen)
-    // The previous screenshot showed it facing left, so we rotate -90 degrees around Y.
-    seatWrapper.rotation.y = -Math.PI / 2;
+    // Rotating by +90 degrees around Y makes it face -Z (UP on the screen)
+    seatWrapper.rotation.y = Math.PI / 2;
     
-    // 3. Position the seat in the top-right driver's slot
+    // 3. Position the seat in the left driver's slot
     seatWrapper.position.set(
-        1.5,   // Move right in X (Driver side)
+        -1.5,  // Move left in X (Driver side)
         -0.5,  // Slightly lowered in Y
-        -2.5   // Move further up/forward in Z (closer to windshield)
+        -4.0   // Move further up/forward in Z (closer to windshield)
     );
     
     window.stableSeat.add(seatWrapper);
