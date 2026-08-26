@@ -69,7 +69,7 @@
       </nav>
 
       <!-- SECTION 1: HERO OVERLAY (Blurs and Translates Up) -->
-      <div id="section-1" class="fixed inset-0 z-40 bg-[#e5e0d8] overflow-hidden origin-top flex flex-col justify-center">
+      <div id="section-1" class="fixed inset-0 z-40 bg-[#0d0d0d] overflow-hidden origin-top flex flex-col justify-center">
         
         <!-- Road Lines (Treadmill effect) -->
         <div id="road-lines" class="absolute inset-0 z-0 flex justify-center pointer-events-none opacity-0 overflow-hidden">
@@ -83,21 +83,30 @@
 
         <!-- Hero Text (Moved to z-20 so it sits IN FRONT of the truck) -->
         <div id="hero-ui" class="absolute inset-0 flex flex-col justify-center pointer-events-none z-20">
+          
+          <!-- Structural Grid Overlay -->
+          <div class="absolute inset-0 grid grid-cols-12 gap-4 px-8 opacity-10 pointer-events-none border-x border-white/20">
+              <div class="col-span-1 border-r border-white/20"></div><div class="col-span-1 border-r border-white/20"></div><div class="col-span-1 border-r border-white/20"></div><div class="col-span-1 border-r border-white/20"></div><div class="col-span-1 border-r border-white/20"></div><div class="col-span-1 border-r border-white/20"></div><div class="col-span-1 border-r border-white/20"></div><div class="col-span-1 border-r border-white/20"></div><div class="col-span-1 border-r border-white/20"></div><div class="col-span-1 border-r border-white/20"></div><div class="col-span-1 border-r border-white/20"></div>
+          </div>
+          <!-- Engineering Metadata -->
+          <div class="absolute top-8 left-8 text-[10px] font-mono text-white/50 tracking-widest">[ CHASSIS-04 ]</div>
+          <div class="absolute top-8 right-8 text-[10px] font-mono text-white/50 tracking-widest">AERO-TEST-ACTIVE</div>
+
           <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
               <div class="w-1/2 flex justify-end pr-[4vw]">
-                  <h1 id="hero-text-left" class="text-[9vw] jesko-heading text-[#111111] leading-none whitespace-nowrap">Built for</h1>
+                  <h1 id="hero-text-left" class="text-[9vw] font-light tracking-tighter text-white leading-none whitespace-nowrap">Built for</h1>
               </div>
               <div class="w-1/2 flex justify-start pl-[4vw]">
-                  <h1 id="hero-text-right" class="text-[9vw] jesko-heading text-[#111111] leading-none whitespace-nowrap">Endurance</h1>
+                  <h1 id="hero-text-right" class="text-[9vw] font-light tracking-tighter text-white leading-none whitespace-nowrap">Endurance</h1>
               </div>
           </div>
           <!-- Left minor details -->
           <div id="hero-sub-left" class="absolute left-16 top-1/2 mt-[6vw] w-48 z-20 pointer-events-none">
-              <p class="text-xs font-bold leading-relaxed uppercase text-black/80">Comfort<br/>that works<br/>as hard as you</p>
+              <p class="text-[10px] font-mono leading-relaxed uppercase text-white/50 tracking-widest">Comfort<br/>that works<br/>as hard as you</p>
           </div>
           <!-- Right minor details -->
           <div id="hero-sub-right" class="absolute right-16 top-1/2 mt-[6vw] w-72 z-20 pointer-events-none text-right">
-              <p class="text-[10px] font-bold leading-relaxed uppercase text-black/80">GATORCORP SEATING SYSTEMS<br/><br/>Engineered to completely isolate vibration and eliminate driver fatigue in the harshest industrial environments.</p>
+              <p class="text-[10px] font-mono leading-relaxed uppercase text-white/50 tracking-widest">GATORCORP SEATING SYSTEMS<br/><br/>Engineered to isolate vibration and eliminate driver fatigue in harsh environments.</p>
           </div>
         </div>
       </div>
@@ -116,7 +125,7 @@
       </div>
 
       <!-- SECTION 3: ENVIRONMENTS TEASE -->
-      <div id="section-3" class="fixed inset-0 z-20 bg-[#e5e0d8] opacity-0 overflow-hidden pointer-events-none">
+      <div id="section-3" class="fixed inset-0 z-20 bg-[#0d0d0d] opacity-0 overflow-hidden pointer-events-none">
           <div class="absolute inset-0 flex gap-4 p-4 z-0">
              <!-- Panel 1: Highway -->
              <div id="env-panel-1" class="flex-1 bg-[#151515] rounded-lg overflow-hidden transform translate-y-full relative flex justify-center items-center">
@@ -140,7 +149,7 @@
       </div>
 
       <!-- SECTION 4: CATALOGUE REVEAL (Grand Reveal) -->
-      <div id="catalogue-ui" class="fixed inset-0 z-10 flex flex-col justify-end p-6 md:p-10 pointer-events-auto bg-[#e5e0d8]">
+      <div id="catalogue-ui" class="fixed inset-0 z-10 flex flex-col justify-end p-6 md:p-10 pointer-events-auto bg-[#0d0d0d]">
         <main class="flex-1 w-full flex items-center justify-center relative mt-10">
           <div class="absolute inset-0 flex justify-center items-center pointer-events-none z-10 pt-10">
               <img id="cat-img" src="/assets/seats/Supremo.png" class="h-[75vh] object-contain drop-shadow-2xl" />

@@ -73,7 +73,7 @@ window.solidMaterials = []; // Collect materials for diagram fade
               pos.z += wave * uVibration * 0.15;
               
               vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
-              gl_PointSize = 3.0 * (10.0 / -mvPosition.z);
+              gl_PointSize = 4.0 * (10.0 / -mvPosition.z);
               gl_Position = projectionMatrix * mvPosition;
           }
       `,
@@ -84,7 +84,7 @@ window.solidMaterials = []; // Collect materials for diagram fade
               float dist = length(c);
               if (dist > 0.5) discard;
               float strength = pow(1.0 - (dist * 2.0), 1.5);
-              gl_FragColor = vec4(0.0, 0.8, 1.0, strength * uOpacity);
+              gl_FragColor = vec4(0.5, 0.7, 0.9, strength * uOpacity * 0.4);
           }
       `
   });
@@ -155,7 +155,7 @@ window.solidMaterials = []; // Collect materials for diagram fade
   // Start at the bottom of the hero section
   truckGroup.position.set(0, 0, 14.5); 
 
-  const s = 5;
+  const s = 7;
   const stretchX = 1.0, stretchY = 1.0, stretchZ = 1.2; // Slightly elongated length
   truckModel.scale.set(s * stretchX, s * stretchY, s * stretchZ);
   truckModel.position.set(
@@ -200,9 +200,12 @@ function initMasterTimeline() {
   masterTl.to(window.particleUniforms.uVibration, { value: 1.5, duration: 0.15, ease: "power2.inOut" }, 0.0);
   masterTl.to(window.particleUniforms.uVibration, { value: 3.5, duration: 0.20, ease: "none" }, 0.15);
   
-  // Phase 2: Massive Zoom In + Data dissolve
-  masterTl.to(truckGroup.scale, { x: 8, y: 8, z: 8, duration: 0.10, ease: "power2.inIn" }, 0.35);
+  // Phase 2: Massive Zoom In + Chaotic Particle Dispersion
+  masterTl.to(truckGroup.scale, { x: 12, y: 12, z: 12, duration: 0.10, ease: "power2.inIn" }, 0.35);
   masterTl.to(truckGroup.rotation, { z: 0.2, duration: 0.10, ease: "power1.inOut" }, 0.35); 
+  
+  // The particles violently fly apart right before "Isolating Vibrations" appears
+  masterTl.to(window.particleUniforms.uVibration, { value: 50.0, duration: 0.10, ease: "power3.in" }, 0.35);
   masterTl.to(window.particleUniforms.uOpacity, { value: 0, duration: 0.10, ease: "power2.out" }, 0.35);
 
   masterTl.to("#hero-text-left", { x: -300, opacity: 0, duration: 0.10 }, 0.35);
