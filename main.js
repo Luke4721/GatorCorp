@@ -90,62 +90,6 @@ window.stableSeat = new THREE.Group();
 window.seatMaterials = [];
 window.seatOpacity = { value: 0 };
 
-gltfLoader.loadAsync('/assets/Seat_draco.glb').then((seatGltf) => {
-    const seatModel = seatGltf.scene;
-    
-    seatModel.traverse((child) => {
-        if (child.isMesh) {
-            child.visible = false;
-            
-            // Premium glowing blue particles
-            const ptsMat = new THREE.PointsMaterial({ 
-                color: 0x00ffff, 
-                size: 0.05, 
-                transparent: true, 
-                opacity: 0, 
-                depthWrite: false, 
-                blending: THREE.AdditiveBlending 
-            });
-            const pts = new THREE.Points(child.geometry, ptsMat);
-            child.parent.add(pts);
-            
-            window.seatMaterials.push(ptsMat);
-        }
-    });
-    
-    // Scale and position to fit exactly inside the truck cab
-    // We will auto-center and scale it based on bounding box
-    const seatBox = new THREE.Box3().setFromObject(seatModel);
-    const seatSize = seatBox.getSize(new THREE.Vector3());
-    const seatCenter = seatBox.getCenter(new THREE.Vector3());
-    
-    // The truck scale is about 9 units total. Let's make the seat about 5 units tall so it fills the cab.
-    const seatScale = 5 / Math.max(seatSize.x, seatSize.y, seatSize.z); 
-    seatModel.scale.set(seatScale, seatScale, seatScale);
-    
-    // 1. Perfectly center the raw model to 0,0,0
-    seatModel.position.set(
-        -seatCenter.x * seatScale,
-        -seatCenter.y * seatScale,
-        -seatCenter.z * seatScale
-    );
-    
-    const seatWrapper = new THREE.Group();
-    seatWrapper.add(seatModel);
-    
-    // 2. Rotate the centered seat to face forward (towards windshield / top of screen)
-    // We'll set it to Math.PI / 2 which faces it UP (-Z)
-    seatWrapper.rotation.y = Math.PI / 2;
-    
-    // 3. Position the seat in the top-right corner as explicitly requested
-    seatWrapper.position.set(
-        2.0,   // Move right in X (Top Right corner)
-        -0.5,  // Slightly lowered in Y
-        -4.0   // Move further up/forward in Z (closer to windshield)
-    );
-    
-    window.stableSeat.add(seatWrapper);
-});
 // ----------------------------
 
 gltfLoader.loadAsync('/assets/Truck_draco.glb').then((truckGltf) => {
