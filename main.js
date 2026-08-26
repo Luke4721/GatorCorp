@@ -88,6 +88,7 @@ window.noiseClouds = [];
 // -- BLUE STABLE SEAT SETUP --
 window.stableSeat = new THREE.Group();
 window.seatMaterials = [];
+window.seatOpacity = { value: 0 };
 
 gltfLoader.loadAsync('/assets/Seat.glb').then((seatGltf) => {
     const seatModel = seatGltf.scene;
@@ -264,7 +265,7 @@ function initMasterTimeline() {
   masterTl.to(window.solidMaterials, { opacity: 0, duration: 0.10, ease: "power2.out" }, 0.30);
   
   // ... Revealing the perfectly stable, pristine blue seat inside
-  masterTl.to(window.seatMaterials, { opacity: 1, duration: 0.10, ease: "power2.in" }, 0.30);
+  masterTl.to(window.seatOpacity, { value: 1, duration: 0.10, ease: "power2.in" }, 0.30);
   
   masterTl.to("#hero-text-left", { x: -300, opacity: 0, duration: 0.10 }, 0.35);
   masterTl.to("#hero-text-right", { x: 300, opacity: 0, duration: 0.10 }, 0.35);
@@ -279,15 +280,11 @@ function initMasterTimeline() {
 
   // Fade out the 3D canvas smoothly after the text is fully revealed
   masterTl.to("#plane-container", { opacity: 0, duration: 0.10, ease: "power2.inOut" }, 0.52);
-
-  // Phase 4: Environments
-  masterTl.to("#section-2", { opacity: 0, duration: 0.1 }, 0.65);
-  masterTl.to("#section-3", { opacity: 1, duration: 0.1 }, 0.65);
-  masterTl.to("#env-panel-1", { y: "0%", duration: 0.15, ease: "power3.out" }, 0.70);
-  masterTl.to("#env-panel-2", { y: "0%", duration: 0.15, ease: "power3.out" }, 0.73);
-  masterTl.to("#env-panel-3", { y: "0%", duration: 0.15, ease: "power3.out" }, 0.76);
-  masterTl.to("#env-heading", { opacity: 1, scale: 1, duration: 0.15, ease: "power2.out" }, 0.80);
-
+  
+  // Phase 4: Product Tease Reveal
+  masterTl.to("#section-2", { opacity: 0, duration: 0.05, ease: "power1.inOut" }, 0.85);
+  masterTl.to("#section-3", { opacity: 1, duration: 0.05, ease: "power1.inOut" }, 0.85);
+  
   // Phase 5: Catalogue Reveal
   masterTl.to("#section-3", { opacity: 0, duration: 0.1 }, 0.90);
   masterTl.to("#catalogue-ui", { y: "0vh", scale: 1, opacity: 1, filter: "blur(0px)", pointerEvents: "auto", duration: 0.1, ease: "power3.out" }, 0.90);
@@ -299,6 +296,11 @@ function animate() {
   
   if (window.particleUniforms) {
       window.particleUniforms.uTime.value = t;
+  }
+  
+  // Apply async GSAP opacity to the seat
+  if (window.seatMaterials && window.seatOpacity) {
+      window.seatMaterials.forEach(m => m.opacity = window.seatOpacity.value);
   }
   
   // Apply physical wobble to the truck (but NOT the seat)
