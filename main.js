@@ -317,7 +317,9 @@ function animate() {
   const t = now / 1000;
   
   // Calculate Delta Time (clamp to avoid physics explosion on tab switch)
-  const dt = Math.min((now - lastTime) / 1000, 0.05);
+  let dt = (now - lastTime) / 1000;
+  if (dt <= 0) dt = 0.016; // Prevent division by zero on the very first frame
+  dt = Math.min(dt, 0.05); // Clamp max step
   lastTime = now;
   
   // 1. Calculate Instantaneous Scroll Velocity
