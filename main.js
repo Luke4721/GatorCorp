@@ -109,13 +109,7 @@ gltfLoader.loadAsync('/assets/Seat_draco.glb').then((seatGltf) => {
             const pts = new THREE.Points(child.geometry, ptsMat);
             child.parent.add(pts);
             
-            // Premium sharp blue wireframe
-            const edges = new THREE.EdgesGeometry(child.geometry, 30);
-            const lineMat = new THREE.LineBasicMaterial({ color: 0x0088ff, transparent: true, opacity: 0 });
-            const lines = new THREE.LineSegments(edges, lineMat);
-            child.parent.add(lines);
-            
-            window.seatMaterials.push(ptsMat, lineMat);
+            window.seatMaterials.push(ptsMat);
         }
     });
     
@@ -140,12 +134,12 @@ gltfLoader.loadAsync('/assets/Seat_draco.glb').then((seatGltf) => {
     seatWrapper.add(seatModel);
     
     // 2. Rotate the centered seat to face forward (towards windshield / top of screen)
-    // Rotating by +90 degrees around Y makes it face -Z (UP on the screen)
+    // We'll set it to Math.PI / 2 which faces it UP (-Z)
     seatWrapper.rotation.y = Math.PI / 2;
     
-    // 3. Position the seat in the left driver's slot
+    // 3. Position the seat in the top-right corner as explicitly requested
     seatWrapper.position.set(
-        -1.5,  // Move left in X (Driver side)
+        2.0,   // Move right in X (Top Right corner)
         -0.5,  // Slightly lowered in Y
         -4.0   // Move further up/forward in Z (closer to windshield)
     );
@@ -368,14 +362,13 @@ function updateCatalogueUI(index) {
   
   // Change the 3D seat colors to match the selected model!
   const seatColors = [
-    { pt: 0x00ffff, line: 0x0088ff }, // Supremo (Blue)
-    { pt: 0xffaa00, line: 0xff5500 }, // Excavator (Orange)
-    { pt: 0x00ff44, line: 0x008822 }, // Tractor (Green)
-    { pt: 0xff2222, line: 0xaa0000 }  // Forklift (Red)
+    { pt: 0x00ffff }, // Supremo (Blue)
+    { pt: 0xffaa00 }, // Excavator (Orange)
+    { pt: 0x00ff44 }, // Tractor (Green)
+    { pt: 0xff2222 }  // Forklift (Red)
   ];
-  if (window.seatMaterials && window.seatMaterials.length >= 2) {
-    window.seatMaterials[0].color.setHex(seatColors[index].pt);
-    window.seatMaterials[1].color.setHex(seatColors[index].line);
+  if (window.seatMaterials && window.seatMaterials.length >= 1) {
+    window.seatMaterials.forEach(m => m.color.setHex(seatColors[index].pt));
   }
   
   const badgesContainer = document.getElementById('cat-badges');
