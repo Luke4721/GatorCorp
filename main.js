@@ -54,8 +54,7 @@ window.solidMaterials = []; // Collect materials for diagram fade
   window.particleUniforms = {
       uTime: { value: 0 },
       uVibration: { value: 0 }, 
-      uOpacity: { value: 1 },
-      uFlatten: { value: 0 } // Morphs truck into a flatline
+      uOpacity: { value: 1 }
   };
 
   const particleMaterial = new THREE.ShaderMaterial({
@@ -66,28 +65,15 @@ window.solidMaterials = []; // Collect materials for diagram fade
       vertexShader: `
           uniform float uTime;
           uniform float uVibration;
-          uniform float uFlatten;
           void main() {
               vec3 pos = position;
-              
-              // Morph into a flat line
-              pos.y = mix(pos.y, 0.0, uFlatten);
-              pos.z = mix(pos.z, 0.0, uFlatten);
-
               // Fluid wave simulating vibration isolation data
               float wave = sin(position.y * 5.0 + uTime * 5.0) * sin(position.x * 5.0 + uTime * 7.0);
-              
-              // When it's a truck, vibrate in X/Z. When flattened, vibrate in Y like an oscilloscope.
-              float vibX = mix(wave * uVibration * 0.15, 0.0, uFlatten);
-              float vibZ = mix(wave * uVibration * 0.15, 0.0, uFlatten);
-              float vibY = mix(0.0, wave * uVibration * 0.5, uFlatten);
-              
-              pos.x += vibX;
-              pos.y += vibY;
-              pos.z += vibZ;
+              pos.x += wave * uVibration * 0.15;
+              pos.z += wave * uVibration * 0.15;
               
               vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
-              gl_PointSize = 4.0 * (10.0 / -mvPosition.z);
+              gl_PointSize = 3.0 * (10.0 / -mvPosition.z);
               gl_Position = projectionMatrix * mvPosition;
           }
       `,
@@ -98,22 +84,33 @@ window.solidMaterials = []; // Collect materials for diagram fade
               float dist = length(c);
               if (dist > 0.5) discard;
               float strength = pow(1.0 - (dist * 2.0), 1.5);
+              // Silver-blue noise color
               gl_FragColor = vec4(0.5, 0.7, 0.9, strength * uOpacity * 0.4);
           }
       `
   });
+
+  window.noiseClouds = [];
 
   gltfLoader.loadAsync('/assets/Meshy_AI_truck_cab_front_untex_0826175627_generate.glb').then((truckGltf) => {
     truckModel = truckGltf.scene;
   
     truckModel.traverse((child) => {
         if (child.isMesh) {
-            // Hide the solid mesh completely
-            child.visible = false;
+            // Re-enable the perfectly solid, stable glossy black truck
+            child.material = new THREE.MeshStandardMaterial({
+                color: 0x111111, 
+                roughness: 0.1,
+                metalness: 0.9,
+                transparent: true,
+                opacity: 1
+            });
+            window.solidMaterials.push(child.material);
             
-            // Create the particle cloud using the raw AI geometry
+            // Overlay the chaotic data noise shell on top of it
             const points = new THREE.Points(child.geometry, particleMaterial);
-            child.parent.add(points);
+            window.noiseClouds.push(points);
+            child.add(points);
         }
     });
 
@@ -214,25 +211,28 @@ function initMasterTimeline() {
   masterTl.to(window.particleUniforms.uVibration, { value: 1.5, duration: 0.15, ease: "power2.inOut" }, 0.0);
   masterTl.to(window.particleUniforms.uVibration, { value: 3.5, duration: 0.20, ease: "none" }, 0.15);
   
-  // Phase 2: The Oscilloscope Flatline
-  // Morph into a chaotic 2D line and stretch it across the screen
-  masterTl.to(truckGroup.scale, { x: 40, duration: 0.10, ease: "power2.inOut" }, 0.35);
-  masterTl.to(window.particleUniforms.uFlatten, { value: 1.0, duration: 0.10, ease: "power2.inOut" }, 0.35);
-  masterTl.to(window.particleUniforms.uVibration, { value: 10.0, duration: 0.10, ease: "power2.in" }, 0.35);
+  // Phase 2: The Layered Peel (Stripping the Noise)
+  // The pristine solid truck shoots safely forward into the camera
+  masterTl.to(truckGroup.scale, { x: 15, y: 15, z: 15, duration: 0.10, ease: "power2.in" }, 0.35);
+  masterTl.to(truckGroup.rotation, { z: 0.1, duration: 0.10, ease: "power1.inOut" }, 0.35); 
+  
+  // The chaotic noise shell is violently blown backwards off the truck and fades out
+  masterTl.to(window.noiseClouds.map(c => c.position), { z: -200, duration: 0.10, ease: "power2.in" }, 0.35);
+  masterTl.to(window.particleUniforms.uOpacity, { value: 0, duration: 0.10, ease: "power2.out" }, 0.35);
+  
+  // Fade the solid truck right before the text appears
+  masterTl.to(window.solidMaterials, { opacity: 0, duration: 0.05, ease: "power2.out" }, 0.40);
   
   masterTl.to("#hero-text-left", { x: -300, opacity: 0, duration: 0.10 }, 0.35);
   masterTl.to("#hero-text-right", { x: 300, opacity: 0, duration: 0.10 }, 0.35);
   masterTl.to(["#hero-sub-left", "#hero-sub-right"], { opacity: 0, y: 50, duration: 0.10 }, 0.35);
   
   // Phase 3: Isolating Vibration
-  // Snap the chaotic line to a perfectly flat, silent line
-  masterTl.to(window.particleUniforms.uVibration, { value: 0.0, duration: 0.01, ease: "none" }, 0.45);
-  
   masterTl.to("#section-1", { opacity: 0, duration: 0.05, ease: "power1.inOut" }, 0.45);
   masterTl.to("#section-2", { opacity: 1, duration: 0.05, ease: "power1.inOut" }, 0.45);
   masterTl.to("#tease-text-1", { y: "0%", duration: 0.2, ease: "power3.out" }, 0.45);
   masterTl.to("#tease-text-2", { y: "0%", duration: 0.2, ease: "power3.out" }, 0.48);
-  masterTl.to("#tease-sub", { scale: 1, opacity: 1, duration: 0.2, ease: "power3.out" }, 0.52);
+  masterTl.to("#tease-sub", { y: "0%", opacity: 1, duration: 0.2, ease: "power3.out" }, 0.52);
 
   // Fade out the 3D canvas smoothly after the text is fully revealed
   masterTl.to("#plane-container", { opacity: 0, duration: 0.10, ease: "power2.inOut" }, 0.52);
