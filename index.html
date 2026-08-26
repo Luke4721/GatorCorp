@@ -1,85 +1,173 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GatorCorp - Heavy Duty Engineering</title>
-  <link rel="stylesheet" href="/style.css">
-</head>
-<body>
-  <!-- PRELOADER -->
-  <div class="preloader" data-preloader>
-    <div class="preloader__bar" data-preloader-bar></div>
-  </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GatorCorp | Built for Endurance</title>
+    <style>
+      body {
+        background-color: #e5e0d8;
+        color: #111111;
+        overflow-x: hidden;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      }
+      ::-webkit-scrollbar {
+        display: none;
+      }
+      
+      .jesko-heading {
+        font-weight: 400;
+        letter-spacing: -0.04em;
+        line-height: 0.9;
+      }
+      
+      .jesko-nav {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+      }
 
-  <!-- NAVBAR -->
-  <nav class="navbar">
-    <div class="nav-logo">GatorCorp</div>
-    <div class="nav-links">
-      <a href="#">Vehicles</a>
-      <a href="#">Seating</a>
-      <a href="#">Engineering</a>
+      .wuwa-thumbnail {
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        filter: grayscale(100%) opacity(0.3);
+      }
+      .wuwa-thumbnail.active {
+        filter: grayscale(0%) opacity(1);
+        transform: scale(1.1);
+        border-color: #111111;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      }
+      .wuwa-thumbnail:hover:not(.active) {
+        filter: grayscale(50%) opacity(0.8);
+        transform: scale(1.05);
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- Scroll Container (Increased to 1200vh for extended narrative) -->
+    <div id="scroll-container" style="height: 700vh; position: relative;">
+      
+      <!-- PRISTINE NAVBAR -->
+      <nav class="fixed top-0 w-full p-8 flex justify-between items-center z-50 pointer-events-auto mix-blend-difference text-white">
+        <div class="flex gap-10 text-[9px] font-bold tracking-[0.2em] uppercase">
+            <a href="/about" class="hover:opacity-50 transition-opacity">About Us</a>
+            <a href="/products" class="hover:opacity-50 transition-opacity">Products</a>
+            <a href="/technology" class="hover:opacity-50 transition-opacity">Technology</a>
+            <a href="/careers" class="hover:opacity-50 transition-opacity">Careers</a>
+        </div>
+        <div class="text-sm font-black tracking-[0.3em] uppercase ml-12">
+            GatorCorp
+        </div>
+        <div class="flex items-center gap-8 text-[9px] font-bold tracking-[0.2em] uppercase">
+            <span>+91 11 41058130</span>
+            <button class="px-5 py-2.5 border border-white rounded-full hover:bg-white hover:text-black transition-colors cursor-pointer tracking-widest">
+                Contact Us
+            </button>
+        </div>
+      </nav>
+
+      <!-- SECTION 1: HERO OVERLAY (Blurs and Translates Up) -->
+      <div id="section-1" class="fixed inset-0 z-40 bg-[#e5e0d8] overflow-hidden origin-top flex flex-col justify-center">
+        
+        <!-- Road Lines (Treadmill effect) -->
+        <div id="road-lines" class="absolute inset-0 z-0 flex justify-center pointer-events-none opacity-0 overflow-hidden">
+           <div id="road-lines-strip" class="w-6 h-[400%]" style="background-image: repeating-linear-gradient(to bottom, #111111 0, #111111 150px, transparent 150px, transparent 300px); background-size: 100% 300px; transform: translateY(-75%);"></div>
+        </div>
+
+        <!-- The 3D Truck Canvas (Moved to z-10 so it sits BEHIND the text) -->
+        <div id="plane-container" class="absolute inset-0 z-10 pointer-events-none">
+           <canvas id="webgl-canvas" class="w-full h-full"></canvas>
+        </div>
+
+        <!-- Hero Text (Moved to z-20 so it sits IN FRONT of the truck) -->
+        <div id="hero-ui" class="absolute inset-0 flex flex-col justify-center pointer-events-none z-20">
+          <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
+              <div class="w-1/2 flex justify-end pr-[4vw]">
+                  <h1 id="hero-text-left" class="text-[9vw] jesko-heading text-[#111111] leading-none whitespace-nowrap">Built for</h1>
+              </div>
+              <div class="w-1/2 flex justify-start pl-[4vw]">
+                  <h1 id="hero-text-right" class="text-[9vw] jesko-heading text-[#111111] leading-none whitespace-nowrap">Endurance</h1>
+              </div>
+          </div>
+          <!-- Left minor details -->
+          <div id="hero-sub-left" class="absolute left-16 top-1/2 mt-[6vw] w-48 z-20 pointer-events-none">
+              <p class="text-xs font-bold leading-relaxed uppercase text-black/80">Comfort<br/>that works<br/>as hard as you</p>
+          </div>
+          <!-- Right minor details -->
+          <div id="hero-sub-right" class="absolute right-16 top-1/2 mt-[6vw] w-72 z-20 pointer-events-none text-right">
+              <p class="text-[10px] font-bold leading-relaxed uppercase text-black/80">GATORCORP SEATING SYSTEMS<br/><br/>Engineered to completely isolate vibration and eliminate driver fatigue in the harshest industrial environments.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 2: ENGINEERING TEASE -->
+      <div id="section-2" class="fixed inset-0 z-30 bg-[#111111] text-[#e5e0d8] flex items-center justify-center opacity-0 overflow-hidden pointer-events-none">
+         <div class="text-center z-10 flex flex-col items-center">
+            <h2 class="jesko-heading text-[6vw] leading-none overflow-hidden"><span id="tease-text-1" class="inline-block transform translate-y-full">Isolating</span></h2>
+            <h2 class="jesko-heading text-[6vw] leading-none overflow-hidden"><span id="tease-text-2" class="inline-block transform translate-y-full">Vibration.</span></h2>
+            <div class="mt-8 overflow-hidden">
+               <p id="tease-sub" class="text-[10px] uppercase tracking-[0.3em] font-bold transform translate-y-full opacity-0">Advanced Mechanical Suspension Systems</p>
+            </div>
+         </div>
+         <!-- Faint grid / technical background -->
+         <div class="absolute inset-0 opacity-10" style="background-image: linear-gradient(#e5e0d8 1px, transparent 1px), linear-gradient(90deg, #e5e0d8 1px, transparent 1px); background-size: 50px 50px;"></div>
+      </div>
+
+      <!-- SECTION 3: ENVIRONMENTS TEASE -->
+      <div id="section-3" class="fixed inset-0 z-20 bg-[#e5e0d8] opacity-0 overflow-hidden pointer-events-none">
+          <div class="absolute inset-0 flex gap-4 p-4 z-0">
+             <!-- Panel 1: Highway -->
+             <div id="env-panel-1" class="flex-1 bg-[#151515] rounded-lg overflow-hidden transform translate-y-full relative flex justify-center items-center">
+                <img src="/assets/seats/Supremo.png" class="absolute h-[80%] object-contain drop-shadow-2xl opacity-60 mix-blend-screen mix-blend-luminosity hover:opacity-100 transition-opacity duration-700" />
+                <div class="absolute bottom-8 left-8 text-white uppercase text-[10px] font-bold tracking-widest z-10">01 // Long Haul</div>
+             </div>
+             <!-- Panel 2: Construction -->
+             <div id="env-panel-2" class="flex-1 bg-[#1a1a1a] rounded-lg overflow-hidden transform translate-y-full relative mt-16 flex justify-center items-center">
+                <img src="/assets/seats/Excavator.png" class="absolute h-[80%] object-contain drop-shadow-2xl opacity-60 mix-blend-screen mix-blend-luminosity hover:opacity-100 transition-opacity duration-700" />
+                <div class="absolute bottom-8 left-8 text-white uppercase text-[10px] font-bold tracking-widest z-10">02 // Construction</div>
+             </div>
+             <!-- Panel 3: Agriculture -->
+             <div id="env-panel-3" class="flex-1 bg-[#0a0a0a] rounded-lg overflow-hidden transform translate-y-full relative mt-32 flex justify-center items-center">
+                <img src="/assets/seats/Tractor.png" class="absolute h-[80%] object-contain drop-shadow-2xl opacity-60 mix-blend-screen mix-blend-luminosity hover:opacity-100 transition-opacity duration-700" />
+                <div class="absolute bottom-8 left-8 text-white uppercase text-[10px] font-bold tracking-widest z-10">03 // Agriculture</div>
+             </div>
+          </div>
+          <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+             <h2 id="env-heading" class="jesko-heading text-[7vw] text-white mix-blend-difference text-center leading-none opacity-0 scale-90">Engineered for<br/>the Harshest<br/>Environments.</h2>
+          </div>
+      </div>
+
+      <!-- SECTION 4: CATALOGUE REVEAL (Grand Reveal) -->
+      <div id="catalogue-ui" class="fixed inset-0 z-10 flex flex-col justify-end p-6 md:p-10 pointer-events-auto bg-[#e5e0d8]">
+        <main class="flex-1 w-full flex items-center justify-center relative mt-10">
+          <div class="absolute inset-0 flex justify-center items-center pointer-events-none z-10 pt-10">
+              <img id="cat-img" src="/assets/seats/Supremo.png" class="h-[75vh] object-contain drop-shadow-2xl" />
+          </div>
+          <div class="absolute right-10 bottom-20 w-64 z-20 pointer-events-auto flex flex-col gap-4">
+              <div class="flex justify-between border-b border-black/10 pb-2">
+                  <span class="jesko-nav text-black/50">MODEL</span>
+                  <span id="cat-title" class="jesko-nav font-bold">SUPREMO</span>
+              </div>
+              <p id="cat-desc" class="text-[10px] font-medium leading-relaxed text-black/70">
+                  Supremo is a premium offering with top-of-the-line air suspension. It guarantees the absolute ultimate in long-haul comfort and vibration isolation for highway driving.
+              </p>
+              <div id="cat-badges" class="flex flex-wrap gap-2 mt-2"></div>
+          </div>
+        </main>
+        <footer class="w-full flex justify-between items-end pb-2 pointer-events-auto">
+           <button class="px-6 py-2 bg-white rounded-full jesko-nav text-black shadow-sm flex items-center gap-2 hover:bg-black hover:text-white transition-all cursor-pointer z-40">
+               Explore Seat <span class="text-lg leading-none">↗</span>
+           </button>
+           <div class="z-40 pointer-events-auto">
+               <div class="jesko-nav text-black/40 mb-3 text-right">SELECT MODEL</div>
+               <div id="carousel-container" class="flex gap-3 items-center"></div>
+           </div>
+        </footer>
+      </div>
     </div>
-  </nav>
-
-  <!-- MASTER PINNED SCROLL AREA -->
-  <div id="master-pin-container">
     
-    <!-- CANVAS 1: 3D TRUCK -->
-    <canvas id="bg"></canvas>
-
-    <!-- CANVAS 2: APPLE-STYLE SEAT SEQUENCE -->
-    <canvas id="seat-sequence"></canvas>
-
-    <!-- OVERLAY 1: HERO TEXT -->
-    <div class="hero-overlay">
-      <h1 class="hero-title">Heavy Duty.<br>Redefined.</h1>
-      <div class="hero-subtitle">Scroll to explore the GatorCorp fleet.</div>
-    </div>
-
-    <!-- OVERLAY 2: TRUCK SPECS -->
-    <div class="truck-specs-overlay">
-      <div class="spec-card spec-left">
-        <div class="spec-line"></div>
-        <h4>Chassis</h4>
-        <p>Rigid Steel</p>
-        <div class="spec-line"></div>
-        <h4>Payload</h4>
-        <p>120,000 lbs</p>
-      </div>
-      <div class="spec-card spec-right">
-        <div class="spec-line"></div>
-        <h4>Suspension</h4>
-        <p>Active Air-Ride</p>
-        <div class="spec-line"></div>
-        <h4>Drive</h4>
-        <p>6x6 All-Wheel</p>
-      </div>
-    </div>
-
-    <!-- OVERLAY 3: SEAT FEATURES -->
-    <div class="seat-features-overlay">
-      <div class="feature-list-container">
-        <h2 class="feature-item f-0"><span>01 / 09</span> Integrated 3-Point Belt</h2>
-        <h2 class="feature-item f-1"><span>02 / 09</span> Adjustable Armrest</h2>
-        <h2 class="feature-item f-2"><span>03 / 09</span> Seat Back Recliner</h2>
-        <h2 class="feature-item f-3"><span>04 / 09</span> Mechanical Lumbar</h2>
-        <h2 class="feature-item f-4"><span>05 / 09</span> 7-Step Height Adjust</h2>
-        <h2 class="feature-item f-5"><span>06 / 09</span> Shock Absorber</h2>
-        <h2 class="feature-item f-6"><span>07 / 09</span> Quick Dump Lever</h2>
-        <h2 class="feature-item f-7"><span>08 / 09</span> Seat Sliding Bar</h2>
-        <h2 class="feature-item f-8"><span>09 / 09</span> Pneumatic Suspension</h2>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- FOOTER -->
-  <footer class="footer">
-    <h2>The Backbone of Industry.</h2>
-    <p>Engineered for the extreme.</p>
-  </footer>
-
-  <script type="module" src="/main.js"></script>
-</body>
+    <script type="module" src="/main.js"></script>
+  </body>
 </html>
