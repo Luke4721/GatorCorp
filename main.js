@@ -90,7 +90,7 @@ window.stableSeat = new THREE.Group();
 window.seatMaterials = [];
 window.seatOpacity = { value: 0 };
 
-gltfLoader.loadAsync('/assets/Seat.glb').then((seatGltf) => {
+gltfLoader.loadAsync('/assets/Seat_draco.glb').then((seatGltf) => {
     const seatModel = seatGltf.scene;
     
     seatModel.traverse((child) => {
@@ -154,7 +154,7 @@ gltfLoader.loadAsync('/assets/Seat.glb').then((seatGltf) => {
 });
 // ----------------------------
 
-gltfLoader.loadAsync('/assets/Meshy_AI_truck_cab_front_untex_0826175627_generate.glb').then((truckGltf) => {
+gltfLoader.loadAsync('/assets/Truck_draco.glb').then((truckGltf) => {
     truckModel = truckGltf.scene;
   
     truckModel.traverse((child) => {
