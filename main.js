@@ -147,7 +147,7 @@ gltfLoader.loadAsync('/assets/Meshy_AI_truck_cab_front_untex_0826175627_generate
 function initMasterTimeline() {
   gsap.set("#section-2", { opacity: 0 });
   gsap.set("#section-3", { opacity: 0 });
-  gsap.set("#catalogue-ui", { y: "20vh", scale: 0.9, filter: "blur(20px)", opacity: 0 });
+  gsap.set("#catalogue-ui", { y: "20vh", scale: 0.9, filter: "blur(20px)", opacity: 0, pointerEvents: "none" });
 
   const masterTl = gsap.timeline({
     scrollTrigger: {
@@ -162,7 +162,7 @@ function initMasterTimeline() {
   masterTl.to(truckGroup.position, { z: 0, duration: 0.15, ease: "power2.out" }, 0.0);
   
   // Acceleration Pitch & Bank: The truck leans back and tilts slightly as it drives, simulating suspension momentum
-  masterTl.to(truckGroup.rotation, { x: -0.05, z: 0.03, duration: 0.07, ease: "power2.out" }, 0.0);
+  masterTl.to(truckGroup.rotation, { x: -0.05, z: 0.03, duration: 0.07, ease: "power2.out" }, 0.07);
   masterTl.to(truckGroup.rotation, { x: 0, z: 0, duration: 0.08, ease: "power2.inOut" }, 0.07);
 
   // Treadmill Road Effect (Starts immediately, lasts until phase 2)
@@ -232,7 +232,7 @@ function initMasterTimeline() {
 
   // Phase 5: Catalogue Reveal
   masterTl.to("#section-3", { opacity: 0, duration: 0.1 }, 0.90);
-  masterTl.to("#catalogue-ui", { y: "0vh", scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.1, ease: "power3.out" }, 0.90);
+  masterTl.to("#catalogue-ui", { y: "0vh", scale: 1, opacity: 1, filter: "blur(0px)", pointerEvents: "auto", duration: 0.1, ease: "power3.out" }, 0.90);
 }
 
 function animate() {
@@ -268,17 +268,17 @@ function updateCatalogueUI(index) {
   badgesContainer.innerHTML = '';
   data.badges.forEach(badge => {
       const span = document.createElement('span');
-      span.className = 'px-2 py-1 bg-black/5 rounded text-[8px] font-bold tracking-widest text-black/60';
+      span.className = 'px-2 py-1 bg-white/10 rounded text-[8px] font-bold tracking-widest text-white/60';
       span.textContent = badge;
       badgesContainer.appendChild(span);
   });
   
   document.querySelectorAll('.carousel-thumb').forEach((thumb, i) => {
       if(i === index) {
-          thumb.classList.add('border-black', 'opacity-100');
+          thumb.classList.add('border-white', 'opacity-100');
           thumb.classList.remove('border-transparent', 'opacity-40');
       } else {
-          thumb.classList.remove('border-black', 'opacity-100');
+          thumb.classList.remove('border-white', 'opacity-100');
           thumb.classList.add('border-transparent', 'opacity-40');
       }
   });
@@ -291,7 +291,7 @@ function initCarousel() {
   seatData.forEach((data, index) => {
       const btn = document.createElement('button');
       btn.className = 'carousel-thumb w-12 h-12 rounded-lg border-2 overflow-hidden transition-all duration-300 bg-white cursor-pointer';
-      if(index === 0) btn.classList.add('border-black', 'opacity-100');
+      if(index === 0) btn.classList.add('border-white', 'opacity-100');
       else btn.classList.add('border-transparent', 'opacity-40');
       
       const img = document.createElement('img');
