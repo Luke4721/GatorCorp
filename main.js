@@ -111,7 +111,7 @@ const shaftGroup = new THREE.Group();
 for(let i = 0; i < 20; i++) {
     const box = new THREE.LineSegments(
         new THREE.EdgesGeometry(new THREE.BoxGeometry(40, 10, 40)),
-        new THREE.LineBasicMaterial({ color: wireColor, transparent: true, opacity: 0.5 })
+        new THREE.LineBasicMaterial({ color: wireColor, transparent: true, opacity: 1.0 })
     );
     box.position.y = 40 - (i * 20);
     shaftGroup.add(box);
@@ -122,7 +122,7 @@ scene.add(shaftGroup);
 const gridHelper = new THREE.GridHelper(300, 100, gridColor, gridColor);
 gridHelper.position.set(100, -100, -50); 
 gridHelper.material.transparent = true;
-gridHelper.material.opacity = 0.6;
+gridHelper.material.opacity = 1.0;
 scene.add(gridHelper);
 
 // Environment 3: The Integration Matrix (Deep dive)
@@ -206,10 +206,13 @@ masterTl.to(videoContainer, { opacity: 1, duration: 0.05 }, 0.15);
 // Scrub the image sequence
 masterTl.to(currentFrame, {
     frame: frameCount - 1,
-    snap: "frame",
     ease: "none",
     duration: 0.25,
-    onUpdate: () => renderFrame(currentFrame.frame)
+    onUpdate: () => {
+        // Fallback to 0 if rounding fails
+        const f = Math.floor(currentFrame.frame) || 0;
+        renderFrame(f);
+    }
 }, 0.15);
 
 masterTl.to(camera.position, { y: -90, ease: "power2.inOut", duration: 0.25 }, 0.15);
