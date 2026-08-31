@@ -95,7 +95,7 @@ const masterTl = gsap.timeline({
 });
 
 // Phase 1: ERA Hero Scroll Parallax & Fade
-masterTl.to("#hero-script", { y: "-100%", x: "50%", rotate: "0deg", duration: 0.15 }, 0.0);
+
 masterTl.to("#hero-typography", { y: -150, opacity: 0, duration: 0.20 }, 0.0);
 masterTl.to("#hero-split-left", { x: -200, opacity: 0, duration: 0.15 }, 0.05);
 masterTl.to("#hero-split-right", { x: 200, opacity: 0, duration: 0.15 }, 0.05);
