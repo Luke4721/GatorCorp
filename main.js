@@ -155,7 +155,13 @@ const masterTl = gsap.timeline({
     }
 });
 
-masterTl.to(camera.position, { y: -90, ease: "power2.inOut", duration: 0.25 }, 0.15);
+masterTl.to('#hero-typography', { y: -150, opacity: 0, duration: 0.10 }, 0.0);
+masterTl.to('#hero-split-left', { x: -200, opacity: 0, duration: 0.05 }, 0.05);
+masterTl.to('#hero-split-right', { x: 200, opacity: 0, duration: 0.05 }, 0.05);
+masterTl.to(['#hero-circle-1', '#hero-circle-2'], { scale: 1.5, opacity: 0, duration: 0.1 }, 0.0);
+masterTl.to('#hero-img', { opacity: 0, duration: 0.1 }, 0.05);
+masterTl.to('#tron-canvas', { opacity: 1, duration: 0.1 }, 0.05);
+masterTl.to(camera.position, { y: -90, ease: 'power2.inOut', duration: 0.25 }, 0.15);
 masterTl.to("#era-hero", { opacity: 0, duration: 0.1 }, 0.15);
 masterTl.to("#section-descent", { opacity: 1, duration: 0.05 }, 0.15);
 masterTl.to("#descent-text-1", { y: "0%", duration: 0.05, ease: "power3.out" }, 0.17);
