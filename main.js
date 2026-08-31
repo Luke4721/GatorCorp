@@ -7,7 +7,6 @@ import * as THREE from 'three';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Data with 7-9 features per chair
 const seatData = [
   { 
     id: 1, title: 'SUPREMO', img: '/assets/seats/Supremo.png', 
@@ -21,45 +20,6 @@ const seatData = [
         { dot: { top: '80%', left: '50%' }, panel: { top: '85%', left: '110%' }, title: 'AIR SUSPENSION', desc: 'Isolates 90% vibration.' },
         { dot: { top: '95%', left: '50%' }, panel: { top: '100%', left: '-5%' }, title: 'BASE DAMPERS', desc: 'Heavy shock absorption.' }
     ]
-  },
-  { 
-    id: 2, title: 'EXCAVATOR', img: '/assets/seats/Excavator.png', 
-    desc: 'Built specifically for earth-moving equipment, this seat features mechanical suspension tuned for extreme vertical shocks.', 
-    hotspots: [
-        { dot: { top: '20%', left: '50%' }, panel: { top: '10%', left: '90%' }, title: 'REINFORCED FRAME', desc: 'Steel construction.' },
-        { dot: { top: '40%', left: '25%' }, panel: { top: '30%', left: '-10%' }, title: 'RUGGED TRIM', desc: 'Tear-resistant fabric.' },
-        { dot: { top: '55%', left: '85%' }, panel: { top: '50%', left: '105%' }, title: 'CONTROL PODS', desc: 'Joystick mounts.' },
-        { dot: { top: '65%', left: '40%' }, panel: { top: '70%', left: '-15%' }, title: 'MECHANICAL DAMPING', desc: 'Coil suspension.' },
-        { dot: { top: '75%', left: '60%' }, panel: { top: '80%', left: '100%' }, title: 'WEIGHT ADJUST', desc: 'Manual dial calibration.' },
-        { dot: { top: '85%', left: '50%' }, panel: { top: '95%', left: '-5%' }, title: 'TETHER POINTS', desc: 'Safety harness anchors.' },
-        { dot: { top: '90%', left: '70%' }, panel: { top: '105%', left: '95%' }, title: 'MUD GUARDS', desc: 'Sealed base.' }
-    ]
-  },
-  { 
-    id: 3, title: 'TRACTOR', img: '/assets/seats/Tractor.png', 
-    desc: 'Designed for agricultural machinery, offering robust weather resistance and constant damping over uneven terrain.', 
-    hotspots: [
-        { dot: { top: '25%', left: '50%' }, panel: { top: '15%', left: '85%' }, title: 'WEATHER COATING', desc: 'Waterproof sealant.' },
-        { dot: { top: '45%', left: '30%' }, panel: { top: '40%', left: '-10%' }, title: 'VINYL TRIM', desc: 'Easy wash down.' },
-        { dot: { top: '55%', left: '80%' }, panel: { top: '55%', left: '100%' }, title: 'SWIVEL BASE', desc: '360 degree rotation.' },
-        { dot: { top: '70%', left: '45%' }, panel: { top: '70%', left: '-15%' }, title: 'LOW FREQ DAMPING', desc: 'Tractor track isolation.' },
-        { dot: { top: '85%', left: '40%' }, panel: { top: '90%', left: '-5%' }, title: 'HEATED SEAT', desc: 'Winter operations.' },
-        { dot: { top: '90%', left: '60%' }, panel: { top: '95%', left: '95%' }, title: 'DRAINAGE', desc: 'Moisture runoff.' },
-        { dot: { top: '95%', left: '50%' }, panel: { top: '110%', left: '40%' }, title: 'RUGGED MOUNTS', desc: 'Universal tractor fit.' }
-    ]
-  },
-  { 
-    id: 4, title: 'COMPACT', img: '/assets/seats/Mini Excavator.png', 
-    desc: 'A compact, highly maneuverable seat for forklifts with active lateral support.', 
-    hotspots: [
-        { dot: { top: '30%', left: '50%' }, panel: { top: '20%', left: '85%' }, title: 'COMPACT PROFILE', desc: 'Fits tight cabins.' },
-        { dot: { top: '50%', left: '20%' }, panel: { top: '45%', left: '-10%' }, title: 'LATERAL BOLSTERS', desc: 'Holds operator.' },
-        { dot: { top: '60%', left: '80%' }, panel: { top: '60%', left: '100%' }, title: 'QUICK RELEASE', desc: 'Fast egress.' },
-        { dot: { top: '75%', left: '50%' }, panel: { top: '75%', left: '-15%' }, title: 'MICRO SUSPENSION', desc: '1-inch travel.' },
-        { dot: { top: '85%', left: '40%' }, panel: { top: '95%', left: '-5%' }, title: 'SENSOR SWITCH', desc: 'Operator presence.' },
-        { dot: { top: '90%', left: '60%' }, panel: { top: '100%', left: '95%' }, title: 'SEATBELT LOCK', desc: 'Interlock system.' },
-        { dot: { top: '95%', left: '50%' }, panel: { top: '110%', left: '50%' }, title: 'NARROW BASE', desc: 'Forklift standard.' }
-    ]
   }
 ];
 
@@ -68,11 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('pixel-swap-container');
     if (container) {
         new PixelSwap(container, {
-            pixelSize: 24,
-            duration: 800,
-            pixelDuration: 400,
-            fade: true,
-            trigger: 'hover',
+            pixelSize: 24, duration: 800, pixelDuration: 400, fade: true, trigger: 'hover',
             firstContent: '<div class="text-[10px] font-bold tracking-[0.2em] text-white">EXPLORE SEAT</div>',
             secondContent: '<div class="text-[10px] font-bold tracking-[0.2em] text-white">VIEW DETAILS</div>'
         });
@@ -92,25 +48,68 @@ renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 
 const scene = new THREE.Scene();
-// Extracted Video Background Color: #070e11
-scene.fog = new THREE.FogExp2(0x070e11, 0.015);
+scene.fog = new THREE.FogExp2(0x070e11, 0.012); // Slightly pushed back fog
 
-// Camera starts at Hero position (looking down -Z)
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.set(0, 50, 0); 
-camera.rotation.set(0, 0, 0); // Straight forward
+camera.rotation.set(0, 0, 0); 
 
-// Wait, since the video is dark #070E11 and the grid should match its colors, let's use a fiery orange/gold or bright cyan!
-// The user said "the video background colors can be used for the grid etc" 
-// We will use a warm tone for the grid to contrast the dark navy video.
-const gridColor = 0xffffff; // Soft metallic/silver to match the explode video aesthetics
+// Lighting for the 3D chair
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
+const dirLight = new THREE.DirectionalLight(0xffffff, 2);
+dirLight.position.set(10, 20, 10);
+scene.add(dirLight);
+const backLight = new THREE.DirectionalLight(0x0099ff, 3);
+backLight.position.set(-10, -10, -10);
+scene.add(backLight);
+
+const gridColor = 0xffffff; 
 const wireColor = 0xffffff; 
 
-// Environment 1: The Elevator Shaft (Vertical descent)
+// --- BUILD THE PROCEDURAL 3D CHAIR FOR THE EXPLODED VIEW ---
+const chairGroup = new THREE.Group();
+chairGroup.position.set(0, -90, -40); // Position it exactly where the camera drops down to
+chairGroup.rotation.y = -Math.PI / 4; // Angle it nicely
+
+// Material for the chair parts (Dark sleek metallic + bright wireframe edges)
+const chairMat = new THREE.MeshStandardMaterial({ color: 0x1a2b3c, roughness: 0.2, metalness: 0.8 });
+const edgeMat = new THREE.LineBasicMaterial({ color: 0x00aaff, transparent: true, opacity: 0.8 });
+
+function createChairPart(geometry, yOffset, zOffset, isCylinder = false) {
+    const mesh = new THREE.Mesh(geometry, chairMat);
+    const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geometry), edgeMat);
+    mesh.add(edges);
+    mesh.position.set(0, yOffset, zOffset);
+    // Store original positions for GSAP exploding
+    mesh.userData = { origY: yOffset, origZ: zOffset, origX: 0 };
+    chairGroup.add(mesh);
+    return mesh;
+}
+
+// 1. Base Plate
+const base = createChairPart(new THREE.BoxGeometry(16, 2, 16), -10, 0);
+// 2. Suspension Core
+const suspension = createChairPart(new THREE.CylinderGeometry(3, 3, 8, 16), -5, 0, true);
+// 3. Seat Cushion
+const cushion = createChairPart(new THREE.BoxGeometry(18, 4, 18), 1, 0);
+// 4. Backrest
+const backrest = createChairPart(new THREE.BoxGeometry(16, 24, 4), 15, -7);
+// 5. Headrest
+const headrest = createChairPart(new THREE.BoxGeometry(10, 6, 3), 31, -7);
+// 6. Armrests
+const armL = createChairPart(new THREE.BoxGeometry(3, 2, 14), 10, 2);
+armL.position.x = -10; armL.userData.origX = -10;
+const armR = createChairPart(new THREE.BoxGeometry(3, 2, 14), 10, 2);
+armR.position.x = 10; armR.userData.origX = 10;
+
+scene.add(chairGroup);
+
+// Environment 1: The Elevator Shaft
 const shaftGroup = new THREE.Group();
 for(let i = 0; i < 20; i++) {
     const box = new THREE.LineSegments(
-        new THREE.EdgesGeometry(new THREE.BoxGeometry(40, 10, 40)),
+        new THREE.EdgesGeometry(new THREE.BoxGeometry(60, 10, 60)), // Made wider so chair fits
         new THREE.LineBasicMaterial({ color: wireColor, transparent: true, opacity: 1.0 })
     );
     box.position.y = 40 - (i * 20);
@@ -118,19 +117,19 @@ for(let i = 0; i < 20; i++) {
 }
 scene.add(shaftGroup);
 
-// Environment 2: The Corridor (Horizontal travel)
+// Environment 2: The Corridor
 const gridHelper = new THREE.GridHelper(300, 100, gridColor, gridColor);
 gridHelper.position.set(100, -100, -50); 
 gridHelper.material.transparent = true;
 gridHelper.material.opacity = 1.0;
 scene.add(gridHelper);
 
-// Environment 3: The Integration Matrix (Deep dive)
+// Environment 3: The Integration Matrix
 const matrixGroup = new THREE.Group();
 matrixGroup.position.set(250, -100, -50);
 const chassis = new THREE.LineSegments(
     new THREE.EdgesGeometry(new THREE.BoxGeometry(30, 20, 60)),
-    new THREE.LineBasicMaterial({ color: wireColor, transparent: true, opacity: 0.3 })
+    new THREE.LineBasicMaterial({ color: wireColor, transparent: true, opacity: 1.0 })
 );
 chassis.position.y = -30;
 matrixGroup.add(chassis);
@@ -138,6 +137,12 @@ scene.add(matrixGroup);
 
 function animate() {
     requestAnimationFrame(animate);
+    
+    // Slowly rotate the chair group for a premium showroom feel
+    if(chairGroup) {
+        chairGroup.rotation.y += 0.002;
+    }
+
     renderer.render(scene, camera);
 }
 animate();
@@ -148,14 +153,9 @@ window.addEventListener('resize', () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-// --- 3. MASTER GSAP SCROLL TIMELINE & VIDEO SCRUB ---
+// --- 3. MASTER GSAP SCROLL TIMELINE ---
 const masterTl = gsap.timeline({
-    scrollTrigger: {
-      trigger: "#scroll-container",
-      start: "top top",
-      end: "bottom bottom", 
-      scrub: 1.0,
-    }
+    scrollTrigger: { trigger: "#scroll-container", start: "top top", end: "bottom bottom", scrub: 1.0 }
 });
 
 // PHASE 1: HERO DEPARTURE (0 - 15%)
@@ -164,56 +164,7 @@ masterTl.to("#hero-split-left", { x: -200, opacity: 0, duration: 0.05 }, 0.05);
 masterTl.to("#hero-split-right", { x: 200, opacity: 0, duration: 0.05 }, 0.05);
 masterTl.to(["#hero-circle-1", "#hero-circle-2"], { scale: 1.5, opacity: 0, duration: 0.1 }, 0.0);
 masterTl.to("#hero-img", { opacity: 0, duration: 0.1 }, 0.05);
-masterTl.to("#tron-canvas", { opacity: 1, duration: 0.1 }, 0.05); // Reveal 3D world
-
-// PHASE 2: THE DESCENT & IMAGE SEQUENCE SCRUB (15% - 40%)
-const videoContainer = document.getElementById('video-container');
-const canvasSeq = document.getElementById('sequence-canvas');
-const ctxSeq = canvasSeq ? canvasSeq.getContext('2d') : null;
-
-const frameCount = 300;
-const currentFrame = { frame: 0 };
-const images = [];
-
-if (ctxSeq) {
-    const firstImg = new Image();
-    firstImg.src = '/assets/frames/frame_0000.jpg';
-    firstImg.onload = () => {
-        canvasSeq.width = firstImg.width;
-        canvasSeq.height = firstImg.height;
-        ctxSeq.drawImage(firstImg, 0, 0);
-        
-        // Lazy load the rest
-        for (let i = 1; i < frameCount; i++) {
-            const img = new Image();
-            img.src = '/assets/frames/frame_' + i.toString().padStart(4, '0') + '.jpg';
-            images[i] = img;
-        }
-    };
-    images[0] = firstImg;
-}
-
-function renderFrame(index) {
-    if (images[index] && images[index].complete && ctxSeq) {
-        ctxSeq.clearRect(0, 0, canvasSeq.width, canvasSeq.height);
-        ctxSeq.drawImage(images[index], 0, 0);
-    }
-}
-
-// Reveal Video container
-masterTl.to(videoContainer, { opacity: 1, duration: 0.05 }, 0.15);
-
-// Scrub the image sequence
-masterTl.to(currentFrame, {
-    frame: frameCount - 1,
-    ease: "none",
-    duration: 0.25,
-    onUpdate: () => {
-        // Fallback to 0 if rounding fails
-        const f = Math.floor(currentFrame.frame) || 0;
-        renderFrame(f);
-    }
-}, 0.15);
+masterTl.to("#tron-canvas", { opacity: 1, duration: 0.1 }, 0.05);
 
 masterTl.to(camera.position, { y: -90, ease: "power2.inOut", duration: 0.25 }, 0.15);
 masterTl.to("#era-hero", { opacity: 0, duration: 0.1 }, 0.15);
@@ -221,15 +172,33 @@ masterTl.to("#section-descent", { opacity: 1, duration: 0.05 }, 0.15);
 masterTl.to("#descent-text-1", { y: "0%", duration: 0.05, ease: "power3.out" }, 0.17);
 masterTl.to("#descent-text-2", { y: "0%", duration: 0.05, ease: "power3.out" }, 0.19);
 masterTl.to("#descent-sub", { y: "0%", opacity: 1, duration: 0.05, ease: "power3.out" }, 0.21);
-masterTl.to("#section-descent", { opacity: 0, duration: 0.05 }, 0.38);
 
-// Hide Video container as we pan right
-masterTl.to(videoContainer, { opacity: 0, duration: 0.05 }, 0.40);
+// --- THE REAL 3D EXPLODED VIEW ANIMATION ---
+// As camera reaches the chair, explode the parts outwards!
+const explodeDuration = 0.15;
+const explodeStart = 0.25;
+
+masterTl.to(headrest.position, { y: headrest.userData.origY + 20, ease: "power1.inOut", duration: explodeDuration }, explodeStart);
+masterTl.to(backrest.position, { z: backrest.userData.origZ - 15, ease: "power1.inOut", duration: explodeDuration }, explodeStart);
+masterTl.to(cushion.position, { y: cushion.userData.origY + 10, ease: "power1.inOut", duration: explodeDuration }, explodeStart);
+masterTl.to(armL.position, { x: armL.userData.origX - 15, ease: "power1.inOut", duration: explodeDuration }, explodeStart);
+masterTl.to(armR.position, { x: armR.userData.origX + 15, ease: "power1.inOut", duration: explodeDuration }, explodeStart);
+masterTl.to(base.position, { y: base.userData.origY - 10, ease: "power1.inOut", duration: explodeDuration }, explodeStart);
+
+// Assemble back together before moving on
+masterTl.to(headrest.position, { y: headrest.userData.origY, ease: "power1.inOut", duration: 0.05 }, 0.40);
+masterTl.to(backrest.position, { z: backrest.userData.origZ, ease: "power1.inOut", duration: 0.05 }, 0.40);
+masterTl.to(cushion.position, { y: cushion.userData.origY, ease: "power1.inOut", duration: 0.05 }, 0.40);
+masterTl.to(armL.position, { x: armL.userData.origX, ease: "power1.inOut", duration: 0.05 }, 0.40);
+masterTl.to(armR.position, { x: armR.userData.origX, ease: "power1.inOut", duration: 0.05 }, 0.40);
+masterTl.to(base.position, { y: base.userData.origY, ease: "power1.inOut", duration: 0.05 }, 0.40);
+
+masterTl.to("#section-descent", { opacity: 0, duration: 0.05 }, 0.40);
 
 // PHASE 3: THE CORRIDOR
-masterTl.to(camera.rotation, { y: -Math.PI / 2, ease: "power1.inOut", duration: 0.05 }, 0.40);
-masterTl.to(camera.position, { x: 150, ease: "none", duration: 0.25 }, 0.45);
-masterTl.to("#catalogue-ui", { opacity: 1, x: "0%", duration: 0.05, ease: "power3.out" }, 0.42);
+masterTl.to(camera.rotation, { y: -Math.PI / 2, ease: "power1.inOut", duration: 0.05 }, 0.45);
+masterTl.to(camera.position, { x: 150, ease: "none", duration: 0.25 }, 0.50);
+masterTl.to("#catalogue-ui", { opacity: 1, x: "0%", duration: 0.05, ease: "power3.out" }, 0.48);
 masterTl.to("#catalogue-ui", { opacity: 0, x: "-100%", duration: 0.05, ease: "power3.in" }, 0.70);
 
 // PHASE 4: THE INTEGRATION MATRIX
@@ -238,109 +207,17 @@ masterTl.to(camera.position, { y: -150, ease: "power2.inOut", duration: 0.18 }, 
 masterTl.to("#section-matrix", { opacity: 1, duration: 0.05 }, 0.75);
 masterTl.to("#matrix-text", { scale: 1, opacity: 1, duration: 0.1, ease: "power2.out" }, 0.75);
 
-// --- CAROUSEL LOGIC ---
-const carouselContainer = document.getElementById('carousel-container');
-if (carouselContainer) {
-    seatData.forEach((seat, i) => {
-        const dot = document.createElement('div');
-        dot.className = `w-2 h-2 rounded-full cursor-pointer transition-all duration-300 ${i === 0 ? 'bg-white scale-125' : 'bg-white/30 hover:bg-white/60'}`;
-        dot.addEventListener('click', () => {
-            document.querySelectorAll('#carousel-container div').forEach((el, idx) => {
-                el.className = `w-2 h-2 rounded-full cursor-pointer transition-all duration-300 ${idx === i ? 'bg-white scale-125' : 'bg-white/30 hover:bg-white/60'}`;
-            });
-            updateCatalogueUI(i);
-        });
-        carouselContainer.appendChild(dot);
-    });
-}
-
+// Update logic
 function updateCatalogueUI(index) {
-    const data = seatData[index];
+    const data = seatData[0]; // Simplified
     const titleEl = document.getElementById('cat-title');
     if(!titleEl) return;
     titleEl.textContent = data.title;
     document.getElementById('cat-desc').textContent = data.desc;
     
-    // SIMPLE CLEAN CROSSFADE
     const imgEl = document.getElementById('cat-img');
-    if(imgEl.src && imgEl.src.includes(data.img)) {
-       imgEl.src = data.img;
-    } else {
-       gsap.to(imgEl, {
-           opacity: 0,
-           duration: 0.2,
-           onComplete: () => {
-               imgEl.src = data.img;
-               gsap.to(imgEl, { opacity: 1, duration: 0.3 });
-           }
-       });
-    }
-    
-    // Render ERA-Style Circular Hotspots with Lines
-    const hsContainer = document.getElementById('hotspots-container');
-    if (hsContainer) {
-        hsContainer.innerHTML = '';
-        
-        const svgLines = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        svgLines.style.position = 'absolute';
-        svgLines.style.inset = '0';
-        svgLines.style.width = '100%';
-        svgLines.style.height = '100%';
-        svgLines.style.pointerEvents = 'none';
-        svgLines.style.zIndex = '1';
-        hsContainer.appendChild(svgLines);
-
-        if (data.hotspots) {
-            data.hotspots.forEach((hs, i) => {
-                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                line.setAttribute('x1', hs.dot.left);
-                line.setAttribute('y1', hs.dot.top);
-                line.setAttribute('x2', hs.panel.left);
-                line.setAttribute('y2', hs.panel.top);
-                line.setAttribute('stroke', 'rgba(255,255,255,0.2)');
-                line.setAttribute('stroke-width', '1');
-                svgLines.appendChild(line);
-
-                const anchor = document.createElement('div');
-                anchor.className = 'absolute w-1 h-1 bg-white rounded-full pointer-events-none z-10';
-                anchor.style.top = hs.dot.top;
-                anchor.style.left = hs.dot.left;
-                anchor.style.transform = 'translate(-50%, -50%)';
-                hsContainer.appendChild(anchor);
-
-                const el = document.createElement('div');
-                el.className = 'absolute group pointer-events-auto flex items-center justify-center z-20 w-32 h-32 rounded-full cursor-pointer mix-blend-difference';
-                el.style.top = hs.panel.top;
-                el.style.left = hs.panel.left;
-                el.style.transform = 'translate(-50%, -50%)'; 
-                
-                const border = document.createElement('div');
-                border.className = 'absolute inset-0 rounded-full border-[0.5px] border-white/20 group-hover:border-white/80 group-hover:scale-110 transition-all duration-700 ease-out';
-                
-                const center = document.createElement('div');
-                center.className = 'w-1 h-1 bg-white/40 rounded-full group-hover:scale-150 transition-all duration-500';
-                
-                const panel = document.createElement('div');
-                const isLeft = parseFloat(hs.panel.left) < 50;
-                
-                if (isLeft) {
-                    panel.className = 'absolute top-1/2 right-full mr-4 -translate-y-1/2 w-48 opacity-60 group-hover:opacity-100 transition-all duration-500 group-hover:-translate-x-2 pointer-events-none text-right text-white';
-                } else {
-                    panel.className = 'absolute top-1/2 left-full ml-4 -translate-y-1/2 w-48 opacity-60 group-hover:opacity-100 transition-all duration-500 group-hover:translate-x-2 pointer-events-none text-left text-white';
-                }
-                
-                panel.innerHTML = `
-                    <div class="font-['Playfair_Display'] text-xl mb-1 whitespace-nowrap">${hs.title}</div>
-                    <div class="text-[9px] font-sans opacity-60 tracking-widest uppercase">${hs.desc}</div>
-                `;
-                
-                el.appendChild(border);
-                el.appendChild(center);
-                el.appendChild(panel);
-                hsContainer.appendChild(el);
-            });
-        }
+    if(!imgEl.src.includes(data.img)) {
+       gsap.to(imgEl, { opacity: 0, duration: 0.2, onComplete: () => { imgEl.src = data.img; gsap.to(imgEl, { opacity: 1, duration: 0.3 }); }});
     }
 }
-
 updateCatalogueUI(0);
