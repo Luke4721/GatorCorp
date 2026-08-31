@@ -22,8 +22,7 @@
   <body>
     <!-- THE GEMINI SCRUB VIDEO LAYER (Z-0) -->
     <div id="video-container" class="fixed inset-0 w-full h-full z-0 pointer-events-none opacity-0 flex items-center justify-center overflow-hidden">
-        <!-- Scaled to 110% to crop out the Gemini watermark from the edges -->
-        <video id="explode-video" src="/assets/Videos/explodeview.mp4" class="w-full h-full object-cover scale-[1.15]" muted playsinline preload="auto"></video>
+        <canvas id="sequence-canvas" class="w-full h-full object-cover"></canvas>
     </div>
 
     <!-- THE GLOBAL 3D BACKGROUND (Tron Grid over the video) (Z-10) -->

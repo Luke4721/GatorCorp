@@ -103,15 +103,15 @@ camera.rotation.set(0, 0, 0); // Straight forward
 // Wait, since the video is dark #070E11 and the grid should match its colors, let's use a fiery orange/gold or bright cyan!
 // The user said "the video background colors can be used for the grid etc" 
 // We will use a warm tone for the grid to contrast the dark navy video.
-const gridColor = 0x8a9ba8; // Soft metallic/silver to match the explode video aesthetics
-const wireColor = 0x8a9ba8; 
+const gridColor = 0xffffff; // Soft metallic/silver to match the explode video aesthetics
+const wireColor = 0xffffff; 
 
 // Environment 1: The Elevator Shaft (Vertical descent)
 const shaftGroup = new THREE.Group();
 for(let i = 0; i < 20; i++) {
     const box = new THREE.LineSegments(
         new THREE.EdgesGeometry(new THREE.BoxGeometry(40, 10, 40)),
-        new THREE.LineBasicMaterial({ color: wireColor, transparent: true, opacity: 0.15 })
+        new THREE.LineBasicMaterial({ color: wireColor, transparent: true, opacity: 0.5 })
     );
     box.position.y = 40 - (i * 20);
     shaftGroup.add(box);
@@ -122,7 +122,7 @@ scene.add(shaftGroup);
 const gridHelper = new THREE.GridHelper(300, 100, gridColor, gridColor);
 gridHelper.position.set(100, -100, -50); 
 gridHelper.material.transparent = true;
-gridHelper.material.opacity = 0.15;
+gridHelper.material.opacity = 0.6;
 scene.add(gridHelper);
 
 // Environment 3: The Integration Matrix (Deep dive)
@@ -166,24 +166,50 @@ masterTl.to(["#hero-circle-1", "#hero-circle-2"], { scale: 1.5, opacity: 0, dura
 masterTl.to("#hero-img", { opacity: 0, duration: 0.1 }, 0.05);
 masterTl.to("#tron-canvas", { opacity: 1, duration: 0.1 }, 0.05); // Reveal 3D world
 
-// PHASE 2: THE DESCENT & VIDEO SCRUB (15% - 40%)
-const video = document.getElementById('explode-video');
+// PHASE 2: THE DESCENT & IMAGE SEQUENCE SCRUB (15% - 40%)
 const videoContainer = document.getElementById('video-container');
+const canvasSeq = document.getElementById('sequence-canvas');
+const ctxSeq = canvasSeq ? canvasSeq.getContext('2d') : null;
+
+const frameCount = 300;
+const currentFrame = { frame: 0 };
+const images = [];
+
+if (ctxSeq) {
+    const firstImg = new Image();
+    firstImg.src = '/assets/frames/frame_0000.jpg';
+    firstImg.onload = () => {
+        canvasSeq.width = firstImg.width;
+        canvasSeq.height = firstImg.height;
+        ctxSeq.drawImage(firstImg, 0, 0);
+        
+        // Lazy load the rest
+        for (let i = 1; i < frameCount; i++) {
+            const img = new Image();
+            img.src = '/assets/frames/frame_' + i.toString().padStart(4, '0') + '.jpg';
+            images[i] = img;
+        }
+    };
+    images[0] = firstImg;
+}
+
+function renderFrame(index) {
+    if (images[index] && images[index].complete && ctxSeq) {
+        ctxSeq.clearRect(0, 0, canvasSeq.width, canvasSeq.height);
+        ctxSeq.drawImage(images[index], 0, 0);
+    }
+}
 
 // Reveal Video container
 masterTl.to(videoContainer, { opacity: 1, duration: 0.05 }, 0.15);
 
-// The video scrub dummy object
-const videoObj = { p: 0 };
-masterTl.to(videoObj, {
-    p: 1,
+// Scrub the image sequence
+masterTl.to(currentFrame, {
+    frame: frameCount - 1,
+    snap: "frame",
     ease: "none",
-    duration: 0.25, // Scrub video during the exact descent duration
-    onUpdate: () => {
-        if (video && video.duration) {
-            video.currentTime = videoObj.p * video.duration;
-        }
-    }
+    duration: 0.25,
+    onUpdate: () => renderFrame(currentFrame.frame)
 }, 0.15);
 
 masterTl.to(camera.position, { y: -90, ease: "power2.inOut", duration: 0.25 }, 0.15);
