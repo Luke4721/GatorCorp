@@ -103,14 +103,14 @@ masterTl.to("#ha-text-3", { y: "0%", opacity: 1, duration: 0.1, ease: "power2.ou
 masterTl.to("#section-ha-black", { opacity: 0, duration: 0.05, ease: "none" }, 0.40);
 
 // Transition body bg to white
-masterTl.to("#body-bg", { backgroundColor: "#f4f4f5", duration: 0.05, ease: "none" }, 0.40);
+masterTl.to("body", { backgroundColor: "#f4f4f5", duration: 0.05, ease: "none" }, 0.40);
 masterTl.to("#section-ha-white", { opacity: 1, duration: 0.05, ease: "none" }, 0.40); masterTl.to("#hero-bg", { opacity: 0, duration: 0.05, ease: "none" }, 0.40);
 
 masterTl.to("#ha-text-white", { scale: 1, opacity: 1, duration: 0.1, ease: "power2.out" }, 0.45);
 
 masterTl.to("#section-ha-white", { opacity: 0, duration: 0.05, ease: "none" }, 0.65);
 // Revert body bg to black for the rest of the site
-masterTl.to("#body-bg", { backgroundColor: "#0d0d0d", duration: 0.05, ease: "none" }, 0.65);
+masterTl.to("body", { backgroundColor: "#0d0d0d", duration: 0.05, ease: "none" }, 0.65);
 
 // Phase 3: Isolating Vibration
 masterTl.to("#section-2", { opacity: 1, duration: 0.05, ease: "power1.inOut" }, 0.70);
