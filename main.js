@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
             pixelDuration: 400,
             fade: true,
             trigger: 'hover',
-            firstContent: '<div class="text-[10px] font-bold tracking-[0.2em] text-[#1a1a1a]">EXPLORE SEAT</div>',
+            firstContent: '<div class="text-[10px] font-bold tracking-[0.2em] text-white">EXPLORE SEAT</div>',
             secondContent: '<div class="text-[10px] font-bold tracking-[0.2em] text-white">VIEW DETAILS</div>'
         });
     }
@@ -92,23 +92,26 @@ renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 
 const scene = new THREE.Scene();
-// Background wooden cream color: #E3D3C2
-scene.fog = new THREE.FogExp2(0xE3D3C2, 0.015);
+// Extracted Video Background Color: #070e11
+scene.fog = new THREE.FogExp2(0x070e11, 0.015);
 
 // Camera starts at Hero position (looking down -Z)
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.set(0, 50, 0); 
 camera.rotation.set(0, 0, 0); // Straight forward
 
-// Vibrant (but not eye-hitting) grid color: Warm Coral / Vibrant Blue combination. Let's use a nice vibrant Azure Blue for the technical contrast on wood.
-const gridColor = 0x0099ff; // Vibrant Azure Blue
+// Wait, since the video is dark #070E11 and the grid should match its colors, let's use a fiery orange/gold or bright cyan!
+// The user said "the video background colors can be used for the grid etc" 
+// We will use a warm tone for the grid to contrast the dark navy video.
+const gridColor = 0x8a9ba8; // Soft metallic/silver to match the explode video aesthetics
+const wireColor = 0x8a9ba8; 
 
 // Environment 1: The Elevator Shaft (Vertical descent)
 const shaftGroup = new THREE.Group();
 for(let i = 0; i < 20; i++) {
     const box = new THREE.LineSegments(
         new THREE.EdgesGeometry(new THREE.BoxGeometry(40, 10, 40)),
-        new THREE.LineBasicMaterial({ color: gridColor, transparent: true, opacity: 0.4 })
+        new THREE.LineBasicMaterial({ color: wireColor, transparent: true, opacity: 0.15 })
     );
     box.position.y = 40 - (i * 20);
     shaftGroup.add(box);
@@ -119,7 +122,7 @@ scene.add(shaftGroup);
 const gridHelper = new THREE.GridHelper(300, 100, gridColor, gridColor);
 gridHelper.position.set(100, -100, -50); 
 gridHelper.material.transparent = true;
-gridHelper.material.opacity = 0.3;
+gridHelper.material.opacity = 0.15;
 scene.add(gridHelper);
 
 // Environment 3: The Integration Matrix (Deep dive)
@@ -127,7 +130,7 @@ const matrixGroup = new THREE.Group();
 matrixGroup.position.set(250, -100, -50);
 const chassis = new THREE.LineSegments(
     new THREE.EdgesGeometry(new THREE.BoxGeometry(30, 20, 60)),
-    new THREE.LineBasicMaterial({ color: gridColor, transparent: true, opacity: 0.6 })
+    new THREE.LineBasicMaterial({ color: wireColor, transparent: true, opacity: 0.3 })
 );
 chassis.position.y = -30;
 matrixGroup.add(chassis);
@@ -145,7 +148,7 @@ window.addEventListener('resize', () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-// --- 3. MASTER GSAP SCROLL TIMELINE ---
+// --- 3. MASTER GSAP SCROLL TIMELINE & VIDEO SCRUB ---
 const masterTl = gsap.timeline({
     scrollTrigger: {
       trigger: "#scroll-container",
@@ -155,13 +158,35 @@ const masterTl = gsap.timeline({
     }
 });
 
-masterTl.to('#hero-typography', { y: -150, opacity: 0, duration: 0.10 }, 0.0);
-masterTl.to('#hero-split-left', { x: -200, opacity: 0, duration: 0.05 }, 0.05);
-masterTl.to('#hero-split-right', { x: 200, opacity: 0, duration: 0.05 }, 0.05);
-masterTl.to(['#hero-circle-1', '#hero-circle-2'], { scale: 1.5, opacity: 0, duration: 0.1 }, 0.0);
-masterTl.to('#hero-img', { opacity: 0, duration: 0.1 }, 0.05);
-masterTl.to('#tron-canvas', { opacity: 1, duration: 0.1 }, 0.05);
-masterTl.to(camera.position, { y: -90, ease: 'power2.inOut', duration: 0.25 }, 0.15);
+// PHASE 1: HERO DEPARTURE (0 - 15%)
+masterTl.to("#hero-typography", { y: -150, opacity: 0, duration: 0.10 }, 0.0);
+masterTl.to("#hero-split-left", { x: -200, opacity: 0, duration: 0.05 }, 0.05);
+masterTl.to("#hero-split-right", { x: 200, opacity: 0, duration: 0.05 }, 0.05);
+masterTl.to(["#hero-circle-1", "#hero-circle-2"], { scale: 1.5, opacity: 0, duration: 0.1 }, 0.0);
+masterTl.to("#hero-img", { opacity: 0, duration: 0.1 }, 0.05);
+masterTl.to("#tron-canvas", { opacity: 1, duration: 0.1 }, 0.05); // Reveal 3D world
+
+// PHASE 2: THE DESCENT & VIDEO SCRUB (15% - 40%)
+const video = document.getElementById('explode-video');
+const videoContainer = document.getElementById('video-container');
+
+// Reveal Video container
+masterTl.to(videoContainer, { opacity: 1, duration: 0.05 }, 0.15);
+
+// The video scrub dummy object
+const videoObj = { p: 0 };
+masterTl.to(videoObj, {
+    p: 1,
+    ease: "none",
+    duration: 0.25, // Scrub video during the exact descent duration
+    onUpdate: () => {
+        if (video && video.duration) {
+            video.currentTime = videoObj.p * video.duration;
+        }
+    }
+}, 0.15);
+
+masterTl.to(camera.position, { y: -90, ease: "power2.inOut", duration: 0.25 }, 0.15);
 masterTl.to("#era-hero", { opacity: 0, duration: 0.1 }, 0.15);
 masterTl.to("#section-descent", { opacity: 1, duration: 0.05 }, 0.15);
 masterTl.to("#descent-text-1", { y: "0%", duration: 0.05, ease: "power3.out" }, 0.17);
@@ -169,11 +194,16 @@ masterTl.to("#descent-text-2", { y: "0%", duration: 0.05, ease: "power3.out" }, 
 masterTl.to("#descent-sub", { y: "0%", opacity: 1, duration: 0.05, ease: "power3.out" }, 0.21);
 masterTl.to("#section-descent", { opacity: 0, duration: 0.05 }, 0.38);
 
+// Hide Video container as we pan right
+masterTl.to(videoContainer, { opacity: 0, duration: 0.05 }, 0.40);
+
+// PHASE 3: THE CORRIDOR
 masterTl.to(camera.rotation, { y: -Math.PI / 2, ease: "power1.inOut", duration: 0.05 }, 0.40);
 masterTl.to(camera.position, { x: 150, ease: "none", duration: 0.25 }, 0.45);
 masterTl.to("#catalogue-ui", { opacity: 1, x: "0%", duration: 0.05, ease: "power3.out" }, 0.42);
 masterTl.to("#catalogue-ui", { opacity: 0, x: "-100%", duration: 0.05, ease: "power3.in" }, 0.70);
 
+// PHASE 4: THE INTEGRATION MATRIX
 masterTl.to(camera.rotation, { z: -Math.PI / 2, x: -Math.PI / 2, ease: "power2.inOut", duration: 0.1 }, 0.72);
 masterTl.to(camera.position, { y: -150, ease: "power2.inOut", duration: 0.18 }, 0.82);
 masterTl.to("#section-matrix", { opacity: 1, duration: 0.05 }, 0.75);
@@ -184,11 +214,10 @@ const carouselContainer = document.getElementById('carousel-container');
 if (carouselContainer) {
     seatData.forEach((seat, i) => {
         const dot = document.createElement('div');
-        // Switched to dark styling for the cream background
-        dot.className = `w-2 h-2 rounded-full cursor-pointer transition-all duration-300 ${i === 0 ? 'bg-[#1a1a1a] scale-125' : 'bg-[#1a1a1a]/30 hover:bg-[#1a1a1a]/60'}`;
+        dot.className = `w-2 h-2 rounded-full cursor-pointer transition-all duration-300 ${i === 0 ? 'bg-white scale-125' : 'bg-white/30 hover:bg-white/60'}`;
         dot.addEventListener('click', () => {
             document.querySelectorAll('#carousel-container div').forEach((el, idx) => {
-                el.className = `w-2 h-2 rounded-full cursor-pointer transition-all duration-300 ${idx === i ? 'bg-[#1a1a1a] scale-125' : 'bg-[#1a1a1a]/30 hover:bg-[#1a1a1a]/60'}`;
+                el.className = `w-2 h-2 rounded-full cursor-pointer transition-all duration-300 ${idx === i ? 'bg-white scale-125' : 'bg-white/30 hover:bg-white/60'}`;
             });
             updateCatalogueUI(i);
         });
@@ -203,7 +232,7 @@ function updateCatalogueUI(index) {
     titleEl.textContent = data.title;
     document.getElementById('cat-desc').textContent = data.desc;
     
-    // SIMPLE CLEAN CROSSFADE, NO MORE SVG PIXEL SWAP BUGS!
+    // SIMPLE CLEAN CROSSFADE
     const imgEl = document.getElementById('cat-img');
     if(imgEl.src && imgEl.src.includes(data.img)) {
        imgEl.src = data.img;
@@ -218,7 +247,7 @@ function updateCatalogueUI(index) {
        });
     }
     
-    // Render ERA-Style Circular Hotspots with Lines connecting dot and panel
+    // Render ERA-Style Circular Hotspots with Lines
     const hsContainer = document.getElementById('hotspots-container');
     if (hsContainer) {
         hsContainer.innerHTML = '';
@@ -239,13 +268,12 @@ function updateCatalogueUI(index) {
                 line.setAttribute('y1', hs.dot.top);
                 line.setAttribute('x2', hs.panel.left);
                 line.setAttribute('y2', hs.panel.top);
-                // Dark lines for cream background
-                line.setAttribute('stroke', 'rgba(26,26,26,0.2)');
+                line.setAttribute('stroke', 'rgba(255,255,255,0.2)');
                 line.setAttribute('stroke-width', '1');
                 svgLines.appendChild(line);
 
                 const anchor = document.createElement('div');
-                anchor.className = 'absolute w-1 h-1 bg-[#1a1a1a] rounded-full pointer-events-none z-10';
+                anchor.className = 'absolute w-1 h-1 bg-white rounded-full pointer-events-none z-10';
                 anchor.style.top = hs.dot.top;
                 anchor.style.left = hs.dot.left;
                 anchor.style.transform = 'translate(-50%, -50%)';
@@ -258,25 +286,23 @@ function updateCatalogueUI(index) {
                 el.style.transform = 'translate(-50%, -50%)'; 
                 
                 const border = document.createElement('div');
-                // Dark border for cream background
-                border.className = 'absolute inset-0 rounded-full border-[0.5px] border-[#1a1a1a]/20 group-hover:border-[#1a1a1a]/80 group-hover:scale-110 transition-all duration-700 ease-out';
+                border.className = 'absolute inset-0 rounded-full border-[0.5px] border-white/20 group-hover:border-white/80 group-hover:scale-110 transition-all duration-700 ease-out';
                 
                 const center = document.createElement('div');
-                center.className = 'w-1 h-1 bg-[#1a1a1a]/40 rounded-full group-hover:scale-150 transition-all duration-500';
+                center.className = 'w-1 h-1 bg-white/40 rounded-full group-hover:scale-150 transition-all duration-500';
                 
                 const panel = document.createElement('div');
                 const isLeft = parseFloat(hs.panel.left) < 50;
                 
-                // Text classes changed from text-white to text-[#1a1a1a] (dark mode)
                 if (isLeft) {
-                    panel.className = 'absolute top-1/2 right-full mr-4 -translate-y-1/2 w-48 opacity-60 group-hover:opacity-100 transition-all duration-500 group-hover:-translate-x-2 pointer-events-none text-right';
+                    panel.className = 'absolute top-1/2 right-full mr-4 -translate-y-1/2 w-48 opacity-60 group-hover:opacity-100 transition-all duration-500 group-hover:-translate-x-2 pointer-events-none text-right text-white';
                 } else {
-                    panel.className = 'absolute top-1/2 left-full ml-4 -translate-y-1/2 w-48 opacity-60 group-hover:opacity-100 transition-all duration-500 group-hover:translate-x-2 pointer-events-none text-left';
+                    panel.className = 'absolute top-1/2 left-full ml-4 -translate-y-1/2 w-48 opacity-60 group-hover:opacity-100 transition-all duration-500 group-hover:translate-x-2 pointer-events-none text-left text-white';
                 }
                 
                 panel.innerHTML = `
-                    <div class="font-['Playfair_Display'] text-xl text-[#1a1a1a] mb-1 whitespace-nowrap">${hs.title}</div>
-                    <div class="text-[9px] font-sans text-[#1a1a1a]/60 tracking-widest uppercase">${hs.desc}</div>
+                    <div class="font-['Playfair_Display'] text-xl mb-1 whitespace-nowrap">${hs.title}</div>
+                    <div class="text-[9px] font-sans opacity-60 tracking-widest uppercase">${hs.desc}</div>
                 `;
                 
                 el.appendChild(border);
