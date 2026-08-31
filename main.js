@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import PixelSwap from './PixelSwap.js';
 import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -100,16 +101,17 @@ const wireColor = 0xffffff;
 
 // --- BUILD THE PROCEDURAL 3D CHAIR FOR THE EXPLODED VIEW ---
 const chairGroup = new THREE.Group();
-chairGroup.position.set(0, -90, -40); // Position it exactly where the camera drops down to
-chairGroup.rotation.y = -Math.PI / 4; // Angle it nicely
+chairGroup.position.set(0, -90, -40); 
+chairGroup.rotation.y = -Math.PI / 6; 
+chairGroup.scale.set(0.5, 0.5, 0.5); // SCALE IT DOWN TO FIT IN FRAME!
 
 // Material for the chair parts (Dark sleek metallic + bright wireframe edges)
-const chairMat = new THREE.MeshStandardMaterial({ color: 0x1a2b3c, roughness: 0.2, metalness: 0.8 });
+const chairMat = new THREE.MeshStandardMaterial({ color: 0x050a0f, roughness: 0.1, metalness: 0.9, transparent: true, opacity: 0.95 });
 const edgeMat = new THREE.LineBasicMaterial({ color: 0x00aaff, transparent: true, opacity: 0.8 });
 
 function createChairPart(geometry, yOffset, zOffset, isCylinder = false) {
     const mesh = new THREE.Mesh(geometry, chairMat);
-    const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geometry), edgeMat);
+    const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geometry, 15), edgeMat);
     mesh.add(edges);
     mesh.position.set(0, yOffset, zOffset);
     // Store original positions for GSAP exploding
@@ -118,21 +120,43 @@ function createChairPart(geometry, yOffset, zOffset, isCylinder = false) {
     return mesh;
 }
 
-// 1. Base Plate
-const base = createChairPart(new THREE.BoxGeometry(16, 2, 16), -10, 0);
-// 2. Suspension Core
-const suspension = createChairPart(new THREE.CylinderGeometry(3, 3, 8, 16), -5, 0, true);
-// 3. Seat Cushion
-const cushion = createChairPart(new THREE.BoxGeometry(18, 4, 18), 1, 0);
-// 4. Backrest
-const backrest = createChairPart(new THREE.BoxGeometry(16, 24, 4), 15, -7);
-// 5. Headrest
-const headrest = createChairPart(new THREE.BoxGeometry(10, 6, 3), 31, -7);
-// 6. Armrests
-const armL = createChairPart(new THREE.BoxGeometry(3, 2, 14), 10, 2);
-armL.position.x = -10; armL.userData.origX = -10;
-const armR = createChairPart(new THREE.BoxGeometry(3, 2, 14), 10, 2);
-armR.position.x = 10; armR.userData.origX = 10;
+// 1. Base Plate (Heavy industrial base)
+const base = createChairPart(new RoundedBoxGeometry(16, 3, 18, 4, 0.5), -12, 0);
+
+// 2. Suspension Assembly (Mechanical shock absorber)
+const suspensionGroup = new THREE.Group();
+const shockCore = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 12, 16), new THREE.MeshStandardMaterial({color: 0x222222, metalness: 1.0}));
+suspensionGroup.add(shockCore);
+// Add suspension coil springs using Torus
+for(let i=0; i<5; i++) {
+    const coil = new THREE.Mesh(new THREE.TorusGeometry(3.5, 0.6, 8, 32), new THREE.MeshStandardMaterial({color: 0x00aaff, metalness: 0.8}));
+    coil.rotation.x = Math.PI/2;
+    coil.position.y = -4 + (i * 2);
+    suspensionGroup.add(coil);
+}
+const suspensionEdges = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.CylinderGeometry(2,2,12,16)), edgeMat);
+suspensionGroup.add(suspensionEdges);
+suspensionGroup.position.set(0, -4, 0);
+suspensionGroup.userData = { origY: -4, origZ: 0, origX: 0 };
+chairGroup.add(suspensionGroup);
+
+// 3. Seat Cushion (Ergonomic curves)
+const cushion = createChairPart(new RoundedBoxGeometry(18, 5, 18, 8, 2), 4, 1);
+
+// 4. Backrest (Tall, ergonomic spine support)
+const backrest = createChairPart(new RoundedBoxGeometry(16, 26, 4, 8, 1.5), 18, -6);
+
+// 5. Lumbar Support (Protruding curve)
+const lumbar = createChairPart(new RoundedBoxGeometry(14, 8, 3, 6, 1), 12, -4);
+
+// 6. Headrest (Sculpted neck support)
+const headrest = createChairPart(new RoundedBoxGeometry(10, 8, 4, 6, 2), 34, -5);
+
+// 7. Armrests (Sleek mechanical arms)
+const armL = createChairPart(new RoundedBoxGeometry(3, 2, 14, 4, 0.5), 14, 4);
+armL.position.x = -11; armL.userData.origX = -11;
+const armR = createChairPart(new RoundedBoxGeometry(3, 2, 14, 4, 0.5), 14, 4);
+armR.position.x = 11; armR.userData.origX = 11;
 
 scene.add(chairGroup);
 
@@ -209,20 +233,27 @@ masterTl.to("#descent-sub", { y: "0%", opacity: 1, duration: 0.05, ease: "power3
 const explodeDuration = 0.15;
 const explodeStart = 0.25;
 
-masterTl.to(headrest.position, { y: headrest.userData.origY + 20, ease: "power1.inOut", duration: explodeDuration }, explodeStart);
-masterTl.to(backrest.position, { z: backrest.userData.origZ - 15, ease: "power1.inOut", duration: explodeDuration }, explodeStart);
-masterTl.to(cushion.position, { y: cushion.userData.origY + 10, ease: "power1.inOut", duration: explodeDuration }, explodeStart);
-masterTl.to(armL.position, { x: armL.userData.origX - 15, ease: "power1.inOut", duration: explodeDuration }, explodeStart);
-masterTl.to(armR.position, { x: armR.userData.origX + 15, ease: "power1.inOut", duration: explodeDuration }, explodeStart);
-masterTl.to(base.position, { y: base.userData.origY - 10, ease: "power1.inOut", duration: explodeDuration }, explodeStart);
+// Disassemble
+masterTl.to(headrest.position, { y: headrest.userData.origY + 15, z: headrest.userData.origZ - 5, ease: "power2.inOut", duration: explodeDuration }, explodeStart);
+masterTl.to(backrest.position, { z: backrest.userData.origZ - 12, ease: "power2.inOut", duration: explodeDuration }, explodeStart);
+masterTl.to(lumbar.position, { z: lumbar.userData.origZ - 8, y: lumbar.userData.origY - 2, ease: "power2.inOut", duration: explodeDuration }, explodeStart);
+masterTl.to(cushion.position, { y: cushion.userData.origY + 8, ease: "power2.inOut", duration: explodeDuration }, explodeStart);
+masterTl.to(armL.position, { x: armL.userData.origX - 10, y: armL.userData.origY + 5, ease: "power2.inOut", duration: explodeDuration }, explodeStart);
+masterTl.to(armR.position, { x: armR.userData.origX + 10, y: armR.userData.origY + 5, ease: "power2.inOut", duration: explodeDuration }, explodeStart);
+masterTl.to(suspensionGroup.position, { y: suspensionGroup.userData.origY - 5, ease: "power2.inOut", duration: explodeDuration }, explodeStart);
+masterTl.to(base.position, { y: base.userData.origY - 15, ease: "power2.inOut", duration: explodeDuration }, explodeStart);
 
 // Assemble back together before moving on
-masterTl.to(headrest.position, { y: headrest.userData.origY, ease: "power1.inOut", duration: 0.05 }, 0.40);
-masterTl.to(backrest.position, { z: backrest.userData.origZ, ease: "power1.inOut", duration: 0.05 }, 0.40);
-masterTl.to(cushion.position, { y: cushion.userData.origY, ease: "power1.inOut", duration: 0.05 }, 0.40);
-masterTl.to(armL.position, { x: armL.userData.origX, ease: "power1.inOut", duration: 0.05 }, 0.40);
-masterTl.to(armR.position, { x: armR.userData.origX, ease: "power1.inOut", duration: 0.05 }, 0.40);
-masterTl.to(base.position, { y: base.userData.origY, ease: "power1.inOut", duration: 0.05 }, 0.40);
+const assembleStart = 0.40;
+const assembleDuration = 0.05;
+masterTl.to(headrest.position, { y: headrest.userData.origY, z: headrest.userData.origZ, ease: "power2.inOut", duration: assembleDuration }, assembleStart);
+masterTl.to(backrest.position, { z: backrest.userData.origZ, ease: "power2.inOut", duration: assembleDuration }, assembleStart);
+masterTl.to(lumbar.position, { z: lumbar.userData.origZ, y: lumbar.userData.origY, ease: "power2.inOut", duration: assembleDuration }, assembleStart);
+masterTl.to(cushion.position, { y: cushion.userData.origY, ease: "power2.inOut", duration: assembleDuration }, assembleStart);
+masterTl.to(armL.position, { x: armL.userData.origX, y: armL.userData.origY, ease: "power2.inOut", duration: assembleDuration }, assembleStart);
+masterTl.to(armR.position, { x: armR.userData.origX, y: armR.userData.origY, ease: "power2.inOut", duration: assembleDuration }, assembleStart);
+masterTl.to(suspensionGroup.position, { y: suspensionGroup.userData.origY, ease: "power2.inOut", duration: assembleDuration }, assembleStart);
+masterTl.to(base.position, { y: base.userData.origY, ease: "power2.inOut", duration: assembleDuration }, assembleStart);
 
 masterTl.to("#section-descent", { opacity: 0, duration: 0.05 }, 0.40);
 
