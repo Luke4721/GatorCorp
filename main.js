@@ -142,7 +142,7 @@ gltfLoader.load('/models/seat_compressed.glb', (gltf) => {
     
     // Position the group directly in front of the descended camera
     // Camera is at y: -90, z: 0. Model goes to y: -90, z: -50.
-    loadedModel.position.set(0, -90, -50);
+    loadedModel.position.set(0, -2, -45);
     loadedModel.rotation.y = -Math.PI / 4;
 });
 
@@ -208,7 +208,8 @@ masterTl.to(["#hero-circle-1", "#hero-circle-2"], { scale: 1.5, opacity: 0, dura
 masterTl.to("#hero-img", { opacity: 0, duration: 0.1 }, 0.05);
 masterTl.to("#tron-canvas", { opacity: 1, duration: 0.1 }, 0.05);
 
-masterTl.to(camera.position, { y: -90, ease: "power2.inOut", duration: 0.25 }, 0.15);
+// Move the world up instead of the camera down, so the model stays locked in frame!
+masterTl.to(gridGroup.position, { y: gridGroup.position.y + 90, ease: "power2.inOut", duration: 0.25 }, 0.15);
 masterTl.to("#era-hero", { opacity: 0, duration: 0.1 }, 0.15);
 masterTl.to("#section-descent", { opacity: 1, duration: 0.05 }, 0.15);
 masterTl.to("#descent-text-1", { y: "0%", duration: 0.05, ease: "power3.out" }, 0.17);
@@ -216,15 +217,7 @@ masterTl.to("#descent-text-2", { y: "0%", duration: 0.05, ease: "power3.out" }, 
 masterTl.to("#descent-sub", { y: "0%", opacity: 1, duration: 0.05, ease: "power3.out" }, 0.21);
 
 // --- THE REAL 3D EXPLODED VIEW ANIMATION ---
-// --- 3D SHOWROOM ANIMATION ---
-// Rotate the model gracefully for a premium product feel during Phase 2
-const showroomStart = 0.25;
-
-masterTl.to(loadedModel.rotation, {
-    y: Math.PI / 2, // Smooth 90 degree spin
-    ease: "power1.inOut",
-    duration: 0.25
-}, showroomStart);
+// (No spinning, perfectly static model for feature highlights)
 
 masterTl.to("#section-descent", { opacity: 0, duration: 0.05 }, 0.40);
 
