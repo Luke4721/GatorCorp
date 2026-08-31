@@ -211,7 +211,7 @@ function animate() {
     requestAnimationFrame(animate);
     
     // Slowly rotate the chair group for a premium showroom feel
-    if(loadedModel && scanUniforms.uScanRadius.value >= 60.0) {
+    if (loadedModel) {
         loadedModel.rotation.y += 0.002;
     }
 
