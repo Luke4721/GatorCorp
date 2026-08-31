@@ -6,8 +6,24 @@ import Lenis from 'lenis';
 
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import PixelSwap from './PixelSwap.js';
 
 gsap.registerPlugin(ScrollTrigger);
+
+// Initialize PixelSwap
+document.addEventListener('DOMContentLoaded', () => {
+    const container = document.getElementById('pixel-swap-container');
+    if (container) {
+        new PixelSwap(container, {
+            firstContent: '<div style="font-size: 14px; font-weight: bold; padding: 10px 20px;">EXPLORE SEAT ↗</div>',
+            secondContent: '<div style="font-size: 14px; font-weight: bold; color: black; background: #00ffff; padding: 10px 20px;">INSPECT MODE</div>',
+            pixelSize: 24,
+            pixelDuration: 450,
+            duration: 1000,
+            trigger: 'hover'
+        });
+    }
+});
 
 // 1. SMOOTH SCROLLING (Lenis)
 const lenis = new Lenis({ lerp: 0.05, smoothWheel: true, wheelMultiplier: 1.0 });
@@ -25,8 +41,9 @@ scene.fog = new THREE.FogExp2(0x030303, 0.015); // Cinematic dark fog
 
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ canvas: document.querySelector('#webgl-canvas'), antialias: true, alpha: true });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.localClippingEnabled = true; // REZ-IN CLIPPING
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 // Premium Lighting Setup
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
@@ -54,19 +71,45 @@ window.wireMaterials = [];
 // -- RED PARTICLE TRUCK SETUP --
 window.particleUniforms = {
     uTime: { value: 0 },
-    uVibration: { value: 0 }, 
-    uOpacity: { value: 1 }
+    uOpacity: { value: 1 },
+    uMouse: { value: new THREE.Vector3(0,0,0) },
+    uGlitch: { value: 0.0 }
 };
+
+
+// -- CLIPPING PLANE (REZ-IN) --
+window.clipPlane = new THREE.Plane(new THREE.Vector3(0, -1, 0), 10);
+const clipPlanes = [window.clipPlane];
 
 const truckParticleMaterial = new THREE.ShaderMaterial({
     uniforms: window.particleUniforms,
     transparent: true,
     depthWrite: false,
     blending: THREE.AdditiveBlending,
+    clippingPlanes: clipPlanes,
     vertexShader: `
+        uniform float uTime;
+        uniform vec3 uMouse;
+        uniform float uGlitch;
+        
         void main() {
-            vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+            vec3 pos = position;
+            
+            // Mouse Repulsion
+            float dist = distance(pos, uMouse);
+            if(dist < 3.0) {
+                vec3 dir = normalize(pos - uMouse);
+                pos += dir * (3.0 - dist) * 0.5;
+            }
+            
+            // Glitch Tearing
+            if(uGlitch > 0.0) {
+                pos.x += sin(pos.y * 50.0 + uTime * 10.0) * uGlitch;
+            }
+            
+            vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
             gl_PointSize = 3.0 * (10.0 / -mvPosition.z);
+            if(dist < 3.0) gl_PointSize *= 2.0;
             gl_Position = projectionMatrix * mvPosition;
         }
     `,
@@ -77,7 +120,6 @@ const truckParticleMaterial = new THREE.ShaderMaterial({
             float dist = length(c);
             if (dist > 0.5) discard;
             float strength = pow(1.0 - (dist * 2.0), 1.5);
-            // Aggressive Red chaotic color
             gl_FragColor = vec4(1.0, 0.2, 0.1, strength * uOpacity * 0.6);
         }
     `
@@ -112,7 +154,7 @@ window.seatOpacity = { value: 0 };
               // GPU-accelerated wireframe (0 bytes of extra RAM)
               const wireMat = new THREE.MeshBasicMaterial({ 
                   color: 0x0088ff, 
-                  wireframe: true, 
+                  wireframe: true, clippingPlanes: clipPlanes, 
                   transparent: true, 
                   opacity: 0 
               });
@@ -162,7 +204,7 @@ gltfLoader.loadAsync('/assets/Truck_draco.glb').then((truckGltf) => {
             // GPU-accelerated wireframe (0 bytes of extra RAM, eliminates 800MB leak)
             const wireMat = new THREE.MeshBasicMaterial({ 
                 color: 0xff1111, 
-                wireframe: true, 
+                wireframe: true, clippingPlanes: clipPlanes, 
                 transparent: true, 
                 opacity: 0.2 
             });
@@ -257,7 +299,9 @@ function initMasterTimeline() {
     }
   });
 
-  // Phase 1: Drive to the top (center) from the bottom
+  // Phase 1: Rez-in (Clipping)
+  masterTl.fromTo(window.clipPlane, { constant: -10 }, { constant: 10, duration: 0.15, ease: "none" }, 0.0);
+  // Drive to the top (center) from the bottom
   masterTl.to(truckGroup.position, { z: 0, duration: 0.15, ease: "power2.out" }, 0.0);
   
   // Acceleration Pitch & Bank: The truck leans back and tilts slightly as it drives, simulating suspension momentum
@@ -308,12 +352,58 @@ function initMasterTimeline() {
 }
 
 // --- SCROLL VELOCITY PHYSICS ---
+let lastScrollY = window.scrollY;
+let smoothedVelocity = 0;
+let lastTime = performance.now();
 // (Reverted to basic linear GSAP scroll as requested)
+
+
+// -- MOUSE INTERACTION & PARALLAX --
+let mouse = { x: 0, y: 0, targetX: 0, targetY: 0 };
+window.addEventListener('mousemove', (e) => {
+    mouse.targetX = (e.clientX / window.innerWidth) * 2 - 1;
+    mouse.targetY = -(e.clientY / window.innerHeight) * 2 + 1;
+});
 
 function animate() {
   requestAnimationFrame(animate);
   const now = performance.now();
   const t = now / 1000;
+
+  // Lerp mouse
+  mouse.x += (mouse.targetX - mouse.x) * 0.1;
+  mouse.y += (mouse.targetY - mouse.y) * 0.1;
+  
+  // Parallax Camera
+  camera.position.x = mouse.x * 2.0;
+  camera.position.z = mouse.y * -2.0;
+  camera.lookAt(0,0,0);
+  
+  // Mouse Raycast for Shader
+  const vector = new THREE.Vector3(mouse.targetX, mouse.targetY, 0.5);
+  vector.unproject(camera);
+  const dir = vector.sub(camera.position).normalize();
+  const distance = -camera.position.y / dir.y;
+  const pos = camera.position.clone().add(dir.multiplyScalar(distance));
+  if(window.particleUniforms && window.particleUniforms.uMouse) {
+      window.particleUniforms.uMouse.value.copy(pos);
+  }
+  
+  // Glitch Physics Calculation
+  let dt = (now - lastTime) / 1000;
+  if(dt <= 0) dt = 0.016;
+  dt = Math.min(dt, 0.05);
+  lastTime = now;
+  
+  const currentScroll = window.scrollY;
+  const rawVelocity = Math.abs(currentScroll - lastScrollY) / dt;
+  lastScrollY = currentScroll;
+  smoothedVelocity = smoothedVelocity + (rawVelocity - smoothedVelocity) * (1.0 - Math.exp(-10.0 * dt));
+  
+  if(window.particleUniforms && window.particleUniforms.uGlitch) {
+      window.particleUniforms.uGlitch.value = Math.min(smoothedVelocity * 0.0005, 1.5);
+  }
+
   
   if (window.particleUniforms) {
       window.particleUniforms.uTime.value = t;
