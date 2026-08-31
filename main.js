@@ -71,6 +71,7 @@ window.wireMaterials = [];
 // -- RED PARTICLE TRUCK SETUP --
 window.particleUniforms = {
     uTime: { value: 0 },
+    uVibration: { value: 0 },
     uOpacity: { value: 1 },
     uMouse: { value: new THREE.Vector3(0,0,0) },
     uGlitch: { value: 0.0 }
@@ -444,7 +445,7 @@ const seatData = [
   { id: 1, title: 'SUPREMO', img: '/assets/seats/Supremo.png', desc: 'Supremo is a premium offering with top-of-the-line air suspension. It guarantees the absolute ultimate in long-haul comfort and vibration isolation for highway driving.', badges: ['AIR SUSPENSION', 'VENTILATED', 'LUMBAR SUPPORT'] },
   { id: 2, title: 'EXCAVATOR PRO', img: '/assets/seats/Excavator.png', desc: 'Built specifically for earth-moving equipment, this seat features mechanical suspension tuned for extreme vertical shocks.', badges: ['MECHANICAL', 'HEAVY DUTY'] },
   { id: 3, title: 'TRACTOR COMMAND', img: '/assets/seats/Tractor.png', desc: 'Designed for agricultural machinery, offering robust weather resistance and constant damping over uneven terrain.', badges: ['WEATHERPROOF', 'SHOCK DAMPING'] },
-  { id: 4, title: 'COMPACT LIFT', img: '/assets/seats/Forklift.png', desc: 'A compact, highly maneuverable seat for forklifts with active lateral support.', badges: ['COMPACT', 'LATERAL SUPPORT'] }
+  { id: 4, title: 'COMPACT LIFT', img: '/assets/seats/Mini Excavator.png', desc: 'A compact, highly maneuverable seat for forklifts with active lateral support.', badges: ['COMPACT', 'LATERAL SUPPORT'] }
 ];
 
 let currentSeatIndex = 0;
