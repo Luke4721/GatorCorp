@@ -411,9 +411,9 @@ const seatData = [
     desc: 'Supremo is a premium offering with top-of-the-line air suspension. It guarantees the absolute ultimate in long-haul comfort and vibration isolation for highway driving.', 
     badges: ['AIR SUSPENSION', 'VENTILATED', 'LUMBAR SUPPORT'],
     hotspots: [
-        { top: '25%', left: '50%', title: 'ACTIVE HEADREST', desc: 'Reduces whiplash and neck strain over uneven terrain.' },
-        { top: '65%', left: '30%', title: 'LUMBAR SUPPORT', desc: 'Multi-chamber pneumatic lumbar adjustment.' },
-        { top: '85%', left: '50%', title: 'AIR SUSPENSION', desc: 'Isolates 90% of harmful vertical vibrations.' }
+        { dot: { top: '15%', left: '75%' }, target: { top: '35%', left: '50%' }, title: 'ACTIVE HEADREST', desc: 'Reduces whiplash and neck strain.' },
+        { dot: { top: '65%', left: '15%' }, target: { top: '65%', left: '30%' }, title: 'LUMBAR SUPPORT', desc: 'Multi-chamber pneumatic lumbar adjustment.' },
+        { dot: { top: '85%', left: '75%' }, target: { top: '85%', left: '50%' }, title: 'AIR SUSPENSION', desc: 'Isolates 90% of harmful vibrations.' }
     ]
   },
   { 
@@ -421,8 +421,8 @@ const seatData = [
     desc: 'Built specifically for earth-moving equipment, this seat features mechanical suspension tuned for extreme vertical shocks.', 
     badges: ['MECHANICAL', 'HEAVY DUTY'],
     hotspots: [
-        { top: '30%', left: '48%', title: 'RUGGED TRIM', desc: 'Tear-resistant industrial fabric.' },
-        { top: '75%', left: '50%', title: 'MECHANICAL DAMPING', desc: 'Heavy-duty steel coil suspension block.' }
+        { dot: { top: '25%', left: '20%' }, target: { top: '30%', left: '48%' }, title: 'RUGGED TRIM', desc: 'Tear-resistant industrial fabric.' },
+        { dot: { top: '75%', left: '80%' }, target: { top: '75%', left: '50%' }, title: 'MECHANICAL DAMPING', desc: 'Heavy-duty steel coil suspension.' }
     ]
   },
   { 
@@ -430,8 +430,8 @@ const seatData = [
     desc: 'Designed for agricultural machinery, offering robust weather resistance and constant damping over uneven terrain.', 
     badges: ['WEATHERPROOF', 'SHOCK DAMPING'],
     hotspots: [
-        { top: '40%', left: '60%', title: 'WEATHER RESISTANT', desc: 'Sealed seams and waterproof vinyl coating.' },
-        { top: '80%', left: '45%', title: 'SHOCK DAMPING', desc: 'Constant rate damping for agricultural tracks.' }
+        { dot: { top: '30%', left: '85%' }, target: { top: '40%', left: '60%' }, title: 'WEATHER RESISTANT', desc: 'Sealed seams and waterproof coating.' },
+        { dot: { top: '80%', left: '20%' }, target: { top: '80%', left: '45%' }, title: 'SHOCK DAMPING', desc: 'Constant rate damping for agricultural tracks.' }
     ]
   },
   { 
@@ -439,8 +439,8 @@ const seatData = [
     desc: 'A compact, highly maneuverable seat for forklifts with active lateral support.', 
     badges: ['COMPACT', 'LATERAL SUPPORT'],
     hotspots: [
-        { top: '55%', left: '35%', title: 'LATERAL BOLSTERS', desc: 'Holds operator securely during tight cornering.' },
-        { top: '90%', left: '50%', title: 'LOW PROFILE', desc: 'Fits compactly into tight cabins.' }
+        { dot: { top: '55%', left: '10%' }, target: { top: '55%', left: '35%' }, title: 'LATERAL BOLSTERS', desc: 'Holds operator securely.' },
+        { dot: { top: '90%', left: '80%' }, target: { top: '90%', left: '50%' }, title: 'LOW PROFILE', desc: 'Fits compactly into tight cabins.' }
     ]
   }
 ];
@@ -453,35 +453,124 @@ function updateCatalogueUI(index) {
     if(!titleEl) return;
     titleEl.textContent = data.title;
     document.getElementById('cat-desc').textContent = data.desc;
-    document.getElementById('cat-img').src = data.img;
     
-    // Render Hotspots
+    // PixelSwap transition for the image!
+    const imgEl = document.getElementById('cat-img');
+    if(imgEl.src && imgEl.src.includes(data.img)) {
+       // First load
+       imgEl.src = data.img;
+    } else {
+       // Use PixelSwap manually
+       const width = imgEl.offsetWidth;
+       const height = imgEl.offsetHeight;
+       const size = 64;
+       const cols = Math.ceil(width / size);
+       const rows = Math.ceil(height / size);
+       
+       const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+       svg.style.position = "absolute";
+       svg.style.top = "0";
+       svg.style.left = "0";
+       svg.style.width = "100%";
+       svg.style.height = "100%";
+       svg.style.pointerEvents = "none";
+       svg.style.zIndex = "50";
+       
+       let rects = [];
+       for (let y = 0; y < rows; y++) {
+         for (let x = 0; x < cols; x++) {
+           const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+           rect.setAttribute("x", x * size);
+           rect.setAttribute("y", y * size);
+           rect.setAttribute("width", size);
+           rect.setAttribute("height", size);
+           rect.setAttribute("fill", "#0d0d0d");
+           rect.style.transformOrigin = `${x * size + size/2}px ${y * size + size/2}px`;
+           svg.appendChild(rect);
+           rects.push(rect);
+         }
+       }
+       
+       const wrapper = document.querySelector('.relative.inline-block.h-\\[75vh\\]');
+       wrapper.appendChild(svg);
+       
+       gsap.fromTo(rects.sort(() => Math.random() - 0.5), {
+           scale: 0, opacity: 0
+       }, {
+           scale: 1, opacity: 1,
+           duration: 0.3,
+           stagger: 0.005,
+           ease: "power1.inOut",
+           onComplete: () => {
+               imgEl.src = data.img;
+               gsap.to(rects.sort(() => Math.random() - 0.5), {
+                   scale: 0, opacity: 0,
+                   duration: 0.3, stagger: 0.005,
+                   ease: "power1.inOut",
+                   onComplete: () => { svg.remove(); }
+               });
+           }
+       });
+    }
+    
+    
+    // Render Hotspots with lines
     const hsContainer = document.getElementById('hotspots-container');
     if (hsContainer) {
         hsContainer.innerHTML = '';
+        
+        // Add SVG lines layer
+        const svgLines = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svgLines.style.position = 'absolute';
+        svgLines.style.inset = '0';
+        svgLines.style.width = '100%';
+        svgLines.style.height = '100%';
+        svgLines.style.pointerEvents = 'none';
+        svgLines.style.zIndex = '1';
+        hsContainer.appendChild(svgLines);
+
         if (data.hotspots) {
             data.hotspots.forEach(hs => {
+                // Draw dotted line
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                line.setAttribute('x1', hs.dot.left);
+                line.setAttribute('y1', hs.dot.top);
+                line.setAttribute('x2', hs.target.left);
+                line.setAttribute('y2', hs.target.top);
+                line.setAttribute('stroke', 'rgba(255,255,255,0.4)');
+                line.setAttribute('stroke-width', '1');
+                line.setAttribute('stroke-dasharray', '4 4');
+                svgLines.appendChild(line);
+
+                // Draw target anchor dot
+                const anchor = document.createElement('div');
+                anchor.className = 'absolute w-1 h-1 bg-white/50 rounded-full pointer-events-none z-10';
+                anchor.style.top = hs.target.top;
+                anchor.style.left = hs.target.left;
+                anchor.style.transform = 'translate(-50%, -50%)';
+                hsContainer.appendChild(anchor);
+
+                // Draw main interactive dot
                 const el = document.createElement('div');
-                el.className = 'absolute group pointer-events-auto cursor-pointer flex items-center justify-center';
-                el.style.top = hs.top;
-                el.style.left = hs.left;
-                el.style.transform = 'translate(-50%, -50%)'; // Center the dot
+                el.className = 'absolute group pointer-events-auto cursor-pointer flex items-center justify-center z-20';
+                el.style.top = hs.dot.top;
+                el.style.left = hs.dot.left;
+                el.style.transform = 'translate(-50%, -50%)'; 
                 
+                // Keep tooltip relative to dot, but dot is away from seat
                 el.innerHTML = `
-                    <div class="relative w-6 h-6 flex items-center justify-center">
-                        <div class="absolute inset-0 border border-white/50 rounded-full animate-ping" style="animation-duration: 2s;"></div>
-                        <div class="w-2 h-2 bg-white rounded-full"></div>
+                    <div class="relative w-8 h-8 flex items-center justify-center bg-black/40 rounded-full border border-white/20 backdrop-blur-md hover:bg-white/10 transition-colors">
+                        <div class="w-2 h-2 bg-white rounded-full shadow-[0_0_10px_white]"></div>
                     </div>
-                    <div class="absolute left-8 w-48 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-4 group-hover:translate-x-0 bg-black/80 backdrop-blur-md p-3 border border-white/10 rounded-sm pointer-events-none z-50">
-                        <div class="text-[10px] font-bold text-white mb-1 tracking-widest uppercase">${hs.title}</div>
-                        <div class="text-[10px] text-white/70 leading-snug">${hs.desc}</div>
+                    <div class="absolute top-full left-1/2 -translate-x-1/2 mt-4 w-48 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0 bg-black/90 backdrop-blur-md p-4 border border-white/20 rounded pointer-events-none shadow-2xl">
+                        <div class="text-[11px] font-bold text-white mb-2 tracking-widest uppercase border-b border-white/20 pb-2">${hs.title}</div>
+                        <div class="text-[11px] text-white/80 leading-relaxed">${hs.desc}</div>
                     </div>
                 `;
                 hsContainer.appendChild(el);
             });
         }
     }
-  
   // Change the 3D seat colors to match the selected model!
   const seatColors = [
     { pt: 0x00ffff, line: 0x0088ff }, // Supremo (Blue)
