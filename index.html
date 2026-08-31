@@ -57,7 +57,7 @@
     </nav>
 
     <!-- MASTER SCROLL CONTAINER (PINNED BY GSAP) -->
-    <div id="master-pin-container" class="relative w-full h-screen overflow-hidden">
+    <div id="master-pin-container" class="relative w-full h-screen overflow-hidden" style="perspective: 1500px;">
         
         <!-- PANEL 1: ERA HERO (Dark) -->
         <section id="panel-1" class="absolute inset-0 w-full h-full z-10 bg-[#060d10] flex flex-col justify-center items-center">
@@ -83,7 +83,7 @@
         </section>
 
         <!-- PANEL 2: ISOLATING VIBRATION (Light Blue ERA Wipe) -->
-        <section id="panel-2" class="era-clip absolute inset-0 w-full h-full z-20 bg-[#A3C1D4] text-[#0F172A] flex flex-col items-center justify-between py-12">
+        <section id="panel-2" class="absolute inset-0 w-full h-[100vh] z-20 bg-[#A3C1D4] text-[#0F172A] flex flex-col items-center justify-between py-12" style="transform: translateY(100vh); border-radius: 50vw 50vw 0 0; transform-origin: top center;">
             <!-- Top Title -->
             <div class="w-full text-center mt-8">
                 <h2 class="text-[10vw] md:text-[8vw] font-['Playfair_Display'] leading-none uppercase tracking-tighter">ISOLATING VIBRATION</h2>
@@ -116,7 +116,7 @@
         </section>
 
         <!-- PANEL 3: CATALOGUE / MATRIX (Warm ERA Wipe) -->
-        <section id="panel-3" class="era-clip absolute inset-0 w-full h-full z-30 bg-[#F4F1EB] text-[#0F172A] flex flex-col items-center justify-center">
+        <section id="panel-3" class="absolute inset-0 w-full h-[100vh] z-30 bg-[#F4F1EB] text-[#0F172A] flex flex-col items-center justify-center" style="transform: translateY(100vh); border-radius: 50vw 50vw 0 0; transform-origin: top center;">
             
             <div class="text-center max-w-4xl px-8 flex flex-col items-center gap-12">
                 <h2 class="text-[6vw] font-['Playfair_Display'] leading-[1.1] italic tracking-tight">

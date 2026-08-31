@@ -17,8 +17,10 @@ function raf(time) {
 }
 requestAnimationFrame(raf);
 
-// --- ERA RESIDENCE 1:1 MASTER SCROLL TIMELINE ---
-// We pin the container, and use the scroll distance (end: "+=300%") to control the wipes
+// Ensure panels have transform-style set for 3D
+gsap.set(["#panel-1", "#panel-2", "#panel-3"], { transformStyle: "preserve-3d" });
+
+// --- ERA RESIDENCE 1:1 MASTER SCROLL TIMELINE (3D PARALLAX WIPE) ---
 const masterTl = gsap.timeline({
     scrollTrigger: {
         trigger: "#master-pin-container",
@@ -30,39 +32,71 @@ const masterTl = gsap.timeline({
     }
 });
 
-// PHASE 1: The Massive Light-Blue Circular Wipe
-// Animates the clip-path of Panel 2 from circle(0%) at bottom center to circle(150%) (covering screen)
-masterTl.to("#panel-2", {
-    clipPath: "circle(150% at 50% 100%)",
+// -------------------------------------------------------------
+// PHASE 1: TRANSITION FROM HERO (PANEL 1) TO ISOLATING VIBRATION (PANEL 2)
+// -------------------------------------------------------------
+
+// 1. The 3D Parallax Exit for Panel 1
+// It pushes back into the screen (scale down, rotateX back) and fades out
+masterTl.to("#panel-1", {
+    scale: 0.85,
+    rotationX: -15, // Tilts back in 3D space
+    yPercent: -10,  // Parallax slightly up
+    opacity: 0.2,
     ease: "power2.inOut",
     duration: 1.0
-}, 0);
+}, 0.0);
 
-// Parallax the Hero content slightly down as it gets covered
-masterTl.to("#panel-1", {
-    y: 100,
-    opacity: 0.5,
-    ease: "power1.in",
+// 2. The Curved Arch Enter for Panel 2
+// Slides up from 100vh and flattens its border-radius from a massive dome to a flat rectangle
+masterTl.to("#panel-2", {
+    y: "0vh",
+    borderRadius: "0vw 0vw 0 0",
+    ease: "power2.inOut",
     duration: 1.0
-}, 0);
+}, 0.0);
 
-// Add a slight pause (duration: 0.5) so the user can actually read Panel 2
+// Parallax the contents inside Panel 2 so they feel like they are rising slightly slower than the background
+masterTl.from("#panel-2 > div", {
+    y: 100,
+    opacity: 0,
+    stagger: 0.1,
+    ease: "power2.out",
+    duration: 0.5
+}, 0.5);
+
+// Add a pause in the timeline (duration: 0.5) so the user can read Panel 2 while scrolling
 masterTl.to({}, { duration: 0.5 }); 
 
-// PHASE 2: The Massive Warm Circular Wipe (Catalogue / Matrix)
-// Animates the clip-path of Panel 3 over Panel 2
-masterTl.to("#panel-3", {
-    clipPath: "circle(150% at 50% 100%)",
+// -------------------------------------------------------------
+// PHASE 2: TRANSITION FROM ISOLATING VIBRATION (PANEL 2) TO CATALOGUE (PANEL 3)
+// -------------------------------------------------------------
+
+// 1. The 3D Parallax Exit for Panel 2
+masterTl.to("#panel-2", {
+    scale: 0.85,
+    rotationX: -15,
+    yPercent: -10,
+    opacity: 0.2,
     ease: "power2.inOut",
     duration: 1.0
-});
+}, "+=0"); // Starts immediately after the pause
 
-// Parallax Panel 2 content down as it gets covered
-masterTl.to("#panel-2", {
-    y: 100,
-    opacity: 0.5,
-    ease: "power1.in",
+// 2. The Curved Arch Enter for Panel 3
+masterTl.to("#panel-3", {
+    y: "0vh",
+    borderRadius: "0vw 0vw 0 0",
+    ease: "power2.inOut",
     duration: 1.0
-}, "<"); // "<" means start at the exact same time as the previous animation
+}, "<"); // Starts at the exact same time as Panel 2 exit
 
-console.log("ERA Residence 1:1 Transitions Loaded successfully.");
+// Parallax the contents inside Panel 3
+masterTl.from("#panel-3 > div", {
+    y: 100,
+    opacity: 0,
+    stagger: 0.1,
+    ease: "power2.out",
+    duration: 0.5
+}, "-=0.5");
+
+console.log("ERA Residence 1:1 3D Parallax Transitions Loaded successfully.");
