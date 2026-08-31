@@ -101,12 +101,7 @@ scene.add(backLight);
 const gridColor = 0xffffff; 
 const wireColor = 0xffffff; 
 
-// GLTF AND SCAN REVEAL SETUP
-const scanUniforms = {
-    uScanOrigin: { value: new THREE.Vector3(0, -100, -40) },
-    uScanRadius: { value: 0 },
-    uScanEnabled: { value: 1.0 }
-};
+// GLTF SETUP
 
 const dracoLoader = new DRACOLoader();
 dracoLoader.setDecoderPath('/draco/');
@@ -118,62 +113,37 @@ scene.add(loadedModel);
 
 gltfLoader.load('/models/seat_compressed.glb', (gltf) => {
     const model = gltf.scene;
-    // Meshy AI origin is bottom, so center it roughly
-    model.position.set(0, -115, -40);
-    // Scale it so 12cm = fitting the screen
-    model.scale.set(0.6, 0.6, 0.6);
-    model.rotation.y = -Math.PI / 4;
+    
+    // Automatically center and scale the model based on its actual bounding box
+    const box = new THREE.Box3().setFromObject(model);
+    const size = box.getSize(new THREE.Vector3());
+    const center = box.getCenter(new THREE.Vector3());
+    
+    // We want the model to be roughly 40 units tall to fill the screen
+    const targetHeight = 40;
+    const scaleFactor = targetHeight / size.y;
+    
+    model.scale.set(scaleFactor, scaleFactor, scaleFactor);
+    
+    // Center it on the origin locally
+    model.position.x = -center.x * scaleFactor;
+    model.position.y = -center.y * scaleFactor;
+    model.position.z = -center.z * scaleFactor;
 
+    // Enhance materials, NO WIREFRAMES, NO SHADERS
     model.traverse((child) => {
         if (child.isMesh) {
-            // Darken it slightly to match the vibe
-            child.material.color.setHex(0xaaaaaa);
-            
-            // Shader injection for Scan Reveal
-            child.material.onBeforeCompile = (shader) => {
-                shader.uniforms.uScanOrigin = scanUniforms.uScanOrigin;
-                shader.uniforms.uScanRadius = scanUniforms.uScanRadius;
-                shader.uniforms.uScanEnabled = scanUniforms.uScanEnabled;
-                
-                shader.vertexShader = `
-                    varying vec3 vWorldPosition;
-                    ${shader.vertexShader}
-                `.replace(
-                    `#include <worldpos_vertex>`,
-                    `
-                    #include <worldpos_vertex>
-                    vWorldPosition = (modelMatrix * vec4(position, 1.0)).xyz;
-                    `
-                );
-                
-                shader.fragmentShader = `
-                    uniform vec3 uScanOrigin;
-                    uniform float uScanRadius;
-                    uniform float uScanEnabled;
-                    varying vec3 vWorldPosition;
-                    
-                    bool unscanned(vec3 worldPosition, float lag) {
-                        if (uScanEnabled < 0.5) return false;
-                        float wobble = sin(worldPosition.y * 0.2 + worldPosition.x * 0.1) * 2.0;
-                        return distance(worldPosition, uScanOrigin) > uScanRadius - lag + wobble;
-                    }
-                    ${shader.fragmentShader}
-                `.replace(
-                    `void main() {`,
-                    `void main() {
-                        if (unscanned(vWorldPosition, 5.0)) discard;
-                    `
-                );
-            };
-            
-            // Add a high-tech glowing wireframe overlay for the un-scanned portion
-            const wireMat = new THREE.LineBasicMaterial({ color: 0x00aaff, transparent: true, opacity: 0.1, depthWrite: false, blending: THREE.AdditiveBlending });
-            const wire = new THREE.LineSegments(new THREE.EdgesGeometry(child.geometry, 30), wireMat);
-            child.add(wire);
+            child.material.envMapIntensity = 1.5;
+            child.material.side = THREE.DoubleSide; 
         }
     });
 
     loadedModel.add(model);
+    
+    // Position the group directly in front of the descended camera
+    // Camera is at y: -90, z: 0. Model goes to y: -90, z: -50.
+    loadedModel.position.set(0, -90, -50);
+    loadedModel.rotation.y = -Math.PI / 4;
 });
 
 
@@ -246,23 +216,15 @@ masterTl.to("#descent-text-2", { y: "0%", duration: 0.05, ease: "power3.out" }, 
 masterTl.to("#descent-sub", { y: "0%", opacity: 1, duration: 0.05, ease: "power3.out" }, 0.21);
 
 // --- THE REAL 3D EXPLODED VIEW ANIMATION ---
-// --- HOLOGRAPHIC SCAN REVEAL ANIMATION ---
-// As camera descends, the wireframe is visible. As it stops, the scan radius expands to reveal the solid AI model!
-const explodeDuration = 0.15;
-const explodeStart = 0.25;
+// --- 3D SHOWROOM ANIMATION ---
+// Rotate the model gracefully for a premium product feel during Phase 2
+const showroomStart = 0.25;
 
-masterTl.to(scanUniforms.uScanRadius, {
-    value: 60.0, // Large enough to cover the whole chair
-    ease: "power2.inOut",
-    duration: 0.20
-}, explodeStart);
-
-// Rotate the model slightly for a showroom feel during the scan
 masterTl.to(loadedModel.rotation, {
-    y: Math.PI / 4,
+    y: Math.PI / 2, // Smooth 90 degree spin
     ease: "power1.inOut",
     duration: 0.25
-}, explodeStart);
+}, showroomStart);
 
 masterTl.to("#section-descent", { opacity: 0, duration: 0.05 }, 0.40);
 
