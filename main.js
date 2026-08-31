@@ -13,52 +13,52 @@ const seatData = [
     id: 1, title: 'SUPREMO', img: '/assets/seats/Supremo.png', 
     desc: 'Supremo is a premium offering with top-of-the-line air suspension. It guarantees the absolute ultimate in long-haul comfort and vibration isolation for highway driving.', 
     hotspots: [
-        { dot: { top: '15%', left: '48%' }, panel: { top: '10%', left: '75%' }, title: 'ACTIVE HEADREST', desc: 'Reduces whiplash.' },
-        { dot: { top: '35%', left: '20%' }, panel: { top: '30%', left: '5%' }, title: 'SHOULDER BOLSTERS', desc: 'Lateral support.' },
-        { dot: { top: '55%', left: '25%' }, panel: { top: '55%', left: '5%' }, title: 'LUMBAR SYSTEM', desc: 'Pneumatic adjustment.' },
-        { dot: { top: '65%', left: '80%' }, panel: { top: '60%', left: '85%' }, title: 'ARMREST CONTROLS', desc: 'Integrated haptics.' },
-        { dot: { top: '75%', left: '30%' }, panel: { top: '80%', left: '10%' }, title: 'SEAT PAN TILT', desc: 'Thigh support.' },
-        { dot: { top: '80%', left: '50%' }, panel: { top: '90%', left: '75%' }, title: 'AIR SUSPENSION', desc: 'Isolates 90% vibration.' },
-        { dot: { top: '95%', left: '50%' }, panel: { top: '95%', left: '20%' }, title: 'BASE DAMPERS', desc: 'Heavy shock absorption.' }
+        { dot: { top: '15%', left: '48%' }, panel: { top: '5%', left: '85%' }, title: 'ACTIVE HEADREST', desc: 'Reduces whiplash.' },
+        { dot: { top: '35%', left: '20%' }, panel: { top: '25%', left: '-5%' }, title: 'SHOULDER BOLSTERS', desc: 'Lateral support.' },
+        { dot: { top: '55%', left: '25%' }, panel: { top: '50%', left: '-15%' }, title: 'LUMBAR SYSTEM', desc: 'Pneumatic adjustment.' },
+        { dot: { top: '65%', left: '80%' }, panel: { top: '60%', left: '100%' }, title: 'ARMREST CONTROLS', desc: 'Integrated haptics.' },
+        { dot: { top: '75%', left: '30%' }, panel: { top: '75%', left: '-10%' }, title: 'SEAT PAN TILT', desc: 'Thigh support.' },
+        { dot: { top: '80%', left: '50%' }, panel: { top: '85%', left: '110%' }, title: 'AIR SUSPENSION', desc: 'Isolates 90% vibration.' },
+        { dot: { top: '95%', left: '50%' }, panel: { top: '100%', left: '-5%' }, title: 'BASE DAMPERS', desc: 'Heavy shock absorption.' }
     ]
   },
   { 
     id: 2, title: 'EXCAVATOR', img: '/assets/seats/Excavator.png', 
     desc: 'Built specifically for earth-moving equipment, this seat features mechanical suspension tuned for extreme vertical shocks.', 
     hotspots: [
-        { dot: { top: '20%', left: '50%' }, panel: { top: '15%', left: '75%' }, title: 'REINFORCED FRAME', desc: 'Steel construction.' },
-        { dot: { top: '40%', left: '25%' }, panel: { top: '35%', left: '5%' }, title: 'RUGGED TRIM', desc: 'Tear-resistant fabric.' },
-        { dot: { top: '55%', left: '85%' }, panel: { top: '50%', left: '90%' }, title: 'CONTROL PODS', desc: 'Joystick mounts.' },
-        { dot: { top: '65%', left: '40%' }, panel: { top: '70%', left: '10%' }, title: 'MECHANICAL DAMPING', desc: 'Coil suspension.' },
-        { dot: { top: '75%', left: '60%' }, panel: { top: '85%', left: '80%' }, title: 'WEIGHT ADJUST', desc: 'Manual dial calibration.' },
-        { dot: { top: '85%', left: '50%' }, panel: { top: '95%', left: '25%' }, title: 'TETHER POINTS', desc: 'Safety harness anchors.' },
-        { dot: { top: '90%', left: '70%' }, panel: { top: '90%', left: '95%' }, title: 'MUD GUARDS', desc: 'Sealed base.' }
+        { dot: { top: '20%', left: '50%' }, panel: { top: '10%', left: '90%' }, title: 'REINFORCED FRAME', desc: 'Steel construction.' },
+        { dot: { top: '40%', left: '25%' }, panel: { top: '30%', left: '-10%' }, title: 'RUGGED TRIM', desc: 'Tear-resistant fabric.' },
+        { dot: { top: '55%', left: '85%' }, panel: { top: '50%', left: '105%' }, title: 'CONTROL PODS', desc: 'Joystick mounts.' },
+        { dot: { top: '65%', left: '40%' }, panel: { top: '70%', left: '-15%' }, title: 'MECHANICAL DAMPING', desc: 'Coil suspension.' },
+        { dot: { top: '75%', left: '60%' }, panel: { top: '80%', left: '100%' }, title: 'WEIGHT ADJUST', desc: 'Manual dial calibration.' },
+        { dot: { top: '85%', left: '50%' }, panel: { top: '95%', left: '-5%' }, title: 'TETHER POINTS', desc: 'Safety harness anchors.' },
+        { dot: { top: '90%', left: '70%' }, panel: { top: '105%', left: '95%' }, title: 'MUD GUARDS', desc: 'Sealed base.' }
     ]
   },
   { 
     id: 3, title: 'TRACTOR', img: '/assets/seats/Tractor.png', 
     desc: 'Designed for agricultural machinery, offering robust weather resistance and constant damping over uneven terrain.', 
     hotspots: [
-        { dot: { top: '25%', left: '50%' }, panel: { top: '20%', left: '75%' }, title: 'WEATHER COATING', desc: 'Waterproof sealant.' },
-        { dot: { top: '45%', left: '30%' }, panel: { top: '40%', left: '5%' }, title: 'VINYL TRIM', desc: 'Easy wash down.' },
-        { dot: { top: '55%', left: '80%' }, panel: { top: '50%', left: '90%' }, title: 'SWIVEL BASE', desc: '360 degree rotation.' },
-        { dot: { top: '70%', left: '45%' }, panel: { top: '75%', left: '15%' }, title: 'LOW FREQ DAMPING', desc: 'Tractor track isolation.' },
-        { dot: { top: '85%', left: '40%' }, panel: { top: '90%', left: '10%' }, title: 'HEATED SEAT', desc: 'Winter operations.' },
-        { dot: { top: '90%', left: '60%' }, panel: { top: '95%', left: '85%' }, title: 'DRAINAGE', desc: 'Moisture runoff.' },
-        { dot: { top: '95%', left: '50%' }, panel: { top: '100%', left: '50%' }, title: 'RUGGED MOUNTS', desc: 'Universal tractor fit.' }
+        { dot: { top: '25%', left: '50%' }, panel: { top: '15%', left: '85%' }, title: 'WEATHER COATING', desc: 'Waterproof sealant.' },
+        { dot: { top: '45%', left: '30%' }, panel: { top: '40%', left: '-10%' }, title: 'VINYL TRIM', desc: 'Easy wash down.' },
+        { dot: { top: '55%', left: '80%' }, panel: { top: '55%', left: '100%' }, title: 'SWIVEL BASE', desc: '360 degree rotation.' },
+        { dot: { top: '70%', left: '45%' }, panel: { top: '70%', left: '-15%' }, title: 'LOW FREQ DAMPING', desc: 'Tractor track isolation.' },
+        { dot: { top: '85%', left: '40%' }, panel: { top: '90%', left: '-5%' }, title: 'HEATED SEAT', desc: 'Winter operations.' },
+        { dot: { top: '90%', left: '60%' }, panel: { top: '95%', left: '95%' }, title: 'DRAINAGE', desc: 'Moisture runoff.' },
+        { dot: { top: '95%', left: '50%' }, panel: { top: '110%', left: '40%' }, title: 'RUGGED MOUNTS', desc: 'Universal tractor fit.' }
     ]
   },
   { 
     id: 4, title: 'COMPACT', img: '/assets/seats/Mini Excavator.png', 
     desc: 'A compact, highly maneuverable seat for forklifts with active lateral support.', 
     hotspots: [
-        { dot: { top: '30%', left: '50%' }, panel: { top: '20%', left: '75%' }, title: 'COMPACT PROFILE', desc: 'Fits tight cabins.' },
-        { dot: { top: '50%', left: '20%' }, panel: { top: '45%', left: '5%' }, title: 'LATERAL BOLSTERS', desc: 'Holds operator.' },
-        { dot: { top: '60%', left: '80%' }, panel: { top: '55%', left: '90%' }, title: 'QUICK RELEASE', desc: 'Fast egress.' },
-        { dot: { top: '75%', left: '50%' }, panel: { top: '80%', left: '20%' }, title: 'MICRO SUSPENSION', desc: '1-inch travel.' },
-        { dot: { top: '85%', left: '40%' }, panel: { top: '95%', left: '10%' }, title: 'SENSOR SWITCH', desc: 'Operator presence.' },
-        { dot: { top: '90%', left: '60%' }, panel: { top: '95%', left: '85%' }, title: 'SEATBELT LOCK', desc: 'Interlock system.' },
-        { dot: { top: '95%', left: '50%' }, panel: { top: '100%', left: '50%' }, title: 'NARROW BASE', desc: 'Forklift standard.' }
+        { dot: { top: '30%', left: '50%' }, panel: { top: '20%', left: '85%' }, title: 'COMPACT PROFILE', desc: 'Fits tight cabins.' },
+        { dot: { top: '50%', left: '20%' }, panel: { top: '45%', left: '-10%' }, title: 'LATERAL BOLSTERS', desc: 'Holds operator.' },
+        { dot: { top: '60%', left: '80%' }, panel: { top: '60%', left: '100%' }, title: 'QUICK RELEASE', desc: 'Fast egress.' },
+        { dot: { top: '75%', left: '50%' }, panel: { top: '75%', left: '-15%' }, title: 'MICRO SUSPENSION', desc: '1-inch travel.' },
+        { dot: { top: '85%', left: '40%' }, panel: { top: '95%', left: '-5%' }, title: 'SENSOR SWITCH', desc: 'Operator presence.' },
+        { dot: { top: '90%', left: '60%' }, panel: { top: '100%', left: '95%' }, title: 'SEATBELT LOCK', desc: 'Interlock system.' },
+        { dot: { top: '95%', left: '50%' }, panel: { top: '110%', left: '50%' }, title: 'NARROW BASE', desc: 'Forklift standard.' }
     ]
   }
 ];
