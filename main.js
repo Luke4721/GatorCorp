@@ -82,6 +82,7 @@ renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 
 const scene = new THREE.Scene();
+gsap.set("#tron-canvas", { opacity: 0 });
 gsap.set("#tron-canvas", { opacity: 0 }); // Hide canvas
 scene.fog = new THREE.FogExp2(0x070e11, 0.012); // Slightly pushed back fog
 
@@ -136,17 +137,15 @@ chassis.position.y = -30;
 matrixGroup.add(chassis);
 scene.add(matrixGroup);
 
-function animate() {
-    requestAnimationFrame(animate);
-    
-    // Slowly rotate the chair group for a premium showroom feel
-    if (loadedModel) {
-        loadedModel.rotation.y += 0.002;
-    }
-
-    renderer.render(scene, camera);
-}
-animate();
+// Animation loop disabled while Three.js model is removed
+// function animate() {
+//     requestAnimationFrame(animate);
+//     if (typeof loadedModel !== 'undefined' && loadedModel) {
+//         loadedModel.rotation.y += 0.002;
+//     }
+//     renderer.render(scene, camera);
+// }
+// animate();
 
 window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -154,40 +153,40 @@ window.addEventListener('resize', () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-// --- 3. MASTER GSAP SCROLL TIMELINE ---
+// --- 3. MASTER GSAP SCROLL TIMELINE (ERA STYLE CIRCULAR WIPES) ---
 const masterTl = gsap.timeline({
-    scrollTrigger: { trigger: "#scroll-container", start: "top top", end: "bottom bottom", scrub: 1.0 }
+    scrollTrigger: { 
+        trigger: "#scroll-container", 
+        start: "top top", 
+        end: "bottom bottom", 
+        scrub: 1.0 
+    }
 });
 
-// PHASE 1: HERO DEPARTURE (0 - 15%)
-masterTl.to("#hero-typography", { y: -150, opacity: 0, duration: 0.10 }, 0.0);
-masterTl.to("#hero-split-left", { x: -200, opacity: 0, duration: 0.05 }, 0.05);
-masterTl.to("#hero-split-right", { x: 200, opacity: 0, duration: 0.05 }, 0.05);
-masterTl.to(["#hero-circle-1", "#hero-circle-2"], { scale: 1.5, opacity: 0, duration: 0.1 }, 0.0);
-masterTl.to("#hero-img", { opacity: 0, duration: 0.1 }, 0.05);
-masterTl.to("#tron-canvas", { opacity: 1, duration: 0.1 }, 0.05);
+// PHASE 1: FIRST WIPE - Massive Circular "Carpet" Reveal from the bottom
+masterTl.to("#era-hero", { y: -100, opacity: 0.5, duration: 0.25, ease: "power1.inOut" }, 0.0);
+masterTl.to("#section-descent", { clipPath: "circle(150% at 50% 100%)", duration: 0.25, ease: "power2.inOut" }, 0.0);
 
-// Move the world up instead of the camera down, so the model stays locked in frame!
+masterTl.to("#descent-text-1", { y: "0%", duration: 0.05, ease: "power2.out" }, 0.1);
+masterTl.to("#descent-text-2", { y: "0%", duration: 0.05, ease: "power2.out" }, 0.15);
+masterTl.to("#descent-sub", { y: "0%", opacity: 1, duration: 0.05, ease: "power2.out" }, 0.2);
 
-masterTl.to("#era-hero", { opacity: 0, duration: 0.1 }, 0.15);
-masterTl.to("#section-descent", { opacity: 1, duration: 0.05 }, 0.15);
-masterTl.to("#descent-text-1", { y: "0%", duration: 0.05, ease: "power3.out" }, 0.17);
-masterTl.to("#descent-text-2", { y: "0%", duration: 0.05, ease: "power3.out" }, 0.19);
-masterTl.to("#descent-sub", { y: "0%", opacity: 1, duration: 0.05, ease: "power3.out" }, 0.21);
+// PHASE 2: SECOND WIPE - Circular reveal for Seat Selector
+const wipe2Start = 0.45;
+masterTl.to("#section-descent", { opacity: 0.5, duration: 0.25, ease: "power1.inOut" }, wipe2Start);
+masterTl.to("#catalogue-ui", { clipPath: "circle(150% at 50% 100%)", duration: 0.25, ease: "power2.inOut" }, wipe2Start);
 
-// --- THE REAL 3D EXPLODED VIEW ANIMATION ---
-// (No spinning, perfectly static model for feature highlights)
+masterTl.fromTo("#cat-title", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.05, ease: "power2.out" }, wipe2Start + 0.15);
+masterTl.fromTo("#cat-desc", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.05, ease: "power2.out" }, wipe2Start + 0.18);
+masterTl.fromTo("#cat-img", { scale: 0.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.1, ease: "power2.out" }, wipe2Start + 0.2);
 
-masterTl.to("#section-descent", { opacity: 0, duration: 0.05 }, 0.40);
-
-// PHASE 3: THE CORRIDOR
-masterTl.to(camera.rotation, { y: -Math.PI / 2, ease: "power1.inOut", duration: 0.05 }, 0.45);
-masterTl.to(camera.position, { x: 150, ease: "none", duration: 0.25 }, 0.50);
-masterTl.to("#catalogue-ui", { opacity: 1, x: "0%", duration: 0.05, ease: "power3.out" }, 0.48);
-masterTl.to("#catalogue-ui", { opacity: 0, x: "-100%", duration: 0.05, ease: "power3.in" }, 0.70);
+// PHASE 3: THIRD WIPE - Matrix section fades in over catalogue
+const wipe3Start = 0.85;
+masterTl.to("#section-matrix", { opacity: 1, duration: 0.1, ease: "power2.inOut" }, wipe3Start);
+masterTl.to("#matrix-text", { scale: 1, opacity: 1, duration: 0.1, ease: "power3.out" }, wipe3Start + 0.05);
 
 // PHASE 4: THE INTEGRATION MATRIX
-masterTl.to(camera.rotation, { z: -Math.PI / 2, x: -Math.PI / 2, ease: "power2.inOut", duration: 0.1 }, 0.72);
+// (Empty line for structural compatibility)
 masterTl.to(camera.position, { y: -150, ease: "power2.inOut", duration: 0.18 }, 0.82);
 masterTl.to("#section-matrix", { opacity: 1, duration: 0.05 }, 0.75);
 masterTl.to("#matrix-text", { scale: 1, opacity: 1, duration: 0.1, ease: "power2.out" }, 0.75);
