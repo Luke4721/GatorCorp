@@ -82,47 +82,34 @@ window.particleUniforms = {
 window.clipPlane = new THREE.Plane(new THREE.Vector3(0, -1, 0), 10);
 const clipPlanes = [window.clipPlane];
 
-const truckParticleMaterial = new THREE.ShaderMaterial({
+const truckWireMaterial = new THREE.ShaderMaterial({
     uniforms: window.particleUniforms,
     transparent: true,
     depthWrite: false,
     blending: THREE.AdditiveBlending,
     clippingPlanes: clipPlanes,
+    wireframe: true,
     vertexShader: `
         uniform float uTime;
         uniform vec3 uMouse;
         uniform float uGlitch;
+        uniform float uVibration;
         
         void main() {
             vec3 pos = position;
-            
-            // Mouse Repulsion
             float dist = distance(pos, uMouse);
-            if(dist < 3.0) {
-                vec3 dir = normalize(pos - uMouse);
-                pos += dir * (3.0 - dist) * 0.5;
+            if(dist < 3.0) pos += normalize(pos - uMouse) * (3.0 - dist) * 0.5;
+            if(uGlitch > 0.0) pos.x += sin(pos.y * 50.0 + uTime * 10.0) * uGlitch;
+            if(uVibration > 0.0) {
+                pos.x += sin(uTime * 50.0 + pos.y) * 0.02 * uVibration;
+                pos.y += cos(uTime * 40.0 + pos.x) * 0.02 * uVibration;
             }
-            
-            // Glitch Tearing
-            if(uGlitch > 0.0) {
-                pos.x += sin(pos.y * 50.0 + uTime * 10.0) * uGlitch;
-            }
-            
-            vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
-            gl_PointSize = 3.0 * (10.0 / -mvPosition.z);
-            if(dist < 3.0) gl_PointSize *= 2.0;
-            gl_Position = projectionMatrix * mvPosition;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
         }
     `,
     fragmentShader: `
         uniform float uOpacity;
-        void main() {
-            vec2 c = gl_PointCoord - vec2(0.5);
-            float dist = length(c);
-            if (dist > 0.5) discard;
-            float strength = pow(1.0 - (dist * 2.0), 1.5);
-            gl_FragColor = vec4(1.0, 0.2, 0.1, strength * uOpacity * 0.6);
-        }
+        void main() { gl_FragColor = vec4(1.0, 0.2, 0.1, uOpacity * 0.5); }
     `
 });
 
@@ -139,30 +126,17 @@ window.seatOpacity = { value: 0 };
       seatModel.traverse((child) => {
           if (child.isMesh) {
               child.visible = false;
-              
-              // Premium glowing blue particles
-              const ptsMat = new THREE.PointsMaterial({ 
-                  color: 0x00ffff, 
-                  size: 0.05, 
-                  transparent: true, 
-                  opacity: 0, 
-                  depthWrite: false, 
-                  blending: THREE.AdditiveBlending 
-              });
-              const pts = new THREE.Points(child.geometry, ptsMat);
-              child.parent.add(pts);
-              
-              // GPU-accelerated wireframe (0 bytes of extra RAM)
               const wireMat = new THREE.MeshBasicMaterial({ 
-                  color: 0x0088ff, 
+                  color: 0x00ffff, 
                   wireframe: true, clippingPlanes: clipPlanes, 
                   transparent: true, 
-                  opacity: 0 
+                  opacity: 0,
+                  blending: THREE.AdditiveBlending,
+                  depthWrite: false
               });
               const wireMesh = new THREE.Mesh(child.geometry, wireMat);
               child.parent.add(wireMesh);
-              
-              window.seatMaterials.push(ptsMat, wireMat);
+              window.seatMaterials.push(wireMat);
           }
       });
       
@@ -199,18 +173,8 @@ gltfLoader.loadAsync('/assets/Truck_draco.glb').then((truckGltf) => {
     truckModel.traverse((child) => {
         if (child.isMesh) {
             child.visible = false;
-            const points = new THREE.Points(child.geometry, truckParticleMaterial);
-            window.noiseClouds.push(points);
-            child.parent.add(points);
-            // GPU-accelerated wireframe (0 bytes of extra RAM, eliminates 800MB leak)
-            const wireMat = new THREE.MeshBasicMaterial({ 
-                color: 0xff1111, 
-                wireframe: true, clippingPlanes: clipPlanes, 
-                transparent: true, 
-                opacity: 0.2 
-            });
-            const wireMesh = new THREE.Mesh(child.geometry, wireMat);
-            window.solidMaterials.push(wireMat);
+            const wireMesh = new THREE.Mesh(child.geometry, truckWireMaterial);
+            window.noiseClouds.push(wireMesh);
             child.parent.add(wireMesh);
         }
     });
@@ -465,10 +429,9 @@ function updateCatalogueUI(index) {
     { pt: 0x00ff44, line: 0x008822 }, // Tractor (Green)
     { pt: 0xff2222, line: 0xaa0000 }  // Forklift (Red)
   ];
-  if (window.seatMaterials && window.seatMaterials.length >= 2) {
-    window.seatMaterials[0].color.setHex(seatColors[index].pt);
-    window.seatMaterials[1].color.setHex(seatColors[index].line);
-  }
+  if (window.seatMaterials) {
+      window.seatMaterials.forEach(m => m.color.setHex(seatColors[index].pt));
+    }
   
   const badgesContainer = document.getElementById('cat-badges');
   badgesContainer.innerHTML = '';
