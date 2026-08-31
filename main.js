@@ -4,6 +4,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import PixelSwap from './PixelSwap.js';
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -99,66 +101,81 @@ scene.add(backLight);
 const gridColor = 0xffffff; 
 const wireColor = 0xffffff; 
 
-// --- BUILD THE PROCEDURAL 3D CHAIR FOR THE EXPLODED VIEW ---
-const chairGroup = new THREE.Group();
-chairGroup.position.set(0, -90, -40); 
-chairGroup.rotation.y = -Math.PI / 6; 
-chairGroup.scale.set(0.5, 0.5, 0.5); // SCALE IT DOWN TO FIT IN FRAME!
+// GLTF AND SCAN REVEAL SETUP
+const scanUniforms = {
+    uScanOrigin: { value: new THREE.Vector3(0, -100, -40) },
+    uScanRadius: { value: 0 },
+    uScanEnabled: { value: 1.0 }
+};
 
-// Material for the chair parts (Dark sleek metallic + bright wireframe edges)
-const chairMat = new THREE.MeshStandardMaterial({ color: 0x050a0f, roughness: 0.1, metalness: 0.9, transparent: true, opacity: 0.95 });
-const edgeMat = new THREE.LineBasicMaterial({ color: 0x00aaff, transparent: true, opacity: 0.8 });
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');
+const gltfLoader = new GLTFLoader();
+gltfLoader.setDRACOLoader(dracoLoader);
 
-function createChairPart(geometry, yOffset, zOffset, isCylinder = false) {
-    const mesh = new THREE.Mesh(geometry, chairMat);
-    const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geometry, 15), edgeMat);
-    mesh.add(edges);
-    mesh.position.set(0, yOffset, zOffset);
-    // Store original positions for GSAP exploding
-    mesh.userData = { origY: yOffset, origZ: zOffset, origX: 0 };
-    chairGroup.add(mesh);
-    return mesh;
-}
+let loadedModel = new THREE.Group();
+scene.add(loadedModel);
 
-// 1. Base Plate (Heavy industrial base)
-const base = createChairPart(new RoundedBoxGeometry(16, 3, 18, 4, 0.5), -12, 0);
+gltfLoader.load('/models/seat_compressed.glb', (gltf) => {
+    const model = gltf.scene;
+    // Meshy AI origin is bottom, so center it roughly
+    model.position.set(0, -115, -40);
+    // Scale it so 12cm = fitting the screen
+    model.scale.set(0.6, 0.6, 0.6);
+    model.rotation.y = -Math.PI / 4;
 
-// 2. Suspension Assembly (Mechanical shock absorber)
-const suspensionGroup = new THREE.Group();
-const shockCore = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 12, 16), new THREE.MeshStandardMaterial({color: 0x222222, metalness: 1.0}));
-suspensionGroup.add(shockCore);
-// Add suspension coil springs using Torus
-for(let i=0; i<5; i++) {
-    const coil = new THREE.Mesh(new THREE.TorusGeometry(3.5, 0.6, 8, 32), new THREE.MeshStandardMaterial({color: 0x00aaff, metalness: 0.8}));
-    coil.rotation.x = Math.PI/2;
-    coil.position.y = -4 + (i * 2);
-    suspensionGroup.add(coil);
-}
-const suspensionEdges = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.CylinderGeometry(2,2,12,16)), edgeMat);
-suspensionGroup.add(suspensionEdges);
-suspensionGroup.position.set(0, -4, 0);
-suspensionGroup.userData = { origY: -4, origZ: 0, origX: 0 };
-chairGroup.add(suspensionGroup);
+    model.traverse((child) => {
+        if (child.isMesh) {
+            // Darken it slightly to match the vibe
+            child.material.color.setHex(0xaaaaaa);
+            
+            // Shader injection for Scan Reveal
+            child.material.onBeforeCompile = (shader) => {
+                shader.uniforms.uScanOrigin = scanUniforms.uScanOrigin;
+                shader.uniforms.uScanRadius = scanUniforms.uScanRadius;
+                shader.uniforms.uScanEnabled = scanUniforms.uScanEnabled;
+                
+                shader.vertexShader = `
+                    varying vec3 vWorldPosition;
+                    ${shader.vertexShader}
+                `.replace(
+                    `#include <worldpos_vertex>`,
+                    `
+                    #include <worldpos_vertex>
+                    vWorldPosition = (modelMatrix * vec4(position, 1.0)).xyz;
+                    `
+                );
+                
+                shader.fragmentShader = `
+                    uniform vec3 uScanOrigin;
+                    uniform float uScanRadius;
+                    uniform float uScanEnabled;
+                    varying vec3 vWorldPosition;
+                    
+                    bool unscanned(vec3 worldPosition, float lag) {
+                        if (uScanEnabled < 0.5) return false;
+                        float wobble = sin(worldPosition.y * 0.2 + worldPosition.x * 0.1) * 2.0;
+                        return distance(worldPosition, uScanOrigin) > uScanRadius - lag + wobble;
+                    }
+                    ${shader.fragmentShader}
+                `.replace(
+                    `void main() {`,
+                    `void main() {
+                        if (unscanned(vWorldPosition, 5.0)) discard;
+                    `
+                );
+            };
+            
+            // Add a high-tech glowing wireframe overlay for the un-scanned portion
+            const wireMat = new THREE.LineBasicMaterial({ color: 0x00aaff, transparent: true, opacity: 0.1, depthWrite: false, blending: THREE.AdditiveBlending });
+            const wire = new THREE.LineSegments(new THREE.EdgesGeometry(child.geometry, 30), wireMat);
+            child.add(wire);
+        }
+    });
 
-// 3. Seat Cushion (Ergonomic curves)
-const cushion = createChairPart(new RoundedBoxGeometry(18, 5, 18, 8, 2), 4, 1);
+    loadedModel.add(model);
+});
 
-// 4. Backrest (Tall, ergonomic spine support)
-const backrest = createChairPart(new RoundedBoxGeometry(16, 26, 4, 8, 1.5), 18, -6);
-
-// 5. Lumbar Support (Protruding curve)
-const lumbar = createChairPart(new RoundedBoxGeometry(14, 8, 3, 6, 1), 12, -4);
-
-// 6. Headrest (Sculpted neck support)
-const headrest = createChairPart(new RoundedBoxGeometry(10, 8, 4, 6, 2), 34, -5);
-
-// 7. Armrests (Sleek mechanical arms)
-const armL = createChairPart(new RoundedBoxGeometry(3, 2, 14, 4, 0.5), 14, 4);
-armL.position.x = -11; armL.userData.origX = -11;
-const armR = createChairPart(new RoundedBoxGeometry(3, 2, 14, 4, 0.5), 14, 4);
-armR.position.x = 11; armR.userData.origX = 11;
-
-scene.add(chairGroup);
 
 // Environment 1: The Elevator Shaft
 const shaftGroup = new THREE.Group();
@@ -194,8 +211,8 @@ function animate() {
     requestAnimationFrame(animate);
     
     // Slowly rotate the chair group for a premium showroom feel
-    if(chairGroup) {
-        chairGroup.rotation.y += 0.002;
+    if(loadedModel && scanUniforms.uScanRadius.value >= 60.0) {
+        loadedModel.rotation.y += 0.002;
     }
 
     renderer.render(scene, camera);
@@ -229,31 +246,23 @@ masterTl.to("#descent-text-2", { y: "0%", duration: 0.05, ease: "power3.out" }, 
 masterTl.to("#descent-sub", { y: "0%", opacity: 1, duration: 0.05, ease: "power3.out" }, 0.21);
 
 // --- THE REAL 3D EXPLODED VIEW ANIMATION ---
-// As camera reaches the chair, explode the parts outwards!
+// --- HOLOGRAPHIC SCAN REVEAL ANIMATION ---
+// As camera descends, the wireframe is visible. As it stops, the scan radius expands to reveal the solid AI model!
 const explodeDuration = 0.15;
 const explodeStart = 0.25;
 
-// Disassemble
-masterTl.to(headrest.position, { y: headrest.userData.origY + 15, z: headrest.userData.origZ - 5, ease: "power2.inOut", duration: explodeDuration }, explodeStart);
-masterTl.to(backrest.position, { z: backrest.userData.origZ - 12, ease: "power2.inOut", duration: explodeDuration }, explodeStart);
-masterTl.to(lumbar.position, { z: lumbar.userData.origZ - 8, y: lumbar.userData.origY - 2, ease: "power2.inOut", duration: explodeDuration }, explodeStart);
-masterTl.to(cushion.position, { y: cushion.userData.origY + 8, ease: "power2.inOut", duration: explodeDuration }, explodeStart);
-masterTl.to(armL.position, { x: armL.userData.origX - 10, y: armL.userData.origY + 5, ease: "power2.inOut", duration: explodeDuration }, explodeStart);
-masterTl.to(armR.position, { x: armR.userData.origX + 10, y: armR.userData.origY + 5, ease: "power2.inOut", duration: explodeDuration }, explodeStart);
-masterTl.to(suspensionGroup.position, { y: suspensionGroup.userData.origY - 5, ease: "power2.inOut", duration: explodeDuration }, explodeStart);
-masterTl.to(base.position, { y: base.userData.origY - 15, ease: "power2.inOut", duration: explodeDuration }, explodeStart);
+masterTl.to(scanUniforms.uScanRadius, {
+    value: 60.0, // Large enough to cover the whole chair
+    ease: "power2.inOut",
+    duration: 0.20
+}, explodeStart);
 
-// Assemble back together before moving on
-const assembleStart = 0.40;
-const assembleDuration = 0.05;
-masterTl.to(headrest.position, { y: headrest.userData.origY, z: headrest.userData.origZ, ease: "power2.inOut", duration: assembleDuration }, assembleStart);
-masterTl.to(backrest.position, { z: backrest.userData.origZ, ease: "power2.inOut", duration: assembleDuration }, assembleStart);
-masterTl.to(lumbar.position, { z: lumbar.userData.origZ, y: lumbar.userData.origY, ease: "power2.inOut", duration: assembleDuration }, assembleStart);
-masterTl.to(cushion.position, { y: cushion.userData.origY, ease: "power2.inOut", duration: assembleDuration }, assembleStart);
-masterTl.to(armL.position, { x: armL.userData.origX, y: armL.userData.origY, ease: "power2.inOut", duration: assembleDuration }, assembleStart);
-masterTl.to(armR.position, { x: armR.userData.origX, y: armR.userData.origY, ease: "power2.inOut", duration: assembleDuration }, assembleStart);
-masterTl.to(suspensionGroup.position, { y: suspensionGroup.userData.origY, ease: "power2.inOut", duration: assembleDuration }, assembleStart);
-masterTl.to(base.position, { y: base.userData.origY, ease: "power2.inOut", duration: assembleDuration }, assembleStart);
+// Rotate the model slightly for a showroom feel during the scan
+masterTl.to(loadedModel.rotation, {
+    y: Math.PI / 4,
+    ease: "power1.inOut",
+    duration: 0.25
+}, explodeStart);
 
 masterTl.to("#section-descent", { opacity: 0, duration: 0.05 }, 0.40);
 
