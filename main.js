@@ -209,7 +209,7 @@ masterTl.to("#hero-img", { opacity: 0, duration: 0.1 }, 0.05);
 masterTl.to("#tron-canvas", { opacity: 1, duration: 0.1 }, 0.05);
 
 // Move the world up instead of the camera down, so the model stays locked in frame!
-masterTl.to(gridGroup.position, { y: gridGroup.position.y + 90, ease: "power2.inOut", duration: 0.25 }, 0.15);
+
 masterTl.to("#era-hero", { opacity: 0, duration: 0.1 }, 0.15);
 masterTl.to("#section-descent", { opacity: 1, duration: 0.05 }, 0.15);
 masterTl.to("#descent-text-1", { y: "0%", duration: 0.05, ease: "power3.out" }, 0.17);
