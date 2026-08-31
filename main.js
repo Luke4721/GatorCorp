@@ -92,7 +92,7 @@ renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 
 const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x000000, 0.015);
+scene.fog = new THREE.FogExp2(0x0a1128, 0.015);
 
 // Camera starts at Hero position (looking down -Z)
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -104,7 +104,7 @@ const shaftGroup = new THREE.Group();
 for(let i = 0; i < 20; i++) {
     const box = new THREE.LineSegments(
         new THREE.EdgesGeometry(new THREE.BoxGeometry(40, 10, 40)),
-        new THREE.LineBasicMaterial({ color: 0x444444, transparent: true, opacity: 0.3 })
+        new THREE.LineBasicMaterial({ color: 0xCAA967, transparent: true, opacity: 0.3 })
     );
     box.position.y = 40 - (i * 20); // Extends down to -360
     shaftGroup.add(box);
@@ -113,7 +113,7 @@ scene.add(shaftGroup);
 
 // Environment 2: The Corridor (Horizontal travel)
 // The corridor starts at the bottom of the elevator shaft (y = -100)
-const gridHelper = new THREE.GridHelper(300, 100, 0x00ffff, 0x00ffff);
+const gridHelper = new THREE.GridHelper(300, 100, 0xCAA967, 0xCAA967);
 gridHelper.position.set(100, -100, -50); 
 gridHelper.material.transparent = true;
 gridHelper.material.opacity = 0.2;
@@ -125,7 +125,7 @@ const matrixGroup = new THREE.Group();
 matrixGroup.position.set(250, -100, -50);
 const chassis = new THREE.LineSegments(
     new THREE.EdgesGeometry(new THREE.BoxGeometry(30, 20, 60)),
-    new THREE.LineBasicMaterial({ color: 0xff00ff, transparent: true, opacity: 0.5 })
+    new THREE.LineBasicMaterial({ color: 0xCAA967, transparent: true, opacity: 0.5 })
 );
 chassis.position.y = -30;
 matrixGroup.add(chassis);
