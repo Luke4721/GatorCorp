@@ -82,6 +82,7 @@ renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 
 const scene = new THREE.Scene();
+gsap.set("#tron-canvas", { opacity: 0 }); // Hide canvas
 scene.fog = new THREE.FogExp2(0x070e11, 0.012); // Slightly pushed back fog
 
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -103,49 +104,7 @@ const wireColor = 0xffffff;
 
 // GLTF SETUP
 
-const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath('/draco/');
-const gltfLoader = new GLTFLoader();
-gltfLoader.setDRACOLoader(dracoLoader);
-
-let loadedModel = new THREE.Group();
-scene.add(loadedModel);
-
-gltfLoader.load('/models/seat_compressed.glb', (gltf) => {
-    const model = gltf.scene;
-    
-    // Automatically center and scale the model based on its actual bounding box
-    const box = new THREE.Box3().setFromObject(model);
-    const size = box.getSize(new THREE.Vector3());
-    const center = box.getCenter(new THREE.Vector3());
-    
-    // We want the model to be roughly 40 units tall to fill the screen
-    const targetHeight = 40;
-    const scaleFactor = targetHeight / size.y;
-    
-    model.scale.set(scaleFactor, scaleFactor, scaleFactor);
-    
-    // Center it on the origin locally
-    model.position.x = -center.x * scaleFactor;
-    model.position.y = -center.y * scaleFactor;
-    model.position.z = -center.z * scaleFactor;
-
-    // Enhance materials, NO WIREFRAMES, NO SHADERS
-    model.traverse((child) => {
-        if (child.isMesh) {
-            child.material.envMapIntensity = 1.5;
-            child.material.side = THREE.DoubleSide; 
-        }
-    });
-
-    loadedModel.add(model);
-    
-    // Position the group directly in front of the descended camera
-    // Camera is at y: -90, z: 0. Model goes to y: -90, z: -50.
-    loadedModel.position.set(0, -2, -45);
-    loadedModel.rotation.y = -Math.PI / 4;
-});
-
+// (3D Model removed to focus purely on 1:1 ERA transitions)
 
 // Environment 1: The Elevator Shaft
 const shaftGroup = new THREE.Group();
