@@ -47,7 +47,7 @@
   <body>
 
     <!-- Scroll Container (Increased to 1200vh for extended narrative) -->
-    <div id="scroll-container" style="height: 700vh; position: relative;">
+    <div id="scroll-container" style="height: 1200vh; position: relative;">
       
       <!-- PRISTINE NAVBAR -->
       <nav class="fixed top-0 w-full p-8 flex justify-between items-center z-50 pointer-events-auto mix-blend-difference text-white">
@@ -153,6 +153,33 @@
           <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
              <h2 id="env-heading" class="jesko-heading text-[7vw] text-white mix-blend-difference text-center leading-none opacity-0 scale-90">Engineered for<br/>the Harshest<br/>Environments.</h2>
           </div>
+      </div>
+
+      
+      <!-- SECTION: HEART AEROSPACE BLACK VIDEO -->
+      <div id="section-ha-black" class="fixed inset-0 z-[25] bg-black opacity-0 overflow-hidden pointer-events-none flex items-center justify-center">
+         <video id="vid-black" src="/assets/Videos/Construction_truck_driving_on_te._202608311630.mp4" muted loop playsinline class="absolute inset-0 w-full h-full object-cover z-0" style="mix-blend-mode: screen;"></video>
+         <div class="relative z-10 w-full max-w-7xl mx-auto px-10 text-center flex flex-col items-center">
+            <h2 class="text-[6vw] font-black leading-none tracking-tighter text-white uppercase overflow-hidden">
+                <span id="ha-text-1" class="inline-block transform translate-y-full opacity-0">The terrain is brutal.</span>
+            </h2>
+            <h2 class="text-[6vw] font-black leading-none tracking-tighter text-white uppercase overflow-hidden">
+                <span id="ha-text-2" class="inline-block transform translate-y-full opacity-0">The chassis is unforgiving.</span>
+            </h2>
+            <h2 class="text-[6vw] font-black leading-none tracking-tighter text-[#ff2222] uppercase overflow-hidden">
+                <span id="ha-text-3" class="inline-block transform translate-y-full opacity-0">Your spine doesn't care.</span>
+            </h2>
+         </div>
+      </div>
+
+      <!-- SECTION: HEART AEROSPACE WHITE VIDEO -->
+      <div id="section-ha-white" class="fixed inset-0 z-[26] bg-[#f4f4f5] opacity-0 overflow-hidden pointer-events-none flex items-center justify-center">
+         <video id="vid-white" src="/assets/Videos/Construction_truck_driving_in_qu._202608311641.mp4" muted loop playsinline class="absolute inset-0 w-full h-full object-cover z-0" style="mix-blend-mode: multiply;"></video>
+         <div class="relative z-10 w-full max-w-7xl mx-auto px-10 text-center">
+            <h2 id="ha-text-white" class="text-[5vw] font-black leading-none tracking-tighter text-black uppercase transform scale-90 opacity-0">
+               There is exactly one component<br/>standing between a rugged journey<br/>and total driver collapse.
+            </h2>
+         </div>
       </div>
 
       <!-- SECTION 4: CATALOGUE REVEAL (Grand Reveal) -->
