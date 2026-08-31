@@ -25,7 +25,8 @@
       
       <!-- ERA RESIDENCE 1:1 HERO -->
       <section id="era-hero" class="fixed inset-0 z-40 w-full h-screen overflow-hidden bg-[#0d0d0d] flex flex-col justify-between pointer-events-none">
-          <video src="/assets/Videos/hero.mp4" muted loop playsinline autoplay class="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-screen pointer-events-none"></video>
+          <!-- High Res Industrial/Rock Background from Unsplash -->
+          <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=100&w=2800&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover opacity-50 mix-blend-screen pointer-events-none" style="filter: contrast(1.2) brightness(0.8);" />
           
           <nav class="relative z-20 w-full p-8 flex justify-between items-start pointer-events-auto mix-blend-difference text-white">
               <div class="relative w-32 h-32 flex items-center justify-center animate-[spin_20s_linear_infinite]">
@@ -51,25 +52,27 @@
               <div id="hero-circle-1" class="absolute w-[80vh] h-[80vh] border-[0.5px] border-white/20 rounded-full scale-110"></div>
               <div id="hero-circle-2" class="absolute w-[90vh] h-[90vh] border-[0.5px] border-white/10 rounded-full scale-110"></div>
               
-              <div class="relative text-center mt-20" id="hero-typography">
-                  <h1 class="text-[13vw] font-['Playfair_Display'] leading-[0.8] text-white tracking-[-0.03em] mx-auto z-10">
+              <div class="relative text-center flex flex-col items-center" id="hero-typography">
+                  <h1 class="text-[14vw] font-['Playfair_Display'] leading-[0.8] text-white tracking-[-0.03em] mx-auto z-10 mt-10">
                       GATOR<br/>CORP
                   </h1>
-                  <h2 id="hero-script" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-[80%] text-[10vw] font-['Great_Vibes'] text-white/90 z-20 whitespace-nowrap rotate-[-5deg]">
+                  <!-- Moved the cursive text below so it doesn't overlap messily -->
+                  <h2 id="hero-script" class="text-[6vw] font-['Great_Vibes'] text-white/70 z-20 whitespace-nowrap -mt-6 pr-20 rotate-[-5deg]">
                       Endurance
                   </h2>
               </div>
           </div>
 
           <div class="relative z-20 w-full flex justify-between items-end px-12 pb-10 pointer-events-none mix-blend-difference" id="hero-split-text">
-              <h3 id="hero-split-left" class="text-[6vw] font-['Playfair_Display'] leading-none text-white tracking-tight">BUILT FOR</h3>
-              <h3 id="hero-split-right" class="text-[6vw] font-['Playfair_Display'] leading-none text-white tracking-tight">ENDURANCE</h3>
+              <h3 id="hero-split-left" class="text-[5vw] font-['Playfair_Display'] leading-none text-white tracking-tight">BUILT FOR</h3>
+              <h3 id="hero-split-right" class="text-[5vw] font-['Playfair_Display'] leading-none text-white tracking-tight">ENDURANCE</h3>
           </div>
       </section>
 
       <!-- SECTION: HEART AEROSPACE WHITE VIDEO (TRANSITION TO CATALOGUE) -->
       <div id="section-ha-white" class="fixed inset-0 z-[41] bg-[#f4f4f5] opacity-0 overflow-hidden pointer-events-none flex items-center justify-center">
-         <video src="/assets/Videos/drone.mp4" muted loop playsinline autoplay class="absolute inset-0 w-full h-full object-cover z-0" style="mix-blend-mode: multiply;"></video>
+         <!-- Replacing the muddy drone video with a clean, high-res Unsplash texture -->
+         <img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=100&w=2800&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover z-0 opacity-40 mix-blend-multiply" />
          <div class="relative z-10 w-full max-w-7xl mx-auto px-10 text-center">
             <h2 id="ha-text-white" class="text-[6vw] font-['Playfair_Display'] leading-[1.1] tracking-tight text-[#111] transform scale-90 opacity-0 italic">
                The ultimate<br/>luxury is isolation.
