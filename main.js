@@ -406,21 +406,81 @@ window.addEventListener('resize', () => {
 });
 
 const seatData = [
-  { id: 1, title: 'SUPREMO', img: '/assets/seats/Supremo.png', desc: 'Supremo is a premium offering with top-of-the-line air suspension. It guarantees the absolute ultimate in long-haul comfort and vibration isolation for highway driving.', badges: ['AIR SUSPENSION', 'VENTILATED', 'LUMBAR SUPPORT'] },
-  { id: 2, title: 'EXCAVATOR PRO', img: '/assets/seats/Excavator.png', desc: 'Built specifically for earth-moving equipment, this seat features mechanical suspension tuned for extreme vertical shocks.', badges: ['MECHANICAL', 'HEAVY DUTY'] },
-  { id: 3, title: 'TRACTOR COMMAND', img: '/assets/seats/Tractor.png', desc: 'Designed for agricultural machinery, offering robust weather resistance and constant damping over uneven terrain.', badges: ['WEATHERPROOF', 'SHOCK DAMPING'] },
-  { id: 4, title: 'COMPACT LIFT', img: '/assets/seats/Mini Excavator.png', desc: 'A compact, highly maneuverable seat for forklifts with active lateral support.', badges: ['COMPACT', 'LATERAL SUPPORT'] }
+  { 
+    id: 1, title: 'SUPREMO', img: '/assets/seats/Supremo.png', 
+    desc: 'Supremo is a premium offering with top-of-the-line air suspension. It guarantees the absolute ultimate in long-haul comfort and vibration isolation for highway driving.', 
+    badges: ['AIR SUSPENSION', 'VENTILATED', 'LUMBAR SUPPORT'],
+    hotspots: [
+        { top: '25%', left: '50%', title: 'ACTIVE HEADREST', desc: 'Reduces whiplash and neck strain over uneven terrain.' },
+        { top: '65%', left: '30%', title: 'LUMBAR SUPPORT', desc: 'Multi-chamber pneumatic lumbar adjustment.' },
+        { top: '85%', left: '50%', title: 'AIR SUSPENSION', desc: 'Isolates 90% of harmful vertical vibrations.' }
+    ]
+  },
+  { 
+    id: 2, title: 'EXCAVATOR PRO', img: '/assets/seats/Excavator.png', 
+    desc: 'Built specifically for earth-moving equipment, this seat features mechanical suspension tuned for extreme vertical shocks.', 
+    badges: ['MECHANICAL', 'HEAVY DUTY'],
+    hotspots: [
+        { top: '30%', left: '48%', title: 'RUGGED TRIM', desc: 'Tear-resistant industrial fabric.' },
+        { top: '75%', left: '50%', title: 'MECHANICAL DAMPING', desc: 'Heavy-duty steel coil suspension block.' }
+    ]
+  },
+  { 
+    id: 3, title: 'TRACTOR COMMAND', img: '/assets/seats/Tractor.png', 
+    desc: 'Designed for agricultural machinery, offering robust weather resistance and constant damping over uneven terrain.', 
+    badges: ['WEATHERPROOF', 'SHOCK DAMPING'],
+    hotspots: [
+        { top: '40%', left: '60%', title: 'WEATHER RESISTANT', desc: 'Sealed seams and waterproof vinyl coating.' },
+        { top: '80%', left: '45%', title: 'SHOCK DAMPING', desc: 'Constant rate damping for agricultural tracks.' }
+    ]
+  },
+  { 
+    id: 4, title: 'COMPACT LIFT', img: '/assets/seats/Mini Excavator.png', 
+    desc: 'A compact, highly maneuverable seat for forklifts with active lateral support.', 
+    badges: ['COMPACT', 'LATERAL SUPPORT'],
+    hotspots: [
+        { top: '55%', left: '35%', title: 'LATERAL BOLSTERS', desc: 'Holds operator securely during tight cornering.' },
+        { top: '90%', left: '50%', title: 'LOW PROFILE', desc: 'Fits compactly into tight cabins.' }
+    ]
+  }
 ];
 
 let currentSeatIndex = 0;
 
 function updateCatalogueUI(index) {
-  const data = seatData[index];
-  const titleEl = document.getElementById('cat-title');
-  if(!titleEl) return;
-  titleEl.textContent = data.title;
-  document.getElementById('cat-desc').textContent = data.desc;
-  document.getElementById('cat-img').src = data.img;
+    const data = seatData[index];
+    const titleEl = document.getElementById('cat-title');
+    if(!titleEl) return;
+    titleEl.textContent = data.title;
+    document.getElementById('cat-desc').textContent = data.desc;
+    document.getElementById('cat-img').src = data.img;
+    
+    // Render Hotspots
+    const hsContainer = document.getElementById('hotspots-container');
+    if (hsContainer) {
+        hsContainer.innerHTML = '';
+        if (data.hotspots) {
+            data.hotspots.forEach(hs => {
+                const el = document.createElement('div');
+                el.className = 'absolute group pointer-events-auto cursor-pointer flex items-center justify-center';
+                el.style.top = hs.top;
+                el.style.left = hs.left;
+                el.style.transform = 'translate(-50%, -50%)'; // Center the dot
+                
+                el.innerHTML = `
+                    <div class="relative w-6 h-6 flex items-center justify-center">
+                        <div class="absolute inset-0 border border-white/50 rounded-full animate-ping" style="animation-duration: 2s;"></div>
+                        <div class="w-2 h-2 bg-white rounded-full"></div>
+                    </div>
+                    <div class="absolute left-8 w-48 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-4 group-hover:translate-x-0 bg-black/80 backdrop-blur-md p-3 border border-white/10 rounded-sm pointer-events-none z-50">
+                        <div class="text-[10px] font-bold text-white mb-1 tracking-widest uppercase">${hs.title}</div>
+                        <div class="text-[10px] text-white/70 leading-snug">${hs.desc}</div>
+                    </div>
+                `;
+                hsContainer.appendChild(el);
+            });
+        }
+    }
   
   // Change the 3D seat colors to match the selected model!
   const seatColors = [
