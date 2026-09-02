@@ -3,610 +3,337 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GatorCorp · Supremo — 1,000 km. One seat.</title>
-<meta name="description" content="An interactive demonstration of the GatorCorp Supremo air-suspension seat: 1,000 km of hostile road, one driver, zero transmitted chaos.">
-<meta name="theme-color" content="#05070d">
-<meta property="og:title" content="GatorCorp Supremo — 1,000 km. One seat.">
-<meta property="og:description" content="A scroll-driven demonstration of the GatorCorp Supremo air-suspension seat under a full day's haul.">
-<meta property="og:type" content="website">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2305070d'/%3E%3Cpath d='M6 20l4-6 4 6 4-6 4 6 4-6' stroke='%23ffb300' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<title>GatorCorp · Seating Systems</title>
+<meta name="description" content="GatorCorp heavy-duty seating: Supremo, Ultimo and Leo. Air suspension, ventilated design, lumbar support. Built in India since 1996, homologated for Europe.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-/* ============ tokens ============ */
 :root{
-  --bg:#05070d; --ink:#e9f1ff; --dim:#b7c6e4; --muted:#7d93bd;
-  --cyan:#7fd0ff; --amber:#ffb300; --amber-soft:#ffd27a;
-  --line:rgba(255,255,255,.16);
+  --paper:#f1f0ec; --panel:#fbfaf8; --ink:#15171b; --grey:#8a8d94;
+  --line:#e2e0da; --soft:#d9d6cf; --amber:#c98a12;
+  --sw:min(1080px,84vw);          /* stage width  */
+  --sh:clamp(300px,44vh,420px);   /* stage height */
+  --sd:clamp(300px,40vh,400px);   /* stage depth  */
 }
-*{box-sizing:border-box;margin:0;padding:0}
-html{background:var(--bg)}
-body{font-family:"Space Grotesk",ui-sans-serif,system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
-::selection{background:rgba(255,179,0,.35)}
-a{color:var(--amber-soft)}
+*{margin:0;padding:0;box-sizing:border-box}
+html{background:var(--paper);scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{font-family:Inter,ui-sans-serif,system-ui,sans-serif;color:var(--ink);
+  -webkit-font-smoothing:antialiased;line-height:1.5}
+::selection{background:rgba(201,138,18,.25)}
+a{color:inherit}
 
-/* ============ fixed layers ============ */
-#world{position:fixed;inset:0;z-index:-1;pointer-events:none;display:block}
-.vignette{position:fixed;inset:0;z-index:1;pointer-events:none;
-  background:
-    repeating-linear-gradient(0deg,rgba(255,255,255,.015) 0 1px,transparent 1px 3px),
-    linear-gradient(100deg,rgba(3,5,10,.62) 0%,rgba(3,5,10,.34) 34%,transparent 58%),
-    radial-gradient(120% 100% at 50% 42%,transparent 55%,rgba(2,4,9,.6) 100%)}
-.brand{position:fixed;top:22px;left:24px;z-index:4;text-decoration:none;color:var(--ink);
-  font-weight:700;letter-spacing:.34em;font-size:13px}
-.brand span{color:var(--amber)}
-.hud{position:fixed;top:20px;right:22px;z-index:2;text-align:right;pointer-events:none;
-  font-size:11px;letter-spacing:.18em;color:var(--dim)}
-.hud-row{display:flex;gap:10px;justify-content:flex-end}
-.hud-k{color:var(--dim)}
-.hud-v{color:var(--amber-soft);font-weight:600;font-variant-numeric:tabular-nums}
-.hud-phase{margin-top:6px;font-size:9px;letter-spacing:.26em}
-.hud-phase.ok{color:var(--cyan)} .hud-phase.warn{color:#ffcf87}
-.hud-phase.bad{color:#ff7a85} .hud-phase.gold{color:#ffc76a;text-shadow:0 0 12px rgba(255,179,0,.6)}
-
-/* ============ loader ============ */
-#loader{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;flex-direction:column;
-  gap:26px;align-items:center;justify-content:center;transition:opacity .6s}
-#loader.done{opacity:0;pointer-events:none}
-.loader-mark{font-weight:700;letter-spacing:.34em;font-size:clamp(1.3rem,3vw,1.9rem)}
-.loader-mark span{color:var(--amber)}
-.loader-bar{width:min(260px,60vw);height:2px;background:rgba(255,255,255,.15);overflow:hidden}
-.loader-bar i{display:block;height:100%;width:0;background:var(--amber);animation:loadBar 1s ease forwards}
-@keyframes loadBar{to{width:100%}}
-
-/* ============ shared type ============ */
-main{position:relative;z-index:3}
-.kicker{color:var(--amber-soft);letter-spacing:.32em;font-size:11px;font-weight:500;
-  text-transform:uppercase;margin-bottom:22px;text-shadow:0 2px 18px rgba(0,0,0,.9)}
-h2{font-size:clamp(2.4rem,6.5vw,5.4rem);font-weight:700;letter-spacing:-.02em;line-height:1.04;
-  text-shadow:0 4px 40px rgba(0,0,0,.85)}
-.lead{margin-top:26px;max-width:52ch;color:var(--dim);font-size:clamp(1.02rem,1.6vw,1.3rem);
-  line-height:1.65;text-shadow:0 2px 24px rgba(0,0,0,.9)}
-.stat{margin-top:20px;max-width:46ch;color:var(--dim);font-size:.95rem;line-height:1.65;
-  border-left:2px solid rgba(255,179,0,.5);padding-left:16px;text-shadow:0 2px 24px rgba(0,0,0,.9)}
-.split-word{display:inline-block;white-space:nowrap}
-.split-char{display:inline-block;will-change:transform}
-
-
-/* ============ home hero ============ */
-.home-hero { min-height: 100svh; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; overflow: hidden; padding: 14vh 8vw; }
-.home-bg { position: absolute; inset: 0; z-index: -1; background: url('/images/cine/frame_0040.jpg') center/cover no-repeat; opacity: 0.35; filter: brightness(0.7); }
-.home-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(5,7,13,0.1) 0%, #05070d 95%); }
-.nav { position:absolute; top:0; left:0; width:100%; padding: 26px 8vw; display:flex; justify-content:space-between; align-items:center; z-index:10; }
-.nav .logo { text-decoration:none; font-weight:700; letter-spacing:0.34em; font-size:13px; color:var(--ink); }
-.nav .logo span { color:var(--amber); }
-.nav-links { display:flex; gap:32px; font-size:11px; letter-spacing:0.18em; text-transform:uppercase; }
-.nav-links a { text-decoration:none; color:var(--dim); transition:color 0.2s; }
-.nav-links a:hover { color:var(--ink); }
-.home-content { z-index: 2; padding: 0 5vw; max-width: 800px; display: flex; flex-direction: column; align-items: center; }
-.corp-mark { font-size: clamp(2.4rem, 6vw, 5.4rem); font-weight: 700; letter-spacing: 0.25em; text-indent: 0.125em; color: var(--ink); line-height: 1; margin-bottom: 24px; text-shadow: 0 4px 40px rgba(0,0,0,0.85); }
-.corp-mark span { color: var(--amber); }
-.corp-tagline { font-size: clamp(1rem, 2vw, 1.25rem); color: var(--dim); line-height: 1.6; letter-spacing: 0.04em; max-width: 32ch; margin: 0 auto; text-shadow: 0 2px 24px rgba(0,0,0,0.9); }
-
-
-/* ============ product teasers ============ */
-.product-teasers { position: relative; z-index: 3; background: var(--bg); padding: 10vh 5vw; }
-.teasers-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; max-width: 1400px; margin: 0 auto; }
-.teasers-grid .h-card { width: auto; margin-right: 0; flex: none; height: 100%; justify-content: flex-start; padding: 40px 32px; background: linear-gradient(180deg,rgba(7,12,22,.6),rgba(7,12,22,.1)); }
-.teasers-grid .h-card p { font-size: 14px; margin-bottom: 24px; flex-grow: 1; }
-.teasers-grid .h-card h3 { font-size: clamp(1.4rem, 2.4vw, 2rem); margin-bottom: 8px; }
-.teaser-link { display: inline-flex; align-items: center; gap: 8px; margin-top: auto; color: var(--amber); text-decoration: none; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; border-top: 1px solid rgba(255,179,0,0.2); padding-top: 20px; transition: all 0.2s; }
-.teaser-link:hover { color: #ffe3ae; border-top-color: var(--amber); }
-.teaser-link[aria-disabled="true"] { color: var(--dim); border-top-color: var(--line); pointer-events: none; opacity: 0.5; }
-
-/* ============ hero ============ */
-.hero{min-height:100svh;display:flex;flex-direction:column;justify-content:center;
-  padding:14vh 8vw;position:relative}
-.hero h1{font-size:clamp(3.1rem,10vw,8.8rem);font-weight:700;line-height:.98;letter-spacing:-.025em;
-  text-shadow:0 6px 60px rgba(0,0,0,.9)}
-.hero .sub{margin-top:28px;max-width:46ch;color:var(--dim);font-size:clamp(1rem,1.5vw,1.25rem);
-  line-height:1.6;text-shadow:0 2px 24px rgba(0,0,0,.9)}
-.scroll-cue{position:absolute;bottom:calc(4vh + 64px);left:8vw;display:flex;align-items:center;gap:14px;
-  color:var(--dim);font-size:11px;letter-spacing:.3em}
-.chev{width:10px;height:10px;border-right:2px solid var(--amber);border-bottom:2px solid var(--amber);
-  transform:rotate(45deg);animation:cue 1.6s ease-in-out infinite}
-@keyframes cue{50%{transform:rotate(45deg) translate(5px,5px);opacity:.35}}
-
-
-  /* ============ ambient spot ============ */
-  .ambient-spot {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: -1;
-    background: radial-gradient(circle 800px at var(--spot-x, 50%) var(--spot-y, 50%), rgba(255,179,0,0.06), transparent 70%);
-  }
-  /* ============ problem sections ============ */
-.prob{min-height:115vh;display:flex;flex-direction:column;justify-content:center;padding:14vh 8vw;position:relative;overflow:hidden;}
-
-/* ============ horizontal benefits (GSAP pinned) ============ */
-.h-section{position:relative;height:100vh;overflow:hidden}
-.h-track{display:flex;height:100%;padding-left:8vw;will-change:transform}
-.h-card{flex:0 0 auto;width:min(560px,80vw);margin-right:7vw;display:flex;flex-direction:column;
-  justify-content:center;gap:20px;border:1px solid var(--line);border-radius:14px;
-  padding:48px 44px;background:linear-gradient(90deg,rgba(7,12,22,.78),rgba(7,12,22,.28))}
-.h-num{font-size:12px;color:var(--amber-soft);letter-spacing:.4em}
-.h-card h2{font-size:clamp(1.9rem,4.2vw,3.4rem)}
-.h-card h3{font-size:clamp(1.5rem,2.8vw,2.4rem);letter-spacing:-.01em}
-.h-card p{color:var(--dim);line-height:1.65;max-width:44ch}
-.card-icon{width:54px;height:54px}
-.hint{color:var(--dim);font-size:11px;letter-spacing:.3em}
-
-/* ============ turn ============ */
-.turn{min-height:110vh;display:flex;flex-direction:column;justify-content:center;padding:14vh 8vw 14vh;position:relative;overflow:hidden;}
-
-/* ============ footer: seat configurator ============ */
-.footer-w{position:relative;min-height:100svh;display:flex;flex-direction:column;z-index:3}
-/* INTEGRATION: to use the real banner asset in-project, replace the .cfg-bg background with:
-   background:url('/images/supermo-banner1-1.png') center/cover no-repeat, then keep the vignette below */
-.cfg-bg{position:absolute;inset:0;z-index:0;
-  background:radial-gradient(130% 100% at 50% -10%,#14213a 0%,#0a1322 45%,#05070d 100%);
-  box-shadow:inset 0 0 160px 40px rgba(2,4,9,.85)}
-.cfg-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.05fr 1.25fr .95fr;
-  gap:3vw;align-items:center;padding:13vh 5vw 17vh;flex:1}
-.cfg-name{font-size:clamp(3.1rem,7.5vw,6.6rem);font-weight:700;letter-spacing:-.02em;line-height:1}
-.cfg-tag{color:var(--amber-soft);letter-spacing:.3em;font-size:12px;margin:12px 0 16px}
-.stars{position:relative;height:24px;width:132px}
-.stars-bg,.stars-fg{display:flex;gap:4px}
-.stars svg{width:22px;height:22px}
-.stars-bg svg{fill:#243352}
-.stars-fg svg{fill:#ffc76a;filter:drop-shadow(0 0 6px rgba(255,179,0,.55))}
-.stars-clip{position:absolute;inset:0;overflow:hidden}
-.cfg-pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
-.pill{font-size:10px;letter-spacing:.18em;color:var(--amber-soft);border:1px solid rgba(255,198,106,.45);
-  background:rgba(255,179,0,.08);padding:7px 13px;border-radius:999px;
-  box-shadow:0 0 18px rgba(255,179,0,.15)}
-.cfg-desc{margin-top:18px;color:var(--dim);max-width:40ch;line-height:1.6;font-size:.98rem}
-.thumbs{display:flex;gap:18px;margin-top:32px}
-.thumb{display:flex;flex-direction:column;align-items:center;gap:8px;background:none;border:0;
-  cursor:pointer;color:var(--dim);font-family:inherit}
-.thumb span{width:60px;height:60px;border-radius:50%;display:grid;place-items:center;font-weight:700;
-  font-size:20px;color:var(--amber-soft);border:1px solid rgba(255,198,106,.35);
-  background:radial-gradient(circle at 35% 30%,rgba(255,179,0,.14),rgba(255,179,0,.03) 70%),rgba(10,16,28,.6);
-  transition:all .3s}
-.thumb em{font-style:normal;font-size:10px;letter-spacing:.18em;text-transform:uppercase}
-.thumb:hover span{transform:translateY(-2px)}
-.thumb.active span{border-color:var(--amber);box-shadow:0 0 26px rgba(255,179,0,.4);color:#ffe3ae}
-
-.seat-stage{position:relative;display:flex;justify-content:center;align-items:center;min-height:52vh;
-  perspective:1300px}
-.seat3d-card{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;
-  transform-style:preserve-3d;cursor:grab;touch-action:none}
-.seat3d-card:active{cursor:grabbing}
-.seat-halo{position:absolute;width:min(52vh,90%);aspect-ratio:1;border-radius:50%;
-  background:radial-gradient(circle,rgba(255,179,0,.18),transparent 62%);filter:blur(14px);
-  transform:translateZ(-70px)}
-.seat-svg{width:min(40vh,78%);position:relative;z-index:1;
-  filter:drop-shadow(0 0 34px rgba(255,179,0,.22)) drop-shadow(0 24px 50px rgba(0,0,0,.6));
-  animation:seatFloat 6s ease-in-out infinite}
-.drag-hint{position:absolute;bottom:6%;z-index:2;font-size:10px;letter-spacing:.22em;color:var(--dim);
-  pointer-events:none;opacity:.8}
-@keyframes seatFloat{50%{transform:translateY(-14px)}}
-.bellow{animation:bellow 2.6s ease-in-out infinite}
-@keyframes bellow{50%{opacity:.45}}
-.f-tag{position:absolute;z-index:2;font-size:10px;letter-spacing:.22em;color:var(--amber-soft);
-  border:1px solid rgba(255,198,106,.4);background:rgba(10,16,28,.55);backdrop-filter:blur(8px);
-  padding:7px 12px;border-radius:999px;box-shadow:0 0 18px rgba(255,179,0,.18);
-  animation:tagFloat 5s ease-in-out infinite}
-.f-tag.t1{top:16%;left:-2%}
-.f-tag.t2{top:42%;right:-4%;animation-delay:1.3s}
-.f-tag.t3{bottom:20%;left:6%;animation-delay:2.6s}
-@keyframes tagFloat{50%{transform:translateY(-8px)}}
-
-.cfg-bar{position:sticky;bottom:0;z-index:2;display:flex;justify-content:space-between;
-  align-items:center;gap:18px;padding:12px 5vw;background:rgba(6,10,18,.6);
-  backdrop-filter:blur(16px);border-top:1px solid rgba(255,255,255,.14)}
-.cfg-bar-left{font-size:11px;letter-spacing:.12em;color:var(--dim)}
-.cfg-bar-left strong{color:var(--ink);letter-spacing:.2em;font-size:10px}
-.demo-note{display:block;font-size:9px;color:var(--dim);margin-top:3px}
-.cfg-bar-right{display:flex;align-items:center;gap:22px}
-.mail-link{color:var(--dim);font-size:12px;letter-spacing:.06em}
-.cta-btn{cursor:pointer;border:0;font-family:inherit;font-weight:700;letter-spacing:.22em;
-  font-size:12px;color:#1a1204;padding:15px 30px;border-radius:999px;text-transform:uppercase;
-  background:linear-gradient(135deg,#ffd27a,#ffb300);
-  box-shadow:0 0 28px rgba(255,179,0,.45),inset 0 0 0 1px rgba(255,255,255,.25);transition:all .25s}
-.cta-btn:hover{box-shadow:0 0 44px rgba(255,179,0,.75);transform:translateY(-1px)}
-.cta-btn:focus-visible{outline:2px solid #ffd27a;outline-offset:3px}
-
-/* ============ modal ============ */
-.modal{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:20px}
-.modal[hidden]{display:none}
-.modal-backdrop{position:absolute;inset:0;background:rgba(3,5,10,.72);backdrop-filter:blur(8px);
-  opacity:0;transition:opacity .3s}
-.modal-card{position:relative;width:min(520px,94vw);
-  background:linear-gradient(180deg,#0d1526,#080d18);border:1px solid rgba(255,255,255,.2);
-  border-radius:16px;padding:34px;box-shadow:0 40px 100px rgba(0,0,0,.65);
-  opacity:0;transform:translateY(24px) scale(.97);transition:all .35s cubic-bezier(.2,.8,.2,1)}
-.modal.open .modal-backdrop{opacity:1}
-.modal.open .modal-card{opacity:1;transform:none}
-.modal-card h3{font-size:1.45rem;margin:10px 0 8px}
-.modal-sub{color:var(--dim);font-size:.9rem}
-#leadForm{display:grid;gap:14px;margin-top:22px}
-#leadForm label{display:grid;gap:6px;font-size:10px;letter-spacing:.22em;color:var(--dim);text-transform:uppercase}
-#leadForm input,#leadForm select{background:rgba(7,12,22,.8);border:1px solid rgba(255,255,255,.2);
-  border-radius:8px;color:var(--ink);font-family:inherit;font-size:.95rem;padding:11px 13px;
-  letter-spacing:normal;text-transform:none}
-#leadForm input:focus,#leadForm select:focus{outline:none;border-color:var(--amber);
-  box-shadow:0 0 0 3px rgba(255,179,0,.18)}
-#leadForm .cta-btn{width:100%;margin-top:6px}
-.modal-x{position:absolute;top:14px;right:16px;background:none;border:0;color:var(--dim);
-  font-size:22px;cursor:pointer;line-height:1}
-.modal-done h4{color:var(--amber-soft);letter-spacing:.24em;font-size:13px;margin-bottom:10px}
-.modal-done p{color:var(--dim);font-size:.92rem;line-height:1.6}
-.modal-alt{margin-top:16px;font-size:11px;color:var(--dim)}
-
-/* ============ responsive / fallbacks ============ */
-@media (max-width:960px){
-  .cfg-grid{grid-template-columns:1fr;gap:44px;padding-top:13vh}
-  .seat-stage{min-height:46vh}
-  .cfg-bar{flex-direction:column;align-items:flex-start}
+/* ---------- liquid-glass pill nav (dead center of top) ---------- */
+.pill-nav{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:60;
+  display:flex;align-items:center;padding:8px 10px 8px 20px;border-radius:999px;
+  background:rgba(251,250,248,.58);
+  -webkit-backdrop-filter:blur(18px) saturate(180%);
+  backdrop-filter:blur(18px) saturate(180%);
+  border:1px solid rgba(255,255,255,.7);
+  box-shadow:0 10px 30px rgba(21,23,27,.10), inset 0 1px 0 rgba(255,255,255,.85);
+  transition:background .35s, box-shadow .35s}
+.pill-nav.scrolled{background:rgba(251,250,248,.8);
+  box-shadow:0 14px 38px rgba(21,23,27,.16), inset 0 1px 0 rgba(255,255,255,.9)}
+.pill-logo{font-size:12px;font-weight:600;letter-spacing:.22em;text-decoration:none;
+  margin-right:14px;white-space:nowrap}
+.pill-logo b{color:var(--amber);font-weight:600}
+.pill-links{position:relative;display:flex;gap:2px}
+.pill-links a{position:relative;z-index:1;font-size:11px;font-weight:500;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--grey);text-decoration:none;padding:8px 15px;
+  border-radius:999px;transition:color .25s}
+.pill-links a:hover,.pill-links a[aria-current]{color:var(--ink)}
+.pill-ind{position:absolute;top:0;left:0;height:100%;width:0;border-radius:999px;
+  background:rgba(21,23,27,.07);border:1px solid rgba(21,23,27,.08);
+  opacity:0;transition:opacity .4s}
+.pill-ind.on{opacity:1}
+.pill-ind.move{transition:transform .5s cubic-bezier(.3,1.25,.35,1),
+  width .5s cubic-bezier(.3,1.25,.35,1), opacity .4s}
+@media (prefers-reduced-motion:reduce){.pill-ind.move{transition:opacity .4s}}
+@media (max-width:640px){
+  .pill-nav{padding:7px 8px 7px 16px}
+  .pill-logo{margin-right:8px;font-size:11px}
+  .pill-links a{padding:7px 10px;font-size:10px;letter-spacing:.12em}
 }
-@media (max-width:768px){
-  .h-section{height:auto;padding:20vh 0 14vh}
-  .h-track{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-  .h-track::-webkit-scrollbar{display:none}
-}
-@media (prefers-reduced-motion:reduce){
-  .h-section{height:auto;padding:20vh 0 14vh}
-  .h-track{overflow-x:auto;scrollbar-width:none}
-  .chev,.seat-svg,.f-tag,.bellow,.loader-bar i{animation:none}
-}
-.no-anim .h-section{height:auto}
-.no-anim .h-track{overflow-x:auto}
-.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
-  clip:rect(0,0,0,0);white-space:nowrap;border:0}
-  .spec-data{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:40px;margin-top:40px;max-width:1000px}
-  .spec-col h4{font-size:11px;letter-spacing:.2em;color:var(--amber-soft);margin-bottom:12px;text-transform:uppercase}
-  .spec-col p{font-size:14px;color:var(--dim);line-height:1.6}
+@media (max-width:430px){.pill-links a[data-sec="engineering"]{display:none}}
 
-  .brand-seal{position:fixed;bottom:8vh;right:8vw;width:130px;height:130px;z-index:90}
-  .brand-seal-ring{width:100%;height:100%;animation:sealSpin 24s linear infinite}
-  .brand-seal-text{font-size:9px;letter-spacing:.14em;fill:#e8f1ff;text-transform:uppercase}
-  .brand-seal-mark{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
-  @keyframes sealSpin{to{transform:rotate(360deg)}}
-  @media (prefers-reduced-motion:reduce){.brand-seal-ring{animation:none}}
-
-/* ============ spec icons ============ */
-.spec-icons {
-  display: flex;
-  flex-direction: row;
-  gap: 24px;
-  width: 100%;
-  max-width: 900px;
-  margin: 30px auto 0;
-  justify-content: center;
-}
-.spec-icon {
-  flex: 1;
+/* ---------- hero mask ---------- */
+.hero-mask {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  background: var(--paper);
   display: flex;
   align-items: center;
-  gap: 16px;
-}
-.spec-icon svg {
-  width: 48px;
-  height: 48px;
-  flex-shrink: 0;
-  stroke: var(--amber);
-}
-.spec-icon span {
-  font-size: 10px;
-  letter-spacing: .15em;
-  color: var(--dim);
-  line-height: 1.4;
-  text-align: left;
-}
-
-
-.section-vignette {
-  position: absolute;
-  top: -20%; bottom: -20%; left: -5%; right: -5%;
-  z-index: -2;
+  justify-content: center;
+  overflow: hidden;
   pointer-events: none;
-  background: repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0 1px, transparent 1px 3px);
+}
+.mask-text {
+  font-size: clamp(4rem, 13vw, 18rem);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  margin: 0;
+  background: linear-gradient(135deg, #0A2463 0%, #FFB703 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  
 }
 
-</style>
-  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
-</head>
-<body>
-  <div class="vignette"></div>
+/* ---------- gallery (pinned wide-slab stage) ---------- */
+.gallery{height:100svh;position:relative;overflow:hidden}
+.scene{position:absolute;inset:0;z-index:1;display:grid;place-items:center;}
+.gallery-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+.bg-wall {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 75%;
+  will-change: opacity;
+}
+.bg-floor {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 25%;
+  background: #EBEAE5;
+  border-top: 1px solid rgba(21, 23, 27, 0.04);
+}
+.stage{position:relative;width:var(--sw);height:var(--sh);}
+.face{position:absolute;left:50%;top:50%;width:var(--sw);height:var(--sh);
+  margin-left:calc(var(--sw) / -2);margin-top:calc(var(--sh) / -2);
+  display:grid;place-items:center;opacity:0;pointer-events:none;transform:none;}
+.face.on{opacity:1;pointer-events:auto;}
+.face > model-viewer{height:100%;width:100%;display:block;transform:scale(1.2) translateY(5%);}
+.face .fshadow{position:absolute;left:50%;bottom:-10%;transform:translateX(-50%);
+  width:80%;height:40px;
+  background:radial-gradient(ellipse at center,rgba(21,23,27,.35),rgba(21,23,27,0) 70%);
+  filter:blur(6px);border-radius:50%;pointer-events:none;}
+.face .ftag, .cap {display:none}
 
-<div id="loader" aria-hidden="true">
-  <div class="loader-mark">GATOR<span>CORP</span></div>
-  <div class="loader-bar"><i></i></div>
+/* flat overlays — 1:1 Dribbble alignment */
+.head{position:absolute;top:16vh;left:50%;transform:translateX(-50%);z-index:6;text-align:center;width:100%}
+.head-in{position:relative;height:clamp(96px,15vh,160px);display:flex;justify-content:center}
+.hb{position:absolute;top:0;opacity:0;transform:translateY(15px);
+  transition:opacity .5s,transform .5s cubic-bezier(0.2,0.8,0.2,1);pointer-events:none}
+.hb.on{opacity:1;transform:none;pointer-events:auto}
+.hb h2{font-size:clamp(2.4rem,5vw,4.2rem);font-weight:700;letter-spacing:-.03em;line-height:1;color:var(--ink)}
+.hb p{margin-top:4px;font-size:clamp(2.2rem,4.5vw,3.8rem);letter-spacing:-.02em;font-weight:700;
+  color:transparent;-webkit-text-stroke:1px rgba(21,23,27,0.3);text-transform:uppercase}
+
+.top-right-price{position:absolute;top:16vh;right:6vw;z-index:6;text-align:right}
+.price-val{font-size:1.6rem;font-weight:700;color:var(--ink);letter-spacing:-0.02em}
+.price-loc{font-size:11px;color:var(--grey);margin-top:4px;letter-spacing:0.05em}
+
+.foot{position:absolute;bottom:8vh;left:0;right:0;z-index:6;display:flex;
+  justify-content:center;align-items:flex-end}
+.tv-stack{display:none}
+.spec-stack{position:relative;height:58px;display:flex;justify-content:center;width:100%;max-width:500px}
+.specset{position:absolute;bottom:0;display:flex;gap:5vw;
+  opacity:0;transform:translateY(10px);transition:opacity .5s,transform .5s}
+.specset.on{opacity:1;transform:none}
+.spec{text-align:left}
+.spec span{display:block;font-size:1.8rem;font-weight:700;color:var(--ink);line-height:1;margin-bottom:6px;letter-spacing:-0.02em}
+.spec b{font-size:11px;color:var(--grey);font-weight:500;text-transform:capitalize}
+
+.fd{position:absolute;bottom:9vh;right:6vw;z-index:6;font-size:13px;font-weight:600;color:var(--ink);
+  text-decoration:none;border-bottom:2px solid var(--ink);padding-bottom:6px;
+  transition:opacity .25s}
+.fd .arr{display:inline-block;margin-left:8px;transition:transform .3s}
+.fd:hover .arr{transform:translateX(6px)}
+
+.arrows{position:absolute;left:6vw;bottom:14vh;z-index:7;
+  display:flex;flex-direction:column;gap:12px}
+.arrows button{width:48px;height:48px;border-radius:50%;border:none;
+  background:transparent;cursor:pointer;display:grid;place-items:center;
+  transition:background .25s,transform .15s}
+.arrows button:nth-child(2){background:var(--ink);color:white}
+.arrows button:nth-child(2) svg{stroke:white}
+.arrows button:hover{background:rgba(21,23,27,0.05)}
+.arrows button:nth-child(2):hover{background:var(--amber)}
+.arrows button:active{transform:scale(.93)}
+.arrows svg{width:18px;height:18px;stroke:var(--ink);stroke-width:2;fill:none;
+  stroke-linecap:round;stroke-linejoin:round}
+
+.counter{position:absolute;bottom:8vh;left:7.2vw;z-index:6;font-size:13px;font-weight:600;color:var(--ink)}
+.counter .tot, .pbar{display:none}
+
+/* ---------- engineering ---------- */
+.eng{padding:16vh 6vw;display:grid;grid-template-columns:repeat(3,1fr);gap:6vw}
+.col{border-top:1px solid var(--ink);padding-top:20px}
+.col em{font-style:normal;font-size:11px;letter-spacing:.25em;color:var(--amber)}
+.col h3{font-size:16px;font-weight:600;margin:10px 0 8px}
+.col p{font-size:14px;color:var(--grey);line-height:1.7;max-width:30ch}
+
+/* ---------- outro ---------- */
+.outro{padding:12vh 6vw 6vh}
+.outro h2{font-size:clamp(2rem,6vw,4.4rem);font-weight:600;letter-spacing:-.03em;
+  line-height:1.05;max-width:14ch}
+.cta{display:inline-flex;align-items:center;gap:14px;margin-top:36px;padding:16px 28px;
+  background:var(--ink);color:var(--paper);text-decoration:none;font-size:12px;
+  letter-spacing:.18em;text-transform:uppercase;transition:background .25s}
+.cta:hover{background:var(--amber)}
+.legal{margin-top:10vh;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
+  font-size:10px;letter-spacing:.14em;color:var(--grey);text-transform:uppercase}
+.legal .note{color:#b0ada5;text-transform:none;letter-spacing:0}
+
+@media (max-width:640px){
+  :root{--sw:92vw;--sh:300px;--sd:250px}
+  .face > svg, .face > img{height:74%}
+  .head{top:14vh}
+  .hb h2{max-width:18ch}
+  .foot{flex-direction:column;align-items:flex-start;gap:20px}
+  .spec-stack{min-width:0;width:100%}
+  .specset{gap:20px}
+  .eng{grid-template-columns:1fr;gap:8vh;padding:12vh 6vw}
+}
+</style>
+</head>
+<body id="top">
+
+<div class="nav-left" style="position:fixed; top:28px; left:6vw; z-index:60; display:flex; align-items:center; gap:32px; color:var(--ink);">
+  <span style="font-weight:600; font-size:15px; letter-spacing:-0.03em;">GatorCorp.</span>
+  <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="1.5" fill="none" style="cursor:pointer;"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+</div>
+<div class="nav-right" style="position:fixed; top:28px; right:6vw; z-index:60; display:flex; align-items:center; gap:32px; color:var(--ink); font-size:12px; font-weight:500;">
+  <span style="display:flex; align-items:center; gap:6px; cursor:pointer;">ENG <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"><path d="M6 9l6 6 6-6"/></svg></span>
+  <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="1.5" fill="none" style="cursor:pointer;"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
 </div>
 
-<main>
-  <p class="sr-only">This page illustrates a GatorCorp Supremo seat absorbing a rough 1,000&nbsp;km haul: an
-    off-highway truck jolts over deteriorating terrain, the driver steps out partway through to walk you
-    through the seat's engineering, and the ride settles as the suspension takes over. The text below
-    covers the same content without the animation.</p>
-  
-    <section class="home-hero" id="top">
-      <div class="home-bg" aria-hidden="true">
-        <div class="home-overlay"></div>
-      </div>
-      
-      <div class="nav" data-rise>
-        <a href="#top" class="logo">GATOR<span>CORP</span></a>
-        <div class="nav-links"><a href="#">Products</a><a href="#">Support</a></div>
-      </div>
+<nav class="pill-nav" aria-label="Primary">
+  <a class="pill-logo" href="#top">GATOR<b>CORP</b>.</a>
+  <span class="pill-links" id="pillLinks">
+    <span class="pill-ind" id="pillInd" aria-hidden="true"></span>
+    <a href="#products" data-sec="products">Products</a>
+    <a href="#engineering" data-sec="engineering">Engineering</a>
+    <a href="#contact" data-sec="contact">Contact</a>
+  </span>
+</nav>
 
-      <div class="home-content">
-        <h1 class="corp-mark" data-rise>GATOR<span>CORP</span></h1>
-        <p class="corp-tagline" data-split>Heavy-duty seating engineered for the world's hardest jobs</p>
-      </div>
-      
-      <div class="scroll-cue" data-rise>
-        <span>SCROLL</span>
-        <div class="chev"></div>
-      </div>
-    </section>
-
-    <section class="product-teasers" id="teasers">
-      <div class="teasers-grid">
-        <article class="h-card" data-rise>
-          <span class="h-num">FLAGSHIP &middot; LONG-HAUL</span>
-          <h3 data-split>SUPREMO</h3>
-          <p>Pneumatic auto-levelling suspension, ventilated backrest, full lumbar command.</p>
-          <a href="#supremoHero" class="teaser-link">Explore &rarr;</a>
-        </article>
-        <article class="h-card" data-rise>
-          <span class="h-num">LONG-HAUL &middot; BALANCED</span>
-          <h3 data-split>ULTIMO</h3>
-          <p>Air-suspension comfort tuned for the middle of the range.</p>
-          <a href="#" class="teaser-link" aria-disabled="true">Explore &rarr;</a>
-        </article>
-        <article class="h-card" data-rise>
-          <span class="h-num">FLEET &middot; DURABILITY FIRST</span>
-          <h3 data-split>LEO</h3>
-          <p>Mechanical suspension, overbuilt structure, wear parts you can swap at the depot.</p>
-          <a href="#" class="teaser-link" aria-disabled="true">Explore &rarr;</a>
-        </article>
-        <article class="h-card" data-rise>
-          <span class="h-num">SEVERE DUTY &middot; OFF-HIGHWAY</span>
-          <h3 data-split>CONSTRUCTION &amp; AG</h3>
-          <p>Heavy-duty structural integrity engineered for construction and agricultural applications.</p>
-          <a href="#" class="teaser-link" aria-disabled="true">Explore &rarr;</a>
-        </article>
-      </div>
-    </section>
-
-    <header class="hero" id="supremoHero">
-  <p class="kicker" data-rise style="text-align:center; margin-bottom: 2vh;">FEATURED &middot; OUR FLAGSHIP</p>
-    <h1 data-split class="hero-title">SUPREMO</h1>
-  <div class="seat-stage seat-viewer" id="heroViewer" data-rise style="width:100%;">
-    <model-viewer id="heroModel" src="/images/supremo-seat.glb" camera-controls exposure="0.9" shadow-intensity="1" style="width:100%;height:100%;display:none;position:absolute;inset:0;z-index:2; filter: blur(14px) brightness(0.7); opacity:0; transition: filter 0.8s ease-out, opacity 0.8s ease-out;"></model-viewer>
-    <div class="seat3d-card" id="heroFallback" style="width:100%;height:100%;">
-      <div class="seat-halo" aria-hidden="true"></div>
-      <img class="seat-svg seat-photo" src="/images/Supremo.png" alt="GatorCorp Supremo air-suspension seat">
-    </div>
-    <div class="shadow-ellipse"></div>
-    <div class="badge-360">360&deg;</div>
+<section class="gallery" id="products" aria-label="GatorCorp seat models">
+  <div class="hero-mask">
+    <h1 class="mask-text">GAT<span class="zoom-target">O</span>RCORP</h1>
   </div>
-  <div class="cta-row" data-rise>
-    <button class="btn primary">BUILD YOURS</button>
-    <button class="btn secondary">REQUEST SPEC PACK</button>
-  </div>
-  <p class="hero-fact" data-rise>EST. 1996 &middot; 7 PLANTS, INDIA &middot; US &middot; UK &middot; BRAZIL &middot; CHINA &middot; DSIR-RECOGNISED R&amp;D</p>
-  <div class="spec-icons" data-rise>
-    <div class="spec-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-      <span>ECONOMICS</span>
+  <div class="scene">
+    <div class="gallery-bg">
+      <div class="bg-wall color-0" style="background: linear-gradient(to bottom, #E8EEF2, #ffffff); opacity: 1;"></div>
+      <div class="bg-wall color-1" style="background: linear-gradient(to bottom, #F6E9DF, #ffffff); opacity: 0;"></div>
+      <div class="bg-wall color-2" style="background: linear-gradient(to bottom, #E6ECE8, #ffffff); opacity: 0;"></div>
+      <div class="bg-wall color-3" style="background: linear-gradient(to bottom, #F8EFCF, #ffffff); opacity: 0;"></div>
+      <div class="bg-floor"></div>
     </div>
-    <div class="spec-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
-      <span>RELIABILITY</span>
-    </div>
-    <div class="spec-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      <span>COMFORT</span>
+    <div class="stage">
+
+      <div class="face f0">
+        <model-viewer src="/images/Supremo-opt.glb" camera-controls disable-zoom auto-rotate shadow-intensity="1" environment-image="neutral" exposure="1.2" interaction-prompt="none"></model-viewer>
+        <i class="fshadow" aria-hidden="true"></i>
+        <span class="ftag">Supremo — 01</span>
+      </div>
+
+      <div class="face f1">
+        <model-viewer src="/images/Ultimo-opt.glb" camera-controls disable-zoom auto-rotate shadow-intensity="1" environment-image="neutral" exposure="1.2" interaction-prompt="none"></model-viewer>
+        <i class="fshadow" aria-hidden="true"></i>
+        <span class="ftag">Ultimo — 02</span>
+      </div>
+
+      <div class="face f2">
+        <model-viewer src="/images/Leo-opt.glb" camera-controls disable-zoom auto-rotate shadow-intensity="1" environment-image="neutral" exposure="1.2" interaction-prompt="none"></model-viewer>
+        <i class="fshadow" aria-hidden="true"></i>
+        <span class="ftag">Leo — 03</span>
+      </div>
+
+      <div class="face f3">
+        <model-viewer src="/images/Construction-opt.glb" camera-controls disable-zoom auto-rotate shadow-intensity="1" environment-image="neutral" exposure="1.2" interaction-prompt="none"></model-viewer>
+        <i class="fshadow" aria-hidden="true"></i>
+        <span class="ftag">Construction — 04</span>
+      </div>
+
+      <div class="cap capL" aria-hidden="true"></div>
+      <div class="cap capR" aria-hidden="true"><span>GatorCorp · Heavy-Duty Seating</span></div>
     </div>
   </div>
-</header>
 
-
-  
-
-  
-
-  <section class="h-section" aria-label="Supremo engineering benefits">
-    <div class="h-track">
-      <article class="h-card">
-        <p class="kicker" style="margin-bottom:0">THE ENGINEERING</p>
-        <h2 data-split>THREE WAYS SUPREMO TAKES THE ROAD OUT OF THE RIDE</h2>
-        <p class="hint">KEEP SCROLLING →</p>
-      </article>
-      <article class="h-card">
-        <span class="h-num">01 / SUSPENSION</span>
-        <svg class="card-icon" viewBox="0 0 48 48" fill="none" stroke="#ffb300" stroke-width="2.4"
-             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M6 20l5-7 5 7 5-7 5 7 5-7 5 7 5-7"/>
-          <path d="M12 30q12-9 24 0" stroke="rgba(255,255,255,0.2)"/>
-          <path d="M14 37h20" stroke="rgba(255,255,255,0.2)" opacity=".5"/>
-        </svg>
-        <h3 data-split>AIR SUSPENSION</h3>
-        <p>Auto-levelling pneumatic suspension. The chassis answers to the road; the seat answers
-           to the driver. The worst frequencies never make it past the bellows.</p>
-      </article>
-      <article class="h-card">
-        <span class="h-num">02 / CLIMATE</span>
-        <svg class="card-icon" viewBox="0 0 48 48" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2.4"
-             stroke-linecap="round" aria-hidden="true">
-          <path d="M8 16q9-8 18 0t18 0"/>
-          <path d="M8 26q9-8 18 0t18 0" opacity=".7"/>
-          <path d="M8 36q9-8 18 0t18 0" opacity=".45"/>
-        </svg>
-        <h3 data-split>VENTILATED DESIGN</h3>
-        <p>Engineered airflow through backrest and cushion. Hour ten of a shift arrives
-           feeling like hour two.</p>
-      </article>
-      <article class="h-card">
-        <span class="h-num">03 / ERGONOMICS</span>
-        <svg class="card-icon" viewBox="0 0 48 48" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2.4"
-             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M24 6v5l-5 6 5 6-5 6 5 6v7"/>
-          <circle cx="24" cy="17" r="2" fill="#ffb300" stroke="none"/>
-          <circle cx="24" cy="29" r="2" fill="#ffb300" stroke="none"/>
-        </svg>
-        <h3 data-split>LUMBAR SUPPORT</h3>
-        <p>Adjustable lumbar holds the spine's natural curve — not the road's opinion of it.</p>
-      </article>
-      <article class="h-card">
-        <span class="h-num">04 / STRUCTURE</span>
-        <svg class="card-icon" viewBox="0 0 48 48" fill="none" stroke="#ffb300" stroke-width="2.4"
-             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <rect x="10" y="10" width="28" height="28" rx="3"/>
-          <path d="M10 24h28M24 10v28" stroke="rgba(255,255,255,0.2)"/>
-        </svg>
-        <h3 data-split>REINFORCED FRAME</h3>
-        <p>Overbuilt steel structure engineered for the worst duty cycle in the range — mining and
-           construction terrain, not just the highway.</p>
-      </article>
-    </div>
-  </section>
-
-  <section class="prob" id="global">
-    <div class="section-vignette"></div>
-      <div class="ambient-spot" aria-hidden="true"></div>
-    <p class="kicker" data-rise>BUILT WITH THE WORLD</p>
-    <h2 data-split>ENGINEERED IN INDIA. PROVEN ON FOUR CONTINENTS.</h2>
-    <p class="lead" data-rise>Every Supremo leaves the line backed by the same alliance that supplies
-      Sears, JA Seating and Alba's home markets — not a badge, a supply chain.</p>
-    <p class="stat" data-rise>7 plants across India. 4 vehicle categories — highway, mining &amp;
-      construction, agriculture, material handling. Markets in the US, UK, Brazil and China.</p>
-    </section>
-
-      <section class="prob" id="specifications">
-    <div class="section-vignette"></div>
-      <div class="ambient-spot" aria-hidden="true"></div>
-      <p class="kicker" data-rise>SPECIFICATIONS</p>
-      <h2 data-split>CERTIFIED &amp; HOMOLOGATED.</h2>
-      <div class="spec-data" data-rise>
-        <div class="spec-col">
-          <h4>Homologation &amp; Standards</h4>
-          <p>European Homologation, ISO 14001, ISO 45001.</p>
-        </div>
-        <div class="spec-col">
-          <h4>Engineering Alliance</h4>
-          <p>Sears Seating (US), JA Seating (JP), Tomei Kasei (JP), Alba Tooling (AT).</p>
-        </div>
-        <div class="spec-col">
-          <h4>Production Capacity</h4>
-          <p>7 plants across India. 4 vehicle categories (highway, mining &amp; construction, agriculture, material handling). Markets in the US, UK, Brazil and China.</p>
-        </div>
-        <div class="spec-col">
-          <h4>R&amp;D Recognition</h4>
-          <p>Recognised by DSIR � Govt. of India.</p>
-        </div>
-      </div>
-    </section>
-
-<section class="turn">
-    <div class="section-vignette"></div>
-      <div class="ambient-spot" aria-hidden="true"></div>
-    <h2 data-split>MAXIMUM ISOLATION.</h2>
-    <p class="lead" data-rise>Engineered to absorb severe structural shock and vibration before it reaches the operator.</p>
-  </section>
-
-
-  <div class="brand-seal" aria-hidden="true">
-    <svg viewBox="0 0 200 200" class="brand-seal-ring">
-      <defs>
-        <path id="sealCirclePath" d="M 100,100 m -75,0 a 75,75 0 1,1 150,0 a 75,75 0 1,1 -150,0"/>
-      </defs>
-      <text class="brand-seal-text">
-        <textPath href="#sealCirclePath" startOffset="0%">GATORCORP &middot; HEAVY-DUTY VEHICLE SEATING &middot; SINCE 1996 &middot; </textPath>
-      </text>
-    </svg>
-    <div class="brand-seal-mark">
-      <svg viewBox="0 0 32 32" width="28" height="28">
-        <rect width="32" height="32" rx="6" fill="#05070d"/>
-        <path d="M6 20l4-6 4 6 4-6 4 6 4-6" stroke="#ffb300" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
+  <div class="head">
+    <div class="head-in">
+      <div class="hb on"><h2>Supremo</h2><p>Flagship</p></div>
+      <div class="hb"><h2>Ultimo</h2><p>Balanced</p></div>
+      <div class="hb"><h2>Leo</h2><p>Durability</p></div>
+      <div class="hb"><h2>Construction</h2><p>Site Duty</p></div>
     </div>
   </div>
-</main>
 
-<footer class="footer-w" id="configurator">
-  <div class="cfg-bg" aria-hidden="true"></div>
-  <div class="cfg-grid">
-    <div class="cfg-stats">
-      <p class="kicker" style="margin-bottom:14px">SEAT SELECT · GATORCORP</p>
-      <h2 class="cfg-name" id="cfgName">Supremo</h2>
-      <p class="cfg-tag" id="cfgTag">FLAGSHIP · LONG-HAUL</p>
-      <div class="stars" id="cfgStars"></div>
-      <div class="cfg-pills" id="cfgPills"></div>
-      <p class="cfg-desc" id="cfgDesc"></p>
-      <div class="thumbs" role="group" aria-label="Select a seat model">
-        <button class="thumb" data-model="supremo" aria-label="Select Supremo" aria-pressed="true">
-          <span>S</span><em>Supremo</em></button>
-        <button class="thumb" data-model="ultimo" aria-label="Select Ultimo" aria-pressed="false">
-          <span>U</span><em>Ultimo</em></button>
-        <button class="thumb" data-model="leo" aria-label="Select Leo" aria-pressed="false">
-          <span>L</span><em>Leo</em></button>
+  <div class="top-right-price">
+    <div class="price-val">Commercial</div>
+    <div class="price-loc">Global Export</div>
+  </div>
+
+  <div class="foot">
+    <div class="foot-left">
+      <div class="tv-stack" aria-hidden="true"></div>
+      <div class="spec-stack">
+        <div class="specset on">
+          <div class="spec"><span>Auto</span><b>Suspension</b></div>
+          <div class="spec"><span>Active</span><b>Ventilation</b></div>
+          <div class="spec"><span>ISO</span><b>Standard</b></div>
+        </div>
+        <div class="specset">
+          <div class="spec"><span>Air</span><b>Suspension</b></div>
+          <div class="spec"><span>Lumbar</span><b>Support</b></div>
+          <div class="spec"><span>Fast</span><b>Service</b></div>
+        </div>
+        <div class="specset">
+          <div class="spec"><span>Mech</span><b>Suspension</b></div>
+          <div class="spec"><span>Strong</span><b>Frame</b></div>
+          <div class="spec"><span>Easy</span><b>Swap</b></div>
+        </div>
+        <div class="specset">
+          <div class="spec"><span>HD Air</span><b>Suspension</b></div>
+          <div class="spec"><span>Bolt</span><b>Mounting</b></div>
+          <div class="spec"><span>Heavy</span><b>Duty</b></div>
+        </div>
       </div>
     </div>
+    <a class="fd" id="fdLink" href="mailto:sales@gator-corp.com">Full details <span class="arr" aria-hidden="true">→</span></a>
+  </div>
 
-    <div class="seat-stage seat-viewer" id="cfgViewer">
-      <model-viewer id="cfgModel" src="/images/supremo-seat.glb" camera-controls  exposure="0.9" shadow-intensity="1" style="width:100%;height:100%;display:none;position:absolute;inset:0;z-index:2;"></model-viewer>
-      <div class="seat3d-card" id="cfgFallback" style="width:100%;height:100%;">
-        <div class="seat-halo" aria-hidden="true"></div>
-        <img class="seat-svg seat-photo" id="seatSvg" src="/images/Supremo.png" alt="GatorCorp Supremo air-suspension seat">
-      <span class="f-tag t1">AIR SUSPENSION</span>
-      <span class="f-tag t2">VENTILATED</span>
-      <span class="f-tag t3">LUMBAR</span>
-      <span class="drag-hint" id="dragHint">DRAG TO ROTATE</span>
-      </div>
-    </div>
+  <div class="arrows">
+    <button id="prevBtn" aria-label="Previous seat">
+      <svg viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg></button>
+    <button id="nextBtn" aria-label="Next seat">
+      <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+  </div>
 
-    </div>
+  <div class="counter">
+    <span class="cur" id="idxCur">01</span><span class="tot">/ 04</span>
+    <span class="pbar"><i id="pFill"></i></span>
+  </div>
+</section>
 
-  <div class="cfg-bar">
-    <div class="cfg-bar-left">
-      <strong>GATORCORP AUTOMOTIVES PVT. LTD.</strong><br>
-      Chennai · Bengaluru · Pune · Nashik · Bawal · Gr. Noida · Rudrapur
-      <span class="demo-note">Concept experience — specifications to be verified with GatorCorp before launch.</span>
-    </div>
-    <div class="cfg-bar-right">
-      <a class="mail-link" href="mailto:sales@gator-corp.com">sales@gator-corp.com</a>
-      <button class="cta-btn" id="startCfg" aria-label="Start configuration">START CONFIGURATION</button>
-    </div>
+<section class="eng" id="engineering">
+  <div class="col"><em>01 — Suspension</em><h3>Air suspension</h3>
+    <p>Auto-levelling pneumatic suspension. The chassis answers to the road; the seat answers to the driver.</p></div>
+  <div class="col"><em>02 — Climate</em><h3>Ventilated design</h3>
+    <p>Engineered airflow through backrest and cushion, so hour ten of a shift arrives feeling like hour two.</p></div>
+  <div class="col"><em>03 — Ergonomics</em><h3>Lumbar support</h3>
+    <p>Adjustable support holds the spine's natural curve — not the road's opinion of it.</p></div>
+</section>
+
+<footer class="outro" id="contact">
+  <h2>Sit down for the long haul.</h2>
+  <a class="cta" href="mailto:sales@gator-corp.com?subject=Catalogue%20request%20(GatorCorp)">
+    Request the catalogue <span aria-hidden="true">→</span></a>
+  <div class="legal">
+    <span>GatorCorp Automotives Pvt. Ltd. · Chennai · Since 1996</span>
+    <span class="note">Concept experience — model names and specs to be verified with GatorCorp before launch.</span>
   </div>
 </footer>
 
-<div class="modal" id="leadModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
-  <div class="modal-backdrop" data-close></div>
-  <div class="modal-card">
-    <button class="modal-x" aria-label="Close dialog" data-close>&times;</button>
-    <p class="kicker" style="margin-bottom:0">GATORCORP · SPEC PACK</p>
-    <h3 id="modalTitle">Request the <span id="fModelName">Supremo</span> pack</h3>
-    <p class="modal-sub">Drawings, homologation notes and fitment data — straight to your inbox.</p>
-    <form id="leadForm">
-      <label>Full name <input name="name" required autocomplete="name"></label>
-      <label>Company <input name="company" required autocomplete="organization"></label>
-      <label>Work email <input name="email" type="email" required autocomplete="email"></label>
-      <label>Fleet size
-        <select name="fleet">
-          <option>Under 10</option><option>10 – 100</option>
-          <option>100 – 1,000</option><option>1,000+</option><option>OEM / Tier-1</option>
-        </select>
-      </label>
-      <button class="cta-btn" type="submit">SEND REQUEST</button>
-    </form>
-    <div class="modal-done" id="modalDone" hidden>
-      <h4>REQUEST PREPARED</h4>
-      <p>Your email client is opening with everything pre-filled. Add anything extra and hit send —
-         it's on its way to <strong>sales@gator-corp.com</strong>.</p>
-    </div>
-    <p class="modal-alt">Prefer plain email? <a href="mailto:sales@gator-corp.com">sales@gator-corp.com</a></p>
-  </div>
-</div>
-
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
-<script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
 <script>
 (function(){
 'use strict';
@@ -616,335 +343,162 @@ const hasGsap = !!(window.gsap && window.ScrollTrigger);
 if (hasGsap) gsap.registerPlugin(ScrollTrigger);
 else document.documentElement.classList.add('no-anim');
 
-/* ---------- smooth scroll (Lenis) ---------- */
-if (hasGsap && !reduced && window.Lenis){
-  const lenis = new Lenis({ smoothWheel:true, lerp:0.1 });
-  lenis.on('scroll', ScrollTrigger.update);
-  gsap.ticker.add(function(t){ lenis.raf(t*1000); });
-  document.querySelectorAll('a[href^="#"]').forEach(function(a){
-    a.addEventListener('click', function(e){
-      var t = document.querySelector(this.getAttribute('href'));
-      if (t){ e.preventDefault(); lenis.scrollTo(t); }
-    });
-  });
-  gsap.ticker.lagSmoothing(0);
+/* ---------- liquid-glass pill nav ---------- */
+const pill = document.querySelector('.pill-nav');
+const ind = byId('pillInd');
+const links = Array.prototype.slice.call(document.querySelectorAll('.pill-links a'));
+let activeLink = links[0];
+
+function moveInd(el){
+  ind.style.width = el.offsetWidth + 'px';
+  ind.style.transform = 'translateX(' + el.offsetLeft + 'px)';
 }
-
-/* ---------- text splitting (own structure; no blind innerHTML on body) ---------- */
-function splitText(el){
-  const text = el.textContent.trim();
-  el.textContent = '';
-  el.setAttribute('aria-label', text);
-  text.split(/(\s+)/).forEach(function(tok){
-    if (/^\s+$/.test(tok)){ el.appendChild(document.createTextNode(' ')); return; }
-    const w = document.createElement('span'); w.className = 'split-word'; w.setAttribute('aria-hidden','true');
-    Array.from(tok).forEach(function(ch){
-      const c = document.createElement('span'); c.className = 'split-char'; c.textContent = ch;
-      w.appendChild(c);
-    });
-    el.appendChild(w);
-  });
-  return el.querySelectorAll('.split-char');
+function setActive(el){
+  activeLink = el;
+  links.forEach(function(a){ a.removeAttribute('aria-current'); });
+  el.setAttribute('aria-current','true');
+  ind.classList.add('move');
+  moveInd(el);
 }
-
-if (hasGsap && !reduced){
-  // char reveals for everything outside the hero (hero handled after loader)
-  document.querySelectorAll('[data-split]').forEach(function(el){
-    if (el.closest('.home-hero')) return;
-    const chars = splitText(el);
-    const insideH = !!el.closest('.h-track');
-    gsap.from(chars, { yPercent:120, autoAlpha:0, duration:0.7, ease:'power3.out', stagger:0.014,
-      scrollTrigger: insideH ? null : { trigger:el, start:'top 82%', once:true } });
-  });
-  document.querySelectorAll('[data-rise]').forEach(function(el){
-    if (el.closest('.h-track') || el.closest('.home-hero')) return;
-    gsap.from(el, { y:26, autoAlpha:0, duration:0.9, ease:'power3.out',
-      scrollTrigger:{ trigger:el, start:'top 86%', once:true } });
-  });
-}
-
-/* ---------- pinned horizontal scroll ---------- */
-if (hasGsap){
-  const mm = gsap.matchMedia();
-  mm.add('(min-width: 769px) and (prefers-reduced-motion: no-preference)', function(){
-    const track = document.querySelector('.h-track');
-    const getDist = function(){ return track.scrollWidth - window.innerWidth; };
-    const tween = gsap.to(track, {
-      x: function(){ return -getDist(); }, ease:'none',
-      scrollTrigger:{ trigger:'.h-section', start:'top top', end:function(){ return '+=' + getDist(); },
-        scrub:0.5, pin:true, anticipatePin:1, invalidateOnRefresh:true }
-    });
-    if (!reduced){
-      document.querySelectorAll('.h-track .h-card').forEach(function(card, index){
-          const icon = card.querySelector('.card-icon');
-          if (icon) icon.style.animationDelay = (index * -0.85) + 's';
-
-          gsap.fromTo(card,
-            { y: 40 },
-            { y: -40, ease: 'none',
-              scrollTrigger: {
-                trigger: card,
-                containerAnimation: tween,
-                start: 'left 110%',
-                end: 'right -10%',
-                scrub: true
-              }
-            }
-          );
-
-          card.style.transformStyle = 'preserve-3d';
-          card.style.perspective = '1000px';
-          
-          card.addEventListener('mousemove', function(e){
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const cx = rect.width / 2;
-            const cy = rect.height / 2;
-            const rotateY = ((x - cx) / cx) * 5;
-            const rotateX = -((y - cy) / cy) * 5;
-            gsap.to(card, { rotationX: rotateX, rotationY: rotateY, yPercent: -4, duration: 0.15, overwrite: 'auto' });
-          });
-          card.addEventListener('mouseleave', function(){
-            gsap.to(card, { rotationX: 0, rotationY: 0, yPercent: 0, duration: 0.5, overwrite: 'auto' });
-          });
-
-          const chars = card.querySelectorAll('.split-char');
-          if (chars.length){
-            gsap.from(chars, { yPercent:120, autoAlpha:0, duration:0.6, ease:'power3.out', stagger:0.012,
-              scrollTrigger:{ trigger:card, containerAnimation:tween, start:'left 75%', once:true } });
-          }
-          const bits = Array.prototype.slice.call(
-            card.querySelectorAll('.h-num, .card-icon, p:not(.hint), .kicker')).filter(Boolean);
-          if (bits.length){
-            gsap.from(bits, { autoAlpha:0, y:20, duration:0.7, stagger:0.08,
-              scrollTrigger:{ trigger:card, containerAnimation:tween, start:'left 75%', once:true } });
-          }
-        });
-      }
-    });
-  }
-
-/* ---------- lightweight 3D-look seat: layered CSS tilt, drag to rotate, no WebGL ---------- */
-const seat3dCard = byId('seat3dCard');
-if (seat3dCard && !reduced){
-  let ry = 16, rx = -6, dragging = false, lastX = 0, lastY = 0, idleFrames = 0;
-  function applyTilt(){ seat3dCard.style.transform = 'rotateX(' + rx + 'deg) rotateY(' + ry + 'deg)'; }
-  applyTilt();
-  function down(e){ dragging = true; idleFrames = 0; const p = e.touches ? e.touches[0] : e; lastX = p.clientX; lastY = p.clientY; }
-  function move(e){
-    if (!dragging) return;
-    const p = e.touches ? e.touches[0] : e;
-    ry = Math.max(-28, Math.min(58, ry + (p.clientX - lastX) * 0.35));
-    rx = Math.max(-22, Math.min(18, rx - (p.clientY - lastY) * 0.25));
-    lastX = p.clientX; lastY = p.clientY; applyTilt();
-  }
-  function up(){ dragging = false; }
-  seat3dCard.addEventListener('pointerdown', down);
-  window.addEventListener('pointermove', move);
-  window.addEventListener('pointerup', up);
-  seat3dCard.addEventListener('touchstart', down, { passive: true });
-  window.addEventListener('touchmove', move, { passive: true });
-  window.addEventListener('touchend', up);
-  let spinDir = 1;
-  (function idleSpin(){
-    idleFrames++;
-    if (!dragging && idleFrames > 90){
-      ry += 0.05 * spinDir;
-      if (ry > 50) spinDir = -1; else if (ry < -20) spinDir = 1;
-      applyTilt();
-    }
-    requestAnimationFrame(idleSpin);
-  
-
-
-  /* ---------- 3D Model Fallback Logic ---------- */
-function initViewer(modelId, fallbackId) {
-  const model = byId(modelId);
-  const fallback = byId(fallbackId);
-  if (!model || !fallback) return;
-  model.addEventListener('load', function() {
-    model.style.display = 'block';
-    fallback.style.display = 'none';
-    if (model.id === 'heroModel') {
-      setTimeout(() => {
-        model.style.filter = 'blur(0) brightness(1)';
-        model.style.opacity = '1';
-      }, 50);
-    }
-    if (model.dataset.pendingColor && model.model && model.model.materials && model.model.materials[0]) {
-      const hex = model.dataset.pendingColor;
-      let c = hex.substring(1).split('');
-      if(c.length === 3) c = [c[0], c[0], c[1], c[1], c[2], c[2]];
-      c = '0x' + c.join('');
-      const rgba = [(c>>16)&255, (c>>8)&255, c&255].map(v => v/255).concat(1);
-      model.model.materials[0].pbrMetallicRoughness.setBaseColorFactor(rgba);
-    }
-  });
-  model.addEventListener('error', function() {
-    model.style.display = 'none';
-    fallback.style.display = 'block';
-  });
-}
-initViewer('heroModel', 'heroFallback');
-initViewer('cfgModel', 'cfgFallback');
-
-})();
-}
-
-// paintSeatAccent('supremo');
-
-if (hasGsap && !reduced){
-  gsap.from(['.cfg-stats > *', '.seat-stage'], { y:34, autoAlpha:0, stagger:0.08,
-    duration:0.9, ease:'power3.out',
-    scrollTrigger:{ trigger:'.footer-w', start:'top 72%', once:true } });
-}
-
-/* ---------- lead modal (the conversion moment) ---------- */
-const modal = byId('leadModal');
-function openModal(){
-  modal.hidden = false;
-  requestAnimationFrame(function(){ modal.classList.add('open'); });
-  const first = modal.querySelector('input');
-  if (first) setTimeout(function(){ first.focus(); }, 250);
-}
-function closeModal(){
-  modal.classList.remove('open');
-  setTimeout(function(){ modal.hidden = true; }, 300);
-}
-byId('startCfg').addEventListener('click', openModal);
-document.querySelectorAll('[data-close]').forEach(function(el){ el.addEventListener('click', closeModal); });
-window.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !modal.hidden) closeModal(); });
-
-byId('leadForm').addEventListener('submit', function(e){
-  e.preventDefault();
-  const el = e.target.elements;
-  const m = MODELS[state.model];
-  const subject = 'Spec pack request — ' + m.name + ' (via GatorCorp web experience)';
-  const body = 'Name: ' + el['name'].value.trim() +
-    '\nCompany: ' + el['company'].value.trim() +
-    '\nEmail: ' + el['email'].value.trim() +
-    '\nFleet size: ' + el['fleet'].value +
-    '\nModel of interest: ' + m.name +
-    '\n\n— Request generated from the GatorCorp concept experience.';
-  window.location.href = 'mailto:sales@gator-corp.com?subject=' + encodeURIComponent(subject) +
-    '&body=' + encodeURIComponent(body);
-  e.target.hidden = true;
-  byId('modalDone').hidden = false;
+links.forEach(function(a){
+  a.addEventListener('mouseenter', function(){ ind.classList.add('move'); moveInd(a); });
+  a.addEventListener('focus', function(){ ind.classList.add('move'); moveInd(a); });
 });
+byId('pillLinks').addEventListener('mouseleave', function(){ moveInd(activeLink); });
 
-/* ---------- loader ---------- */
-let loadedFlag = false;
-function heroIntro(){
-  if (!hasGsap || reduced) return;
-  const chars = splitText(document.querySelector('.home-hero [data-split]'));
-  gsap.from(chars, { yPercent:120, autoAlpha:0, duration:1, ease:'power4.out', stagger:0.035, delay:0.05 });
-  gsap.from('.home-hero [data-rise]', { y:26, autoAlpha:0, duration:0.9, stagger:0.1, delay:0.3, ease:'power3.out' });
-  gsap.from('.brand-seal', { autoAlpha:0, duration:1.2, delay:0.8, ease:'power2.out' });
+const secs = ['products','engineering','contact'].map(function(id){ return byId(id); });
+function checkSection(){
+  const mid = innerHeight * 0.45;
+  let target = null;
+  secs.forEach(function(s, k){
+    const r = s.getBoundingClientRect();
+    if (r.top <= mid && r.bottom >= mid) target = links[k];
+  });
+  if (!target) target = links[0];
+  if (target !== activeLink) setActive(target);
 }
-function finishLoad(){
-  if (loadedFlag) return; loadedFlag = true;
-  const L = byId('loader');
-  L.classList.add('done');
-  setTimeout(function(){ L.remove(); }, 700);
-  heroIntro();
-  if (hasGsap) ScrollTrigger.refresh();
+window.addEventListener('scroll', function(){
+  pill.classList.toggle('scrolled', window.scrollY > 60);
+  checkSection();
+}, { passive:true });
+window.addEventListener('resize', function(){ moveInd(activeLink); }, { passive:true });
+setActive(links[0]);                    /* place the bubble */
+ind.classList.add('on');                /* then fade it in  */
+if (document.fonts && document.fonts.ready){
+  document.fonts.ready.then(function(){ moveInd(activeLink); });  /* re-measure after fonts load */
 }
-window.addEventListener('load', finishLoad);
-setTimeout(finishLoad, 2600); // fallback if 'load' stalls on a CDN
-if (reduced) setTimeout(finishLoad, 250);
-if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ if (hasGsap) ScrollTrigger.refresh(); });
 
+/* ---------- gallery product state ---------- */
+const N = 4;
+let idx = -1; let ST = null;
+const gallery = document.querySelector('.gallery');
 
-
-/* ---------- Scroll-driven Camera Orbit ---------- */
-if (hasGsap && !reduced) {
-  const heroModel = byId('heroModel');
-  if (heroModel) {
-    ScrollTrigger.create({
-      trigger: '.hero',
-      start: 'top top',
-      end: 'bottom top',
-      scrub: 1,
-      onUpdate: self => {
-        const theta = 20 + self.progress * 70;
-        heroModel.cameraOrbit = theta + 'deg 78deg 2.4m';
-      }
-    });
-  }
+function setProduct(i){
+  if (i === idx) return; idx = i;
+  document.querySelectorAll('.hb').forEach(function(el,k){ el.classList.toggle('on', k===i); });
+  document.querySelectorAll('.tv').forEach(function(el,k){ el.classList.toggle('on', k===i); });
+  document.querySelectorAll('.specset').forEach(function(el,k){ el.classList.toggle('on', k===i); });
   
-  const cfgModel = byId('cfgModel');
-  if (cfgModel) {
-    ScrollTrigger.create({
-      trigger: '.footer-w',
-      start: 'top bottom',
-      end: 'bottom bottom',
-      scrub: 1,
-      onUpdate: self => {
-        const theta = 20 + self.progress * 70;
-        cfgModel.cameraOrbit = theta + 'deg 78deg 2.4m';
+  if (typeof ST === 'undefined' || !ST) {
+     document.querySelectorAll('.face').forEach(function(el,k){ 
+       el.classList.toggle('on', k===i); 
+       if(k===i) el.style.opacity = 1;
+     });
+  }
+
+  byId('idxCur').textContent = String(i+1).padStart(2,'0');
+  const names = ['Supremo','Ultimo','Leo','Construction'];
+  byId('fdLink').href = 'mailto:sales@gator-corp.com?subject=' +
+    encodeURIComponent('Full details — ' + names[i] + ' (GatorCorp)');
+}
+setProduct(0);
+
+
+if (hasGsap && !reduced){
+  const tl = gsap.timeline({ defaults:{ ease:'none' },
+    scrollTrigger:{
+      trigger:'.gallery', start:'top top',
+      end:function(){ return '+=' + Math.round(window.innerHeight * 4.0); },
+      scrub:0.8, pin:true, anticipatePin:1, invalidateOnRefresh:true,
+      onUpdate:function(self){
+        let p = self.progress;
+        let modelP = Math.max(0, (p - 0.25) / 0.75);
+        setProduct(Math.min(N-1, Math.max(0, Math.round(modelP*(N-1)))));
+        byId('pFill').style.width = (modelP*100).toFixed(2) + '%';
       }
-    });
-  }
-}
+    }});
 
-
-
-  /* ---------- section parallax ---------- */
-  if (hasGsap && !reduced) {
-    gsap.utils.toArray('.prob, .turn').forEach(function(section) {
-      const tl = gsap.timeline({
-        scrollTrigger: { trigger: section, start: 'top bottom', end: 'bottom top', scrub: 1 }
-      });
-      
-      const vignette = section.querySelector('.section-vignette');
-      if(vignette) tl.fromTo(vignette, { yPercent: 0 }, { yPercent: 6 }, 0);
-      
-      const kicker = section.querySelector('.kicker');
-      if(kicker) tl.fromTo(kicker, { yPercent: 0 }, { yPercent: -8 }, 0);
-      
-      const h2 = section.querySelector('h2');
-      if(h2) tl.fromTo(h2, { yPercent: 0 }, { yPercent: -20 }, 0);
-      
-      const sub = section.querySelectorAll('.lead, .sub, .spec-data');
-      if(sub.length) tl.fromTo(sub, { yPercent: 0 }, { yPercent: -32 }, 0);
-      
-      const stat = section.querySelector('.stat');
-      if(stat) tl.fromTo(stat, { yPercent: 0 }, { yPercent: -40 }, 0);
-    });
+  const target = document.querySelector('.zoom-target');
+  const text = document.querySelector('.mask-text');
+  if (target && text) {
+    const tr = target.getBoundingClientRect();
+    const textr = text.getBoundingClientRect();
+    const originX = ((tr.left + tr.width / 2) - textr.left) / textr.width * 100;
+    const originY = ((tr.top + tr.height / 2) - textr.top) / textr.height * 100;
+    gsap.set(text, { transformOrigin: `${originX}% ${originY}%` });
   }
 
-  /* ---------- 3D Model Fallback Logic ---------- */
-function initViewer(modelId, fallbackId) {
-  const model = byId(modelId);
-  const fallback = byId(fallbackId);
-  if (!model || !fallback) return;
-  model.addEventListener('load', function() {
-    model.style.display = 'block';
-    fallback.style.display = 'none';
-    if (model.id === 'heroModel') {
-      setTimeout(() => {
-        model.style.filter = 'blur(0) brightness(1)';
-        model.style.opacity = '1';
-      }, 50);
-    }
-    if (model.dataset.pendingColor && model.model && model.model.materials && model.model.materials[0]) {
-      const hex = model.dataset.pendingColor;
-      let c = hex.substring(1).split('');
-      if(c.length === 3) c = [c[0], c[0], c[1], c[1], c[2], c[2]];
-      c = '0x' + c.join('');
-      const rgba = [(c>>16)&255, (c>>8)&255, c&255].map(v => v/255).concat(1);
-      model.model.materials[0].pbrMetallicRoughness.setBaseColorFactor(rgba);
-    }
+  tl.to('.mask-text', { scale: 200, duration: 1.0, ease: 'power3.in' }, 0);
+  tl.to('.hero-mask', { autoAlpha: 0, duration: 0.2, ease: 'none' }, 0.8);
+
+  const faces = document.querySelectorAll('.face');
+  const walls = document.querySelectorAll('.bg-wall');
+  faces.forEach((f, i) => {
+    if (i > 0) gsap.set(f, { autoAlpha: 0, x: '20vw', y: '-10vh' });
+    else gsap.set(f, { autoAlpha: 1, x: 0, y: 0 });
   });
-  model.addEventListener('error', function() {
-    model.style.display = 'none';
-    fallback.style.display = 'block';
+
+  const maskDur = 1.0;
+  for (let i = 0; i < N - 1; i++) {
+    const stepStart = maskDur + i;
+    const stepDur = 1.0;
+    
+    tl.to(faces[i], {
+      autoAlpha: 0,
+      x: '-20vw',
+      y: '10vh',
+      duration: stepDur,
+      ease: 'power1.inOut'
+    }, stepStart);
+    tl.to(walls[i], { autoAlpha: 0, duration: stepDur, ease: 'power1.inOut' }, stepStart);
+    
+    tl.to(faces[i+1], {
+      autoAlpha: 1,
+      x: '0vw',
+      y: '0vh',
+      duration: stepDur,
+      ease: 'power1.inOut'
+    }, stepStart);
+    tl.to(walls[i+1], { autoAlpha: 1, duration: stepDur, ease: 'power1.inOut' }, stepStart);
+  }
+  ST = tl.scrollTrigger;
+
+  gsap.from('.stage', { scale:0.94, y:26, duration:1.1, ease:'power3.out',
+    scrollTrigger:{ trigger:'.gallery', start:'top 75%', once:true } });
+  gsap.from('.engineering .block', {
+    scrollTrigger: { trigger:'.engineering', start:'top 80%' },
+    y:40, autoAlpha:0, duration:0.9, stagger:0.1, ease:'power3.out'
   });
 }
-initViewer('heroModel', 'heroFallback');
-initViewer('cfgModel', 'cfgFallback');
 
+function go(i){
+  i = Math.min(N-1, Math.max(0, i));
+  if (ST){
+    const y = ST.start + (ST.end - ST.start) * (i/(N-1));
+    window.scrollTo({ top:y, behavior: reduced ? 'auto' : 'smooth' });
+  } else {
+    document.querySelector('.stage').style.transform = 'rotateX(' + (-i*90) + 'deg)';
+    setProduct(i);
+  }
+}
+byId('prevBtn').addEventListener('click', function(){ go(idx-1); });
+byId('nextBtn').addEventListener('click', function(){ go(idx+1); });
+window.addEventListener('keydown', function(e){
+  const r = gallery.getBoundingClientRect();
+  if (r.bottom < innerHeight*0.25 || r.top > innerHeight*0.75) return;
+  if (e.key === 'ArrowDown'){ e.preventDefault(); go(idx+1); }
+  else if (e.key === 'ArrowUp'){ e.preventDefault(); go(idx-1); }
+});
 })();
 </script>
 </body>
