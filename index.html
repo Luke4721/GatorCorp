@@ -18,7 +18,7 @@
 :root{
   --bg:#05070d; --ink:#e9f1ff; --dim:#b7c6e4; --muted:#7d93bd;
   --cyan:#7fd0ff; --amber:#ffb300; --amber-soft:#ffd27a;
-  --line:rgba(127,208,255,.16);
+  --line:rgba(255,255,255,.16);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{background:var(--bg)}
@@ -37,9 +37,9 @@ a{color:var(--amber-soft)}
   font-weight:700;letter-spacing:.34em;font-size:13px}
 .brand span{color:var(--amber)}
 .hud{position:fixed;top:20px;right:22px;z-index:2;text-align:right;pointer-events:none;
-  font-size:11px;letter-spacing:.18em;color:#9db4dd}
+  font-size:11px;letter-spacing:.18em;color:var(--dim)}
 .hud-row{display:flex;gap:10px;justify-content:flex-end}
-.hud-k{color:#5f7396}
+.hud-k{color:var(--dim)}
 .hud-v{color:var(--amber-soft);font-weight:600;font-variant-numeric:tabular-nums}
 .hud-phase{margin-top:6px;font-size:9px;letter-spacing:.26em}
 .hud-phase.ok{color:var(--cyan)} .hud-phase.warn{color:#ffcf87}
@@ -51,7 +51,7 @@ a{color:var(--amber-soft)}
 #loader.done{opacity:0;pointer-events:none}
 .loader-mark{font-weight:700;letter-spacing:.34em;font-size:clamp(1.3rem,3vw,1.9rem)}
 .loader-mark span{color:var(--amber)}
-.loader-bar{width:min(260px,60vw);height:2px;background:rgba(127,208,255,.15);overflow:hidden}
+.loader-bar{width:min(260px,60vw);height:2px;background:rgba(255,255,255,.15);overflow:hidden}
 .loader-bar i{display:block;height:100%;width:0;background:var(--amber);animation:loadBar 1s ease forwards}
 @keyframes loadBar{to{width:100%}}
 
@@ -63,26 +63,62 @@ h2{font-size:clamp(2.4rem,6.5vw,5.4rem);font-weight:700;letter-spacing:-.02em;li
   text-shadow:0 4px 40px rgba(0,0,0,.85)}
 .lead{margin-top:26px;max-width:52ch;color:var(--dim);font-size:clamp(1.02rem,1.6vw,1.3rem);
   line-height:1.65;text-shadow:0 2px 24px rgba(0,0,0,.9)}
-.stat{margin-top:20px;max-width:46ch;color:#8fb2e8;font-size:.95rem;line-height:1.65;
+.stat{margin-top:20px;max-width:46ch;color:var(--dim);font-size:.95rem;line-height:1.65;
   border-left:2px solid rgba(255,179,0,.5);padding-left:16px;text-shadow:0 2px 24px rgba(0,0,0,.9)}
 .split-word{display:inline-block;white-space:nowrap}
 .split-char{display:inline-block;will-change:transform}
 
+
+/* ============ home hero ============ */
+.home-hero { min-height: 100svh; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; overflow: hidden; padding: 14vh 8vw; }
+.home-bg { position: absolute; inset: 0; z-index: -1; background: url('/images/cine/frame_0040.jpg') center/cover no-repeat; opacity: 0.35; filter: brightness(0.7); }
+.home-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(5,7,13,0.1) 0%, #05070d 95%); }
+.nav { position:absolute; top:0; left:0; width:100%; padding: 26px 8vw; display:flex; justify-content:space-between; align-items:center; z-index:10; }
+.nav .logo { text-decoration:none; font-weight:700; letter-spacing:0.34em; font-size:13px; color:var(--ink); }
+.nav .logo span { color:var(--amber); }
+.nav-links { display:flex; gap:32px; font-size:11px; letter-spacing:0.18em; text-transform:uppercase; }
+.nav-links a { text-decoration:none; color:var(--dim); transition:color 0.2s; }
+.nav-links a:hover { color:var(--ink); }
+.home-content { z-index: 2; padding: 0 5vw; max-width: 800px; display: flex; flex-direction: column; align-items: center; }
+.corp-mark { font-size: clamp(2.4rem, 6vw, 5.4rem); font-weight: 700; letter-spacing: 0.25em; text-indent: 0.125em; color: var(--ink); line-height: 1; margin-bottom: 24px; text-shadow: 0 4px 40px rgba(0,0,0,0.85); }
+.corp-mark span { color: var(--amber); }
+.corp-tagline { font-size: clamp(1rem, 2vw, 1.25rem); color: var(--dim); line-height: 1.6; letter-spacing: 0.04em; max-width: 32ch; margin: 0 auto; text-shadow: 0 2px 24px rgba(0,0,0,0.9); }
+
+
+/* ============ product teasers ============ */
+.product-teasers { position: relative; z-index: 3; background: var(--bg); padding: 10vh 5vw; }
+.teasers-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; max-width: 1400px; margin: 0 auto; }
+.teasers-grid .h-card { width: auto; margin-right: 0; flex: none; height: 100%; justify-content: flex-start; padding: 40px 32px; background: linear-gradient(180deg,rgba(7,12,22,.6),rgba(7,12,22,.1)); }
+.teasers-grid .h-card p { font-size: 14px; margin-bottom: 24px; flex-grow: 1; }
+.teasers-grid .h-card h3 { font-size: clamp(1.4rem, 2.4vw, 2rem); margin-bottom: 8px; }
+.teaser-link { display: inline-flex; align-items: center; gap: 8px; margin-top: auto; color: var(--amber); text-decoration: none; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; border-top: 1px solid rgba(255,179,0,0.2); padding-top: 20px; transition: all 0.2s; }
+.teaser-link:hover { color: #ffe3ae; border-top-color: var(--amber); }
+.teaser-link[aria-disabled="true"] { color: var(--dim); border-top-color: var(--line); pointer-events: none; opacity: 0.5; }
+
 /* ============ hero ============ */
 .hero{min-height:100svh;display:flex;flex-direction:column;justify-content:center;
-  padding:0 8vw;position:relative}
+  padding:14vh 8vw;position:relative}
 .hero h1{font-size:clamp(3.1rem,10vw,8.8rem);font-weight:700;line-height:.98;letter-spacing:-.025em;
   text-shadow:0 6px 60px rgba(0,0,0,.9)}
 .hero .sub{margin-top:28px;max-width:46ch;color:var(--dim);font-size:clamp(1rem,1.5vw,1.25rem);
   line-height:1.6;text-shadow:0 2px 24px rgba(0,0,0,.9)}
 .scroll-cue{position:absolute;bottom:calc(4vh + 64px);left:8vw;display:flex;align-items:center;gap:14px;
-  color:#8fb2e8;font-size:11px;letter-spacing:.3em}
+  color:var(--dim);font-size:11px;letter-spacing:.3em}
 .chev{width:10px;height:10px;border-right:2px solid var(--amber);border-bottom:2px solid var(--amber);
   transform:rotate(45deg);animation:cue 1.6s ease-in-out infinite}
 @keyframes cue{50%{transform:rotate(45deg) translate(5px,5px);opacity:.35}}
 
-/* ============ problem sections ============ */
-.prob{min-height:115vh;display:flex;flex-direction:column;justify-content:center;padding:0 8vw}
+
+  /* ============ ambient spot ============ */
+  .ambient-spot {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+    background: radial-gradient(circle 800px at var(--spot-x, 50%) var(--spot-y, 50%), rgba(255,179,0,0.06), transparent 70%);
+  }
+  /* ============ problem sections ============ */
+.prob{min-height:115vh;display:flex;flex-direction:column;justify-content:center;padding:14vh 8vw;position:relative;overflow:hidden;}
 
 /* ============ horizontal benefits (GSAP pinned) ============ */
 .h-section{position:relative;height:100vh;overflow:hidden}
@@ -95,10 +131,10 @@ h2{font-size:clamp(2.4rem,6.5vw,5.4rem);font-weight:700;letter-spacing:-.02em;li
 .h-card h3{font-size:clamp(1.5rem,2.8vw,2.4rem);letter-spacing:-.01em}
 .h-card p{color:var(--dim);line-height:1.65;max-width:44ch}
 .card-icon{width:54px;height:54px}
-.hint{color:#8fb2e8;font-size:11px;letter-spacing:.3em}
+.hint{color:var(--dim);font-size:11px;letter-spacing:.3em}
 
 /* ============ turn ============ */
-.turn{min-height:110vh;display:flex;flex-direction:column;justify-content:center;padding:0 8vw 14vh}
+.turn{min-height:110vh;display:flex;flex-direction:column;justify-content:center;padding:14vh 8vw 14vh;position:relative;overflow:hidden;}
 
 /* ============ footer: seat configurator ============ */
 .footer-w{position:relative;min-height:100svh;display:flex;flex-direction:column;z-index:3}
@@ -108,7 +144,7 @@ h2{font-size:clamp(2.4rem,6.5vw,5.4rem);font-weight:700;letter-spacing:-.02em;li
   background:radial-gradient(130% 100% at 50% -10%,#14213a 0%,#0a1322 45%,#05070d 100%);
   box-shadow:inset 0 0 160px 40px rgba(2,4,9,.85)}
 .cfg-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.05fr 1.25fr .95fr;
-  gap:3vw;align-items:center;padding:9vh 5vw 12vh;flex:1}
+  gap:3vw;align-items:center;padding:13vh 5vw 17vh;flex:1}
 .cfg-name{font-size:clamp(3.1rem,7.5vw,6.6rem);font-weight:700;letter-spacing:-.02em;line-height:1}
 .cfg-tag{color:var(--amber-soft);letter-spacing:.3em;font-size:12px;margin:12px 0 16px}
 .stars{position:relative;height:24px;width:132px}
@@ -124,7 +160,7 @@ h2{font-size:clamp(2.4rem,6.5vw,5.4rem);font-weight:700;letter-spacing:-.02em;li
 .cfg-desc{margin-top:18px;color:var(--dim);max-width:40ch;line-height:1.6;font-size:.98rem}
 .thumbs{display:flex;gap:18px;margin-top:32px}
 .thumb{display:flex;flex-direction:column;align-items:center;gap:8px;background:none;border:0;
-  cursor:pointer;color:#9db4dd;font-family:inherit}
+  cursor:pointer;color:var(--dim);font-family:inherit}
 .thumb span{width:60px;height:60px;border-radius:50%;display:grid;place-items:center;font-weight:700;
   font-size:20px;color:var(--amber-soft);border:1px solid rgba(255,198,106,.35);
   background:radial-gradient(circle at 35% 30%,rgba(255,179,0,.14),rgba(255,179,0,.03) 70%),rgba(10,16,28,.6);
@@ -144,7 +180,7 @@ h2{font-size:clamp(2.4rem,6.5vw,5.4rem);font-weight:700;letter-spacing:-.02em;li
 .seat-svg{width:min(40vh,78%);position:relative;z-index:1;
   filter:drop-shadow(0 0 34px rgba(255,179,0,.22)) drop-shadow(0 24px 50px rgba(0,0,0,.6));
   animation:seatFloat 6s ease-in-out infinite}
-.drag-hint{position:absolute;bottom:6%;z-index:2;font-size:10px;letter-spacing:.22em;color:#8fb2e8;
+.drag-hint{position:absolute;bottom:6%;z-index:2;font-size:10px;letter-spacing:.22em;color:var(--dim);
   pointer-events:none;opacity:.8}
 @keyframes seatFloat{50%{transform:translateY(-14px)}}
 .bellow{animation:bellow 2.6s ease-in-out infinite}
@@ -158,23 +194,14 @@ h2{font-size:clamp(2.4rem,6.5vw,5.4rem);font-weight:700;letter-spacing:-.02em;li
 .f-tag.t3{bottom:20%;left:6%;animation-delay:2.6s}
 @keyframes tagFloat{50%{transform:translateY(-8px)}}
 
-.cfg-hud{display:flex;flex-direction:column;gap:14px}
-.hud-panel{background:rgba(10,16,28,.5);backdrop-filter:blur(12px);
-  border:1px solid rgba(127,208,255,.15);border-radius:12px;padding:16px 18px}
-.hud-panel h4{font-size:10px;letter-spacing:.28em;color:#9fd8ff;font-weight:500;margin-bottom:12px}
-.chip-row{display:flex;flex-wrap:wrap;gap:8px}
-.chip{font-size:9.5px;letter-spacing:.14em;color:#b7d9ff;border:1px solid rgba(127,208,255,.25);
-  background:rgba(127,208,255,.06);padding:5px 9px;border-radius:5px}
-.hud-note{font-size:10px;color:#7d93bd;letter-spacing:.2em;text-align:right}
-
 .cfg-bar{position:sticky;bottom:0;z-index:2;display:flex;justify-content:space-between;
   align-items:center;gap:18px;padding:12px 5vw;background:rgba(6,10,18,.6);
-  backdrop-filter:blur(16px);border-top:1px solid rgba(127,208,255,.14)}
-.cfg-bar-left{font-size:11px;letter-spacing:.12em;color:#9db4dd}
+  backdrop-filter:blur(16px);border-top:1px solid rgba(255,255,255,.14)}
+.cfg-bar-left{font-size:11px;letter-spacing:.12em;color:var(--dim)}
 .cfg-bar-left strong{color:var(--ink);letter-spacing:.2em;font-size:10px}
-.demo-note{display:block;font-size:9px;color:#5f7396;margin-top:3px}
+.demo-note{display:block;font-size:9px;color:var(--dim);margin-top:3px}
 .cfg-bar-right{display:flex;align-items:center;gap:22px}
-.mail-link{color:#9db4dd;font-size:12px;letter-spacing:.06em}
+.mail-link{color:var(--dim);font-size:12px;letter-spacing:.06em}
 .cta-btn{cursor:pointer;border:0;font-family:inherit;font-weight:700;letter-spacing:.22em;
   font-size:12px;color:#1a1204;padding:15px 30px;border-radius:999px;text-transform:uppercase;
   background:linear-gradient(135deg,#ffd27a,#ffb300);
@@ -188,7 +215,7 @@ h2{font-size:clamp(2.4rem,6.5vw,5.4rem);font-weight:700;letter-spacing:-.02em;li
 .modal-backdrop{position:absolute;inset:0;background:rgba(3,5,10,.72);backdrop-filter:blur(8px);
   opacity:0;transition:opacity .3s}
 .modal-card{position:relative;width:min(520px,94vw);
-  background:linear-gradient(180deg,#0d1526,#080d18);border:1px solid rgba(127,208,255,.2);
+  background:linear-gradient(180deg,#0d1526,#080d18);border:1px solid rgba(255,255,255,.2);
   border-radius:16px;padding:34px;box-shadow:0 40px 100px rgba(0,0,0,.65);
   opacity:0;transform:translateY(24px) scale(.97);transition:all .35s cubic-bezier(.2,.8,.2,1)}
 .modal.open .modal-backdrop{opacity:1}
@@ -196,34 +223,32 @@ h2{font-size:clamp(2.4rem,6.5vw,5.4rem);font-weight:700;letter-spacing:-.02em;li
 .modal-card h3{font-size:1.45rem;margin:10px 0 8px}
 .modal-sub{color:var(--dim);font-size:.9rem}
 #leadForm{display:grid;gap:14px;margin-top:22px}
-#leadForm label{display:grid;gap:6px;font-size:10px;letter-spacing:.22em;color:#9db4dd;text-transform:uppercase}
-#leadForm input,#leadForm select{background:rgba(7,12,22,.8);border:1px solid rgba(127,208,255,.2);
+#leadForm label{display:grid;gap:6px;font-size:10px;letter-spacing:.22em;color:var(--dim);text-transform:uppercase}
+#leadForm input,#leadForm select{background:rgba(7,12,22,.8);border:1px solid rgba(255,255,255,.2);
   border-radius:8px;color:var(--ink);font-family:inherit;font-size:.95rem;padding:11px 13px;
   letter-spacing:normal;text-transform:none}
 #leadForm input:focus,#leadForm select:focus{outline:none;border-color:var(--amber);
   box-shadow:0 0 0 3px rgba(255,179,0,.18)}
 #leadForm .cta-btn{width:100%;margin-top:6px}
-.modal-x{position:absolute;top:14px;right:16px;background:none;border:0;color:#9db4dd;
+.modal-x{position:absolute;top:14px;right:16px;background:none;border:0;color:var(--dim);
   font-size:22px;cursor:pointer;line-height:1}
 .modal-done h4{color:var(--amber-soft);letter-spacing:.24em;font-size:13px;margin-bottom:10px}
 .modal-done p{color:var(--dim);font-size:.92rem;line-height:1.6}
-.modal-alt{margin-top:16px;font-size:11px;color:#7d93bd}
+.modal-alt{margin-top:16px;font-size:11px;color:var(--dim)}
 
 /* ============ responsive / fallbacks ============ */
 @media (max-width:960px){
   .cfg-grid{grid-template-columns:1fr;gap:44px;padding-top:13vh}
   .seat-stage{min-height:46vh}
-  .cfg-hud{flex-direction:row;flex-wrap:wrap}
-  .hud-panel{flex:1 1 240px}
   .cfg-bar{flex-direction:column;align-items:flex-start}
 }
 @media (max-width:768px){
-  .h-section{height:auto;padding:14vh 0 10vh}
+  .h-section{height:auto;padding:20vh 0 14vh}
   .h-track{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   .h-track::-webkit-scrollbar{display:none}
 }
 @media (prefers-reduced-motion:reduce){
-  .h-section{height:auto;padding:14vh 0 10vh}
+  .h-section{height:auto;padding:20vh 0 14vh}
   .h-track{overflow-x:auto;scrollbar-width:none}
   .chev,.seat-svg,.f-tag,.bellow,.loader-bar i{animation:none}
 }
@@ -231,21 +256,61 @@ h2{font-size:clamp(2.4rem,6.5vw,5.4rem);font-weight:700;letter-spacing:-.02em;li
 .no-anim .h-track{overflow-x:auto}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
   clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  .spec-data{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:40px;margin-top:40px;max-width:1000px}
+  .spec-col h4{font-size:11px;letter-spacing:.2em;color:var(--amber-soft);margin-bottom:12px;text-transform:uppercase}
+  .spec-col p{font-size:14px;color:var(--dim);line-height:1.6}
+
+  .brand-seal{position:fixed;bottom:8vh;right:8vw;width:130px;height:130px;z-index:90}
+  .brand-seal-ring{width:100%;height:100%;animation:sealSpin 24s linear infinite}
+  .brand-seal-text{font-size:9px;letter-spacing:.14em;fill:#e8f1ff;text-transform:uppercase}
+  .brand-seal-mark{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+  @keyframes sealSpin{to{transform:rotate(360deg)}}
+  @media (prefers-reduced-motion:reduce){.brand-seal-ring{animation:none}}
+
+/* ============ spec icons ============ */
+.spec-icons {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  width: 100%;
+  max-width: 900px;
+  margin: 30px auto 0;
+  justify-content: center;
+}
+.spec-icon {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.spec-icon svg {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  stroke: var(--amber);
+}
+.spec-icon span {
+  font-size: 10px;
+  letter-spacing: .15em;
+  color: var(--dim);
+  line-height: 1.4;
+  text-align: left;
+}
+
+
+.section-vignette {
+  position: absolute;
+  top: -20%; bottom: -20%; left: -5%; right: -5%;
+  z-index: -2;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0 1px, transparent 1px 3px);
+}
+
 </style>
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 </head>
 <body>
-
-<canvas id="world" aria-hidden="true"></canvas>
-<div class="vignette" aria-hidden="true"></div>
-
-<a class="brand" href="#top" aria-label="GatorCorp home">GATOR<span>CORP</span></a>
-
-<div class="hud" aria-hidden="true">
-  <div class="hud-row"><span class="hud-k">KM</span><span class="hud-v" id="hudKm">0000.0</span></div>
-  <div class="hud-row"><span class="hud-k">VIB</span><span class="hud-v" id="hudVib">0.18 m/s²</span></div>
-  <div class="hud-phase ok" id="hudPhase">SURFACE: NOMINAL</div>
-  <div class="hud-phase gold" id="hudDriver" style="display:none">DRIVER: WALKAROUND</div>
-</div>
+  <div class="vignette"></div>
 
 <div id="loader" aria-hidden="true">
   <div class="loader-mark">GATOR<span>CORP</span></div>
@@ -257,36 +322,99 @@ h2{font-size:clamp(2.4rem,6.5vw,5.4rem);font-weight:700;letter-spacing:-.02em;li
     off-highway truck jolts over deteriorating terrain, the driver steps out partway through to walk you
     through the seat's engineering, and the ride settles as the suspension takes over. The text below
     covers the same content without the animation.</p>
-  <header class="hero" id="top">
-    <p class="eyebrow kicker" data-rise>GATORCORP · HEAVY-DUTY VEHICLE SEATING · SINCE 1996</p>
-    <h1 data-split>1,000 KM. ONE SEAT.</h1>
-    <p class="sub" data-rise>Scroll to run a full day's haul across the worst road we could draw —
-      and watch what happens when there's a Supremo in the cab.</p>
-    <div class="scroll-cue" aria-hidden="true"><span>SCROLL TO DRIVE</span><i class="chev"></i></div>
-  </header>
+  
+    <section class="home-hero" id="top">
+      <div class="home-bg" aria-hidden="true">
+        <div class="home-overlay"></div>
+      </div>
+      
+      <div class="nav" data-rise>
+        <a href="#top" class="logo">GATOR<span>CORP</span></a>
+        <div class="nav-links"><a href="#">Products</a><a href="#">Support</a></div>
+      </div>
 
-  <section class="prob">
-    <p class="kicker" data-rise>PHASE 01 — THE HAUL</p>
-    <h2 data-split>POTHOLE #47.</h2>
-    <p class="lead" data-rise>Axle two takes the impact. The chassis takes the shock.
-      Your driver's spine takes both — a few hundred times per shift.</p>
-    <p class="stat" data-rise>Whole-body vibration is regulated for a reason: EU Directive 2002/44/EC
-      caps a driver's daily exposure. The road doesn't check the calendar.</p>
-  </section>
+      <div class="home-content">
+        <h1 class="corp-mark" data-rise>GATOR<span>CORP</span></h1>
+        <p class="corp-tagline" data-split>Heavy-duty seating engineered for the world's hardest jobs</p>
+      </div>
+      
+      <div class="scroll-cue" data-rise>
+        <span>SCROLL</span>
+        <div class="chev"></div>
+      </div>
+    </section>
 
-  <section class="prob">
-    <p class="kicker" data-rise>PHASE 02 — HOUR NINE</p>
-    <h2 data-split>THE ROAD IS WINNING.</h2>
-    <p class="lead" data-rise>Reaction time drifts. Lumbar load compounds. The invoice arrives later —
-      as medical leave, damage claims, and drivers who hand in the keys.</p>
-    <p class="stat" data-rise>Unless something engineered stands between the road and the driver.
-      Keep scrolling.</p>
-  </section>
+    <section class="product-teasers" id="teasers">
+      <div class="teasers-grid">
+        <article class="h-card" data-rise>
+          <span class="h-num">FLAGSHIP &middot; LONG-HAUL</span>
+          <h3 data-split>SUPREMO</h3>
+          <p>Pneumatic auto-levelling suspension, ventilated backrest, full lumbar command.</p>
+          <a href="#supremoHero" class="teaser-link">Explore &rarr;</a>
+        </article>
+        <article class="h-card" data-rise>
+          <span class="h-num">LONG-HAUL &middot; BALANCED</span>
+          <h3 data-split>ULTIMO</h3>
+          <p>Air-suspension comfort tuned for the middle of the range.</p>
+          <a href="#" class="teaser-link" aria-disabled="true">Explore &rarr;</a>
+        </article>
+        <article class="h-card" data-rise>
+          <span class="h-num">FLEET &middot; DURABILITY FIRST</span>
+          <h3 data-split>LEO</h3>
+          <p>Mechanical suspension, overbuilt structure, wear parts you can swap at the depot.</p>
+          <a href="#" class="teaser-link" aria-disabled="true">Explore &rarr;</a>
+        </article>
+        <article class="h-card" data-rise>
+          <span class="h-num">SEVERE DUTY &middot; OFF-HIGHWAY</span>
+          <h3 data-split>CONSTRUCTION &amp; AG</h3>
+          <p>Heavy-duty structural integrity engineered for construction and agricultural applications.</p>
+          <a href="#" class="teaser-link" aria-disabled="true">Explore &rarr;</a>
+        </article>
+      </div>
+    </section>
+
+    <header class="hero" id="supremoHero">
+  <p class="kicker" data-rise style="text-align:center; margin-bottom: 2vh;">FEATURED &middot; OUR FLAGSHIP</p>
+    <h1 data-split class="hero-title">SUPREMO</h1>
+  <div class="seat-stage seat-viewer" id="heroViewer" data-rise style="width:100%;">
+    <model-viewer id="heroModel" src="/images/supremo-seat.glb" camera-controls exposure="0.9" shadow-intensity="1" style="width:100%;height:100%;display:none;position:absolute;inset:0;z-index:2; filter: blur(14px) brightness(0.7); opacity:0; transition: filter 0.8s ease-out, opacity 0.8s ease-out;"></model-viewer>
+    <div class="seat3d-card" id="heroFallback" style="width:100%;height:100%;">
+      <div class="seat-halo" aria-hidden="true"></div>
+      <img class="seat-svg seat-photo" src="/images/Supremo.png" alt="GatorCorp Supremo air-suspension seat">
+    </div>
+    <div class="shadow-ellipse"></div>
+    <div class="badge-360">360&deg;</div>
+  </div>
+  <div class="cta-row" data-rise>
+    <button class="btn primary">BUILD YOURS</button>
+    <button class="btn secondary">REQUEST SPEC PACK</button>
+  </div>
+  <p class="hero-fact" data-rise>EST. 1996 &middot; 7 PLANTS, INDIA &middot; US &middot; UK &middot; BRAZIL &middot; CHINA &middot; DSIR-RECOGNISED R&amp;D</p>
+  <div class="spec-icons" data-rise>
+    <div class="spec-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      <span>ECONOMICS</span>
+    </div>
+    <div class="spec-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+      <span>RELIABILITY</span>
+    </div>
+    <div class="spec-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>COMFORT</span>
+    </div>
+  </div>
+</header>
+
+
+  
+
+  
 
   <section class="h-section" aria-label="Supremo engineering benefits">
     <div class="h-track">
       <article class="h-card">
-        <p class="kicker" style="margin-bottom:0">PHASE 03 — THE ENGINEERING</p>
+        <p class="kicker" style="margin-bottom:0">THE ENGINEERING</p>
         <h2 data-split>THREE WAYS SUPREMO TAKES THE ROAD OUT OF THE RIDE</h2>
         <p class="hint">KEEP SCROLLING →</p>
       </article>
@@ -295,8 +423,8 @@ h2{font-size:clamp(2.4rem,6.5vw,5.4rem);font-weight:700;letter-spacing:-.02em;li
         <svg class="card-icon" viewBox="0 0 48 48" fill="none" stroke="#ffb300" stroke-width="2.4"
              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M6 20l5-7 5 7 5-7 5 7 5-7 5 7 5-7"/>
-          <path d="M12 30q12-9 24 0" stroke="#7fd0ff"/>
-          <path d="M14 37h20" stroke="#7fd0ff" opacity=".5"/>
+          <path d="M12 30q12-9 24 0" stroke="rgba(255,255,255,0.2)"/>
+          <path d="M14 37h20" stroke="rgba(255,255,255,0.2)" opacity=".5"/>
         </svg>
         <h3 data-split>AIR SUSPENSION</h3>
         <p>Auto-levelling pneumatic suspension. The chassis answers to the road; the seat answers
@@ -304,7 +432,7 @@ h2{font-size:clamp(2.4rem,6.5vw,5.4rem);font-weight:700;letter-spacing:-.02em;li
       </article>
       <article class="h-card">
         <span class="h-num">02 / CLIMATE</span>
-        <svg class="card-icon" viewBox="0 0 48 48" fill="none" stroke="#7fd0ff" stroke-width="2.4"
+        <svg class="card-icon" viewBox="0 0 48 48" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2.4"
              stroke-linecap="round" aria-hidden="true">
           <path d="M8 16q9-8 18 0t18 0"/>
           <path d="M8 26q9-8 18 0t18 0" opacity=".7"/>
@@ -316,7 +444,7 @@ h2{font-size:clamp(2.4rem,6.5vw,5.4rem);font-weight:700;letter-spacing:-.02em;li
       </article>
       <article class="h-card">
         <span class="h-num">03 / ERGONOMICS</span>
-        <svg class="card-icon" viewBox="0 0 48 48" fill="none" stroke="#7fd0ff" stroke-width="2.4"
+        <svg class="card-icon" viewBox="0 0 48 48" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2.4"
              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M24 6v5l-5 6 5 6-5 6 5 6v7"/>
           <circle cx="24" cy="17" r="2" fill="#ffb300" stroke="none"/>
@@ -330,7 +458,7 @@ h2{font-size:clamp(2.4rem,6.5vw,5.4rem);font-weight:700;letter-spacing:-.02em;li
         <svg class="card-icon" viewBox="0 0 48 48" fill="none" stroke="#ffb300" stroke-width="2.4"
              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <rect x="10" y="10" width="28" height="28" rx="3"/>
-          <path d="M10 24h28M24 10v28" stroke="#7fd0ff"/>
+          <path d="M10 24h28M24 10v28" stroke="rgba(255,255,255,0.2)"/>
         </svg>
         <h3 data-split>REINFORCED FRAME</h3>
         <p>Overbuilt steel structure engineered for the worst duty cycle in the range — mining and
@@ -340,37 +468,65 @@ h2{font-size:clamp(2.4rem,6.5vw,5.4rem);font-weight:700;letter-spacing:-.02em;li
   </section>
 
   <section class="prob" id="global">
-    <p class="kicker" data-rise>PHASE 03.5 — BUILT WITH THE WORLD</p>
+    <div class="section-vignette"></div>
+      <div class="ambient-spot" aria-hidden="true"></div>
+    <p class="kicker" data-rise>BUILT WITH THE WORLD</p>
     <h2 data-split>ENGINEERED IN INDIA. PROVEN ON FOUR CONTINENTS.</h2>
     <p class="lead" data-rise>Every Supremo leaves the line backed by the same alliance that supplies
       Sears, JA Seating and Alba's home markets — not a badge, a supply chain.</p>
     <p class="stat" data-rise>7 plants across India. 4 vehicle categories — highway, mining &amp;
       construction, agriculture, material handling. Markets in the US, UK, Brazil and China.</p>
-    <div class="cfg-hud" style="margin-top:8px;max-width:640px">
-      <div class="hud-panel">
-        <h4>HOMOLOGATION &amp; STANDARDS</h4>
-        <div class="chip-row">
-          <span class="chip">EUROPEAN HOMOLOGATION</span><span class="chip">ISO 14001</span>
-          <span class="chip">ISO 45001</span>
+    </section>
+
+      <section class="prob" id="specifications">
+    <div class="section-vignette"></div>
+      <div class="ambient-spot" aria-hidden="true"></div>
+      <p class="kicker" data-rise>SPECIFICATIONS</p>
+      <h2 data-split>CERTIFIED &amp; HOMOLOGATED.</h2>
+      <div class="spec-data" data-rise>
+        <div class="spec-col">
+          <h4>Homologation &amp; Standards</h4>
+          <p>European Homologation, ISO 14001, ISO 45001.</p>
+        </div>
+        <div class="spec-col">
+          <h4>Engineering Alliance</h4>
+          <p>Sears Seating (US), JA Seating (JP), Tomei Kasei (JP), Alba Tooling (AT).</p>
+        </div>
+        <div class="spec-col">
+          <h4>Production Capacity</h4>
+          <p>7 plants across India. 4 vehicle categories (highway, mining &amp; construction, agriculture, material handling). Markets in the US, UK, Brazil and China.</p>
+        </div>
+        <div class="spec-col">
+          <h4>R&amp;D Recognition</h4>
+          <p>Recognised by DSIR � Govt. of India.</p>
         </div>
       </div>
-      <div class="hud-panel">
-        <h4>ENGINEERING ALLIANCE</h4>
-        <div class="chip-row">
-          <span class="chip">SEARS SEATING · US</span><span class="chip">JA SEATING · JP</span>
-          <span class="chip">TOMEI KASEI · JP</span><span class="chip">ALBA TOOLING · AT</span>
-        </div>
-      </div>
-    </div>
+    </section>
+
+<section class="turn">
+    <div class="section-vignette"></div>
+      <div class="ambient-spot" aria-hidden="true"></div>
+    <h2 data-split>MAXIMUM ISOLATION.</h2>
+    <p class="lead" data-rise>Engineered to absorb severe structural shock and vibration before it reaches the operator.</p>
   </section>
 
-  <section class="turn">
-    <p class="kicker" data-rise>PHASE 04 — THE ARRIVAL</p>
-    <h2 data-split>CHAOS IN. CALM OUT.</h2>
-    <p class="lead" data-rise>Same road. Same thousand kilometres. The driver steps out level, cool
-      and in command — because a Supremo spent the whole run doing the driving's hardest work.
-      That's not comfort. That's control.</p>
-  </section>
+
+  <div class="brand-seal" aria-hidden="true">
+    <svg viewBox="0 0 200 200" class="brand-seal-ring">
+      <defs>
+        <path id="sealCirclePath" d="M 100,100 m -75,0 a 75,75 0 1,1 150,0 a 75,75 0 1,1 -150,0"/>
+      </defs>
+      <text class="brand-seal-text">
+        <textPath href="#sealCirclePath" startOffset="0%">GATORCORP &middot; HEAVY-DUTY VEHICLE SEATING &middot; SINCE 1996 &middot; </textPath>
+      </text>
+    </svg>
+    <div class="brand-seal-mark">
+      <svg viewBox="0 0 32 32" width="28" height="28">
+        <rect width="32" height="32" rx="6" fill="#05070d"/>
+        <path d="M6 20l4-6 4 6 4-6 4 6 4-6" stroke="#ffb300" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+  </div>
 </main>
 
 <footer class="footer-w" id="configurator">
@@ -393,10 +549,11 @@ h2{font-size:clamp(2.4rem,6.5vw,5.4rem);font-weight:700;letter-spacing:-.02em;li
       </div>
     </div>
 
-    <div class="seat-stage" id="seatStage">
-      <div class="seat3d-card" id="seat3dCard">
+    <div class="seat-stage seat-viewer" id="cfgViewer">
+      <model-viewer id="cfgModel" src="/images/supremo-seat.glb" camera-controls  exposure="0.9" shadow-intensity="1" style="width:100%;height:100%;display:none;position:absolute;inset:0;z-index:2;"></model-viewer>
+      <div class="seat3d-card" id="cfgFallback" style="width:100%;height:100%;">
         <div class="seat-halo" aria-hidden="true"></div>
-        <img class="seat-svg" id="seatSvg" src="/assets/seats/Supremo.png" alt="GatorCorp Supremo air-suspension seat" style="max-height: 480px; object-fit: contain;">
+        <img class="seat-svg seat-photo" id="seatSvg" src="/images/Supremo.png" alt="GatorCorp Supremo air-suspension seat">
       <span class="f-tag t1">AIR SUSPENSION</span>
       <span class="f-tag t2">VENTILATED</span>
       <span class="f-tag t3">LUMBAR</span>
@@ -404,24 +561,7 @@ h2{font-size:clamp(2.4rem,6.5vw,5.4rem);font-weight:700;letter-spacing:-.02em;li
       </div>
     </div>
 
-    <aside class="cfg-hud">
-      <div class="hud-panel">
-        <h4>HOMOLOGATION & STANDARDS</h4>
-        <div class="chip-row">
-          <span class="chip">EUROPEAN HOMOLOGATION</span><span class="chip">ISO 14001</span>
-          <span class="chip">ISO 45001</span>
-        </div>
-      </div>
-      <div class="hud-panel">
-        <h4>ENGINEERING ALLIANCE</h4>
-        <div class="chip-row">
-          <span class="chip">SEARS SEATING · US</span><span class="chip">JA SEATING · JP</span>
-          <span class="chip">TOMEI KASEI · JP</span><span class="chip">ALBA TOOLING · AT</span>
-        </div>
-      </div>
-      <p class="hud-note">R&amp;D RECOGNISED BY DSIR · GOVT. OF INDIA</p>
-    </aside>
-  </div>
+    </div>
 
   <div class="cfg-bar">
     <div class="cfg-bar-left">
@@ -481,6 +621,12 @@ if (hasGsap && !reduced && window.Lenis){
   const lenis = new Lenis({ smoothWheel:true, lerp:0.1 });
   lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add(function(t){ lenis.raf(t*1000); });
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    a.addEventListener('click', function(e){
+      var t = document.querySelector(this.getAttribute('href'));
+      if (t){ e.preventDefault(); lenis.scrollTo(t); }
+    });
+  });
   gsap.ticker.lagSmoothing(0);
 }
 
@@ -504,14 +650,14 @@ function splitText(el){
 if (hasGsap && !reduced){
   // char reveals for everything outside the hero (hero handled after loader)
   document.querySelectorAll('[data-split]').forEach(function(el){
-    if (el.closest('.hero')) return;
+    if (el.closest('.home-hero')) return;
     const chars = splitText(el);
     const insideH = !!el.closest('.h-track');
     gsap.from(chars, { yPercent:120, autoAlpha:0, duration:0.7, ease:'power3.out', stagger:0.014,
       scrollTrigger: insideH ? null : { trigger:el, start:'top 82%', once:true } });
   });
   document.querySelectorAll('[data-rise]').forEach(function(el){
-    if (el.closest('.h-track')) return;
+    if (el.closest('.h-track') || el.closest('.home-hero')) return;
     gsap.from(el, { y:26, autoAlpha:0, duration:0.9, ease:'power3.out',
       scrollTrigger:{ trigger:el, start:'top 86%', once:true } });
   });
@@ -529,82 +675,55 @@ if (hasGsap){
         scrub:0.5, pin:true, anticipatePin:1, invalidateOnRefresh:true }
     });
     if (!reduced){
-      document.querySelectorAll('.h-card').forEach(function(card){
-        const chars = card.querySelectorAll('.split-char');
-        if (chars.length){
-          gsap.from(chars, { yPercent:120, autoAlpha:0, duration:0.6, ease:'power3.out', stagger:0.012,
-            scrollTrigger:{ trigger:card, containerAnimation:tween, start:'left 75%', once:true } });
-        }
-        const bits = Array.prototype.slice.call(
-          card.querySelectorAll('.h-num, .card-icon, p:not(.hint), .kicker')).filter(Boolean);
-        if (bits.length){
-          gsap.from(bits, { autoAlpha:0, y:20, duration:0.7, stagger:0.08,
-            scrollTrigger:{ trigger:card, containerAnimation:tween, start:'left 75%', once:true } });
-        }
-      });
-    }
-  });
-}
+      document.querySelectorAll('.h-track .h-card').forEach(function(card, index){
+          const icon = card.querySelector('.card-icon');
+          if (icon) icon.style.animationDelay = (index * -0.85) + 's';
 
-/* ---------- configurator ---------- */
-const MODELS = {
-  supremo: { name:'Supremo', tag:'FLAGSHIP · LONG-HAUL', rating:5,
-    pills:['AIR SUSPENSION','AUTO-LEVELLING','VENTILATED BACKREST'],
-    desc:"Pneumatic auto-levelling suspension, ventilated backrest, full lumbar command. For fleets that count cost per kilometre, not per seat." },
-  ultimo:  { name:'Ultimo', tag:'LONG-HAUL · BALANCED', rating:4.5,
-    pills:['AIR SUSPENSION','ERGONOMIC CONTOUR','LUMBAR SUPPORT'],
-    desc:"Air-suspension comfort tuned for the middle of the range. The workhorse that never feels like one." },
-  leo:     { name:'Leo', tag:'FLEET · DURABILITY FIRST', rating:4,
-    pills:['MECHANICAL SUSPENSION','REINFORCED FRAME','FAST-SERVICE WEAR PARTS'],
-    desc:"Mechanical suspension, overbuilt structure, wear parts you can swap at the depot. Built to run, and run, and run." }
-};
-const state = { model:'supremo' };
-const ACCENT_COLOR = { supremo: '#ffb300', ultimo: '#ffc94d', leo: '#8a97ad' };
-function paintSeatAccent(id){
-  const acc = byId('seatAccent');
-  if (acc) acc.setAttribute('stroke', ACCENT_COLOR[id] || '#ffb300');
-}
-const STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2l2.95 6.1 6.7.9-4.9 4.7 1.25 6.65L12 17.4l-6 3.15L7.25 13.9 2.35 9.2l6.7-.9z"/></svg>';
+          gsap.fromTo(card,
+            { y: 40 },
+            { y: -40, ease: 'none',
+              scrollTrigger: {
+                trigger: card,
+                containerAnimation: tween,
+                start: 'left 110%',
+                end: 'right -10%',
+                scrub: true
+              }
+            }
+          );
 
-function renderStars(el, rating){
-  el.innerHTML = '<div class="stars-bg">' + STAR.repeat(5) + '</div>' +
-    '<div class="stars-clip" style="width:' + (rating/5*100).toFixed(1) + '%">' +
-    '<div class="stars-fg">' + STAR.repeat(5) + '</div></div>';
-  el.setAttribute('aria-label', 'Rated ' + rating + ' of 5');
-}
+          card.style.transformStyle = 'preserve-3d';
+          card.style.perspective = '1000px';
+          
+          card.addEventListener('mousemove', function(e){
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const cx = rect.width / 2;
+            const cy = rect.height / 2;
+            const rotateY = ((x - cx) / cx) * 5;
+            const rotateX = -((y - cy) / cy) * 5;
+            gsap.to(card, { rotationX: rotateX, rotationY: rotateY, yPercent: -4, duration: 0.15, overwrite: 'auto' });
+          });
+          card.addEventListener('mouseleave', function(){
+            gsap.to(card, { rotationX: 0, rotationY: 0, yPercent: 0, duration: 0.5, overwrite: 'auto' });
+          });
 
-function selectModel(id, animate){
-  const m = MODELS[id]; state.model = id;
-  byId('cfgName').textContent = m.name;
-  byId('cfgTag').textContent = m.tag;
-  renderStars(byId('cfgStars'), m.rating);
-  byId('cfgPills').innerHTML = m.pills.map(function(p){ return '<span class="pill">' + p + '</span>'; }).join('');
-  byId('cfgDesc').textContent = m.desc;
-  byId('fModelName').textContent = m.name;
-  
-  const seatImg = byId('seatSvg');
-  if (seatImg && seatImg.tagName.toLowerCase() === 'img') {
-    seatImg.src = '/assets/seats/' + m.name + '.png';
-    seatImg.alt = m.name + ' Seat';
+          const chars = card.querySelectorAll('.split-char');
+          if (chars.length){
+            gsap.from(chars, { yPercent:120, autoAlpha:0, duration:0.6, ease:'power3.out', stagger:0.012,
+              scrollTrigger:{ trigger:card, containerAnimation:tween, start:'left 75%', once:true } });
+          }
+          const bits = Array.prototype.slice.call(
+            card.querySelectorAll('.h-num, .card-icon, p:not(.hint), .kicker')).filter(Boolean);
+          if (bits.length){
+            gsap.from(bits, { autoAlpha:0, y:20, duration:0.7, stagger:0.08,
+              scrollTrigger:{ trigger:card, containerAnimation:tween, start:'left 75%', once:true } });
+          }
+        });
+      }
+    });
   }
-
-  document.querySelectorAll('.thumb').forEach(function(b){
-    const on = b.dataset.model === id;
-    b.classList.toggle('active', on);
-    b.setAttribute('aria-pressed', String(on));
-  });
-  if (typeof paintSeatAccent === 'function') paintSeatAccent(id);
-  if (animate && hasGsap && !reduced){
-    const chars = splitText(byId('cfgName'));
-    gsap.from(chars, { yPercent:120, autoAlpha:0, stagger:0.025, duration:0.5, ease:'power3.out' });
-    gsap.from('#cfgPills .pill', { autoAlpha:0, y:10, stagger:0.05, duration:0.35 });
-    gsap.from('#cfgDesc', { autoAlpha:0, y:12, duration:0.45 });
-  }
-}
-selectModel('supremo', false);
-document.querySelectorAll('.thumb').forEach(function(b){
-  b.addEventListener('click', function(){ selectModel(b.dataset.model, true); });
-});
 
 /* ---------- lightweight 3D-look seat: layered CSS tilt, drag to rotate, no WebGL ---------- */
 const seat3dCard = byId('seat3dCard');
@@ -636,13 +755,47 @@ if (seat3dCard && !reduced){
       applyTilt();
     }
     requestAnimationFrame(idleSpin);
-  })();
+  
+
+
+  /* ---------- 3D Model Fallback Logic ---------- */
+function initViewer(modelId, fallbackId) {
+  const model = byId(modelId);
+  const fallback = byId(fallbackId);
+  if (!model || !fallback) return;
+  model.addEventListener('load', function() {
+    model.style.display = 'block';
+    fallback.style.display = 'none';
+    if (model.id === 'heroModel') {
+      setTimeout(() => {
+        model.style.filter = 'blur(0) brightness(1)';
+        model.style.opacity = '1';
+      }, 50);
+    }
+    if (model.dataset.pendingColor && model.model && model.model.materials && model.model.materials[0]) {
+      const hex = model.dataset.pendingColor;
+      let c = hex.substring(1).split('');
+      if(c.length === 3) c = [c[0], c[0], c[1], c[1], c[2], c[2]];
+      c = '0x' + c.join('');
+      const rgba = [(c>>16)&255, (c>>8)&255, c&255].map(v => v/255).concat(1);
+      model.model.materials[0].pbrMetallicRoughness.setBaseColorFactor(rgba);
+    }
+  });
+  model.addEventListener('error', function() {
+    model.style.display = 'none';
+    fallback.style.display = 'block';
+  });
+}
+initViewer('heroModel', 'heroFallback');
+initViewer('cfgModel', 'cfgFallback');
+
+})();
 }
 
-paintSeatAccent('supremo');
+// paintSeatAccent('supremo');
 
 if (hasGsap && !reduced){
-  gsap.from(['.cfg-stats > *', '.seat-stage', '.cfg-hud > *'], { y:34, autoAlpha:0, stagger:0.08,
+  gsap.from(['.cfg-stats > *', '.seat-stage'], { y:34, autoAlpha:0, stagger:0.08,
     duration:0.9, ease:'power3.out',
     scrollTrigger:{ trigger:'.footer-w', start:'top 72%', once:true } });
 }
@@ -684,10 +837,10 @@ byId('leadForm').addEventListener('submit', function(e){
 let loadedFlag = false;
 function heroIntro(){
   if (!hasGsap || reduced) return;
-  const chars = splitText(document.querySelector('.hero h1'));
+  const chars = splitText(document.querySelector('.home-hero [data-split]'));
   gsap.from(chars, { yPercent:120, autoAlpha:0, duration:1, ease:'power4.out', stagger:0.035, delay:0.05 });
-  gsap.from(['.hero .eyebrow', '.hero .sub'], { y:18, autoAlpha:0, duration:0.8, stagger:0.12, delay:0.3 });
-  gsap.from('.scroll-cue', { autoAlpha:0, duration:0.6, delay:0.9 });
+  gsap.from('.home-hero [data-rise]', { y:26, autoAlpha:0, duration:0.9, stagger:0.1, delay:0.3, ease:'power3.out' });
+  gsap.from('.brand-seal', { autoAlpha:0, duration:1.2, delay:0.8, ease:'power2.out' });
 }
 function finishLoad(){
   if (loadedFlag) return; loadedFlag = true;
@@ -702,548 +855,96 @@ setTimeout(finishLoad, 2600); // fallback if 'load' stalls on a CDN
 if (reduced) setTimeout(finishLoad, 250);
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ if (hasGsap) ScrollTrigger.refresh(); });
 
-/* ==================================================================
-   THE CANVAS JOURNEY — Dark Isometric Blueprint
-   Own requestAnimationFrame loop, lerping toward window.scrollY,
-   fully independent of the GSAP DOM work (guardrail #4).
-   ================================================================== */
-const canvas = byId('world');
-const ctx = canvas.getContext('2d');
-let W = 0, H = 0, bgGrad = null;
 
-function resizeCanvas(){
-  const DPR = Math.min(window.devicePixelRatio || 1, 1.75);
-  W = window.innerWidth; H = window.innerHeight;
-  canvas.width = Math.round(W * DPR); canvas.height = Math.round(H * DPR);
-  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
-  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-  bgGrad = ctx.createLinearGradient(0, 0, 0, H);
-  bgGrad.addColorStop(0, '#05070d'); bgGrad.addColorStop(0.6, '#081020'); bgGrad.addColorStop(1, '#0a0f1c');
-}
-window.addEventListener('resize', function(){ resizeCanvas(); if (reduced) renderStatic(); }, { passive:true });
-resizeCanvas();
 
-/* ENGINE TUNING */
-const S = 1.3;      // horizontal iso scale (px per unit) — bigger so the rig reads as hero art, not a stray sliver
-const ISOY = 0.55;  // vertical iso slope
-const HS = 2.5;     // height scale (px per unit)
-const SEG = 95;     // hazard segment length in units
-const CAM_X = 0.70; // camera anchor, fraction of width — right of the left-aligned copy column
-const CAM_Y = 0.76; // camera anchor, fraction of height
-
-let d = 0, prog = 0, chaos = 0, iso = 0, curY = 0, curVib = 0.18, fc = 0;
-const vibHist = [], particles = [];
-
-/* ---------- walkaround: driver steps out to point at the engineering cards ---------- */
-const hSection = document.querySelector('.h-section');
-let exitK = 0; // 0 = seated in cab, 1 = out and pointing at the current card
-
-function updateWalker(){
-  if (!hSection){ exitK += (0 - exitK) * 0.06; return; }
-  const r = hSection.getBoundingClientRect();
-  const within = r.top < H * 0.4 && r.bottom > H * 0.6;
-  exitK += ((within ? 1 : 0) - exitK) * 0.06;
-}
-
-function nearestCard(){
-  const cards = document.querySelectorAll('.h-card');
-  if (!cards.length) return null;
-  const cx0 = W / 2;
-  let best = null, bestD = Infinity;
-  cards.forEach(function(card){
-    const r = card.getBoundingClientRect();
-    if (r.width < 4) return;
-    const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
-    const dd = Math.abs(cx - cx0);
-    if (dd < bestD){ bestD = dd; best = { x: cx, y: cy }; }
-  });
-  return best;
-}
-
-function smoothstep(a, b, x){
-  x = Math.min(1, Math.max(0, (x - a) / (b - a)));
-  return x * x * (3 - 2 * x);
-}
-function hash(n){ const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); }
-function proj(u, z, h){
-  const r = u - d;
-  return { x: W * CAM_X + (r - z) * S, y: H * CAM_Y + (r + z) * S * ISOY - h * HS };
-}
-function mixC(a, b, t, al){
-  const r = [0,1,2].map(function(i){ return Math.round(a[i] + (b[i] - a[i]) * t); });
-  return 'rgba(' + r[0] + ',' + r[1] + ',' + r[2] + ',' + al + ')';
-}
-const CYANC = [120,190,255], AMBERC = [255,190,80];
-
-function terrain(u){
-  const c = chaos;
-  let h = (Math.sin(u * 0.011) * 5 + Math.sin(u * 0.029 + 2.1) * 2.5) * (0.35 + c * 1.65) * (1 - iso * 0.8);
-  h += c * (Math.sin(u * 0.09) * 9 + Math.sin(u * 0.24 + 1.3) * 5 + Math.sin(u * 0.53 + 4.2) * 2.5);
-  for (let k = Math.floor((u - 140) / SEG); k <= Math.floor((u + 140) / SEG); k++){
-    const r1 = hash(k);
-    if (r1 < 0.62 * c){
-      const c0 = k * SEG + hash(k + 0.5) * SEG;
-      const depth = (r1 > 0.3 ? -1 : 1) * (10 + hash(k + 9.7) * 10) * c;
-      const dx = u - c0;
-      h += depth * Math.exp(-(dx * dx) / (2 * 26 * 26));
-    }
-  }
-  return h;
-}
-
-function poly(pts, fill, stroke, lw){
-  ctx.beginPath();
-  pts.forEach(function(p, i){ i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y); });
-  ctx.closePath();
-  if (fill){ ctx.fillStyle = fill; ctx.fill(); }
-  if (stroke){ ctx.strokeStyle = stroke; ctx.lineWidth = lw || 1; ctx.stroke(); }
-}
-function isoBox(u0, u1, z0, z1, h0, h1, pal){
-  const a = proj(u0,z0,h1), b = proj(u1,z0,h1), c = proj(u1,z1,h1), e = proj(u0,z1,h1);
-  const f = proj(u1,z0,h0), g = proj(u1,z1,h0), i = proj(u0,z1,h0);
-  poly([e, c, b, a], pal.top, pal.line, 1);
-  poly([i, e, c, g], pal.z, pal.line, 1);
-  poly([b, c, g, f], pal.r, pal.line, 1);
-}
-const PAL = {
-  trailer:{ top:'#16223a', r:'#0f1a2e', z:'#0b1424', line:'rgba(150,200,255,.4)' },
-  rail:   { top:'#1a2740', r:'#10192c', z:'#0c1424', line:'rgba(150,200,255,.35)' },
-  cab:    { top:'#1d2b46', r:'#12203a', z:'#0d182c', line:'rgba(160,215,255,.55)' }
-};
-
-function drawGrid(UR){
-  ctx.lineWidth = 1;
-  ctx.strokeStyle = 'rgba(90,140,220,0.07)';
-  for (let z = -36; z <= 36; z += 6){
-    ctx.beginPath();
-    for (let u = d - UR; u <= d + UR; u += 44){
-      const p = proj(u, z, 0);
-      (u <= d - UR + 0.01) ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y);
-    }
-    ctx.stroke();
-  }
-  ctx.strokeStyle = 'rgba(90,140,220,0.05)';
-  const u0 = Math.floor((d - UR) / 130) * 130;
-  for (let u = u0; u <= d + UR; u += 130){
-    ctx.beginPath();
-    for (let z = -36; z <= 36; z += 6){
-      const p = proj(u, z, 0);
-      (z === -36) ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y);
-    }
-    ctx.stroke();
-  }
-}
-
-function drawRoad(UR){
-  const step = 18, pts = [];
-  for (let u = d - UR; u <= d + UR; u += step) pts.push({ u:u, h:terrain(u) });
-  [ -24, 24 ].forEach(function(zo){
-    ctx.strokeStyle = mixC(CYANC, AMBERC, iso, 0.4); ctx.lineWidth = 1.4;
-    ctx.beginPath();
-    pts.forEach(function(pt, i){
-      const p = proj(pt.u, zo, pt.h);
-      i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y);
+/* ---------- Scroll-driven Camera Orbit ---------- */
+if (hasGsap && !reduced) {
+  const heroModel = byId('heroModel');
+  if (heroModel) {
+    ScrollTrigger.create({
+      trigger: '.hero',
+      start: 'top top',
+      end: 'bottom top',
+      scrub: 1,
+      onUpdate: self => {
+        const theta = 20 + self.progress * 70;
+        heroModel.cameraOrbit = theta + 'deg 78deg 2.4m';
+      }
     });
-    ctx.stroke();
-  });
-  ctx.strokeStyle = mixC(CYANC, AMBERC, iso, 0.2);
-  for (let u = Math.ceil((d - UR) / 72) * 72; u <= d + UR; u += 72){
-    const h = terrain(u), a = proj(u, -24, h), b = proj(u, 24, h);
-    ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
   }
-  ctx.save();
-  ctx.shadowColor = mixC(CYANC, AMBERC, iso, 0.8); ctx.shadowBlur = 8;
-  ctx.strokeStyle = mixC(CYANC, AMBERC, iso, 0.55); ctx.lineWidth = 1.2;
-  ctx.beginPath();
-  pts.forEach(function(pt, i){
-    const p = proj(pt.u, 0, pt.h);
-    i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y);
-  });
-  ctx.stroke();
-  ctx.restore();
+  
+  const cfgModel = byId('cfgModel');
+  if (cfgModel) {
+    ScrollTrigger.create({
+      trigger: '.footer-w',
+      start: 'top bottom',
+      end: 'bottom bottom',
+      scrub: 1,
+      onUpdate: self => {
+        const theta = 20 + self.progress * 70;
+        cfgModel.cameraOrbit = theta + 'deg 78deg 2.4m';
+      }
+    });
+  }
 }
 
-function drawHazards(UR){
-  if (chaos < 0.05) return;
-  for (let k = Math.floor((d - UR) / SEG); k <= Math.floor((d + UR) / SEG); k++){
-    const r1 = hash(k);
-    if (r1 >= 0.62 * chaos) continue;
-    const c0 = k * SEG + hash(k + 0.5) * SEG;
-    const zc = -16 + hash(k + 3.3) * 20;
-    const h = terrain(c0);
-    const p = proj(c0, zc, h);
-    if (r1 > 0.3){ // pothole
-      ctx.fillStyle = '#02040a';
-      ctx.beginPath(); ctx.ellipse(p.x, p.y, 15, 6.5, 0, 0, Math.PI * 2); ctx.fill();
-      ctx.strokeStyle = 'rgba(255,90,100,' + (0.25 + chaos * 0.55) + ')'; ctx.lineWidth = 1.2;
-      ctx.beginPath(); ctx.ellipse(p.x, p.y, 15, 6.5, 0, 0, Math.PI * 2); ctx.stroke();
-    } else { // bump spike
-      const a = proj(c0 - 8, zc, h), b = proj(c0 + 8, zc, h), apex = proj(c0, zc, h + 12);
-      poly([a, b, apex], null, 'rgba(255,179,0,' + (0.3 + chaos * 0.5) + ')', 1.3);
+
+
+  /* ---------- section parallax ---------- */
+  if (hasGsap && !reduced) {
+    gsap.utils.toArray('.prob, .turn').forEach(function(section) {
+      const tl = gsap.timeline({
+        scrollTrigger: { trigger: section, start: 'top bottom', end: 'bottom top', scrub: 1 }
+      });
+      
+      const vignette = section.querySelector('.section-vignette');
+      if(vignette) tl.fromTo(vignette, { yPercent: 0 }, { yPercent: 6 }, 0);
+      
+      const kicker = section.querySelector('.kicker');
+      if(kicker) tl.fromTo(kicker, { yPercent: 0 }, { yPercent: -8 }, 0);
+      
+      const h2 = section.querySelector('h2');
+      if(h2) tl.fromTo(h2, { yPercent: 0 }, { yPercent: -20 }, 0);
+      
+      const sub = section.querySelectorAll('.lead, .sub, .spec-data');
+      if(sub.length) tl.fromTo(sub, { yPercent: 0 }, { yPercent: -32 }, 0);
+      
+      const stat = section.querySelector('.stat');
+      if(stat) tl.fromTo(stat, { yPercent: 0 }, { yPercent: -40 }, 0);
+    });
+  }
+
+  /* ---------- 3D Model Fallback Logic ---------- */
+function initViewer(modelId, fallbackId) {
+  const model = byId(modelId);
+  const fallback = byId(fallbackId);
+  if (!model || !fallback) return;
+  model.addEventListener('load', function() {
+    model.style.display = 'block';
+    fallback.style.display = 'none';
+    if (model.id === 'heroModel') {
+      setTimeout(() => {
+        model.style.filter = 'blur(0) brightness(1)';
+        model.style.opacity = '1';
+      }, 50);
     }
-  }
-}
-
-let ju = 0, dbobU = 0;
-function drawTruck(t){
-  ju = reduced ? 0 : chaos * (Math.sin(t * 27) * 2.6 + Math.sin(t * 39 + 1.7) * 1.9);
-  dbobU = ju * 1.55 * (1 - iso * 0.93);
-  const hF = terrain(d + 30), hR = terrain(d - 16);
-  const hb = Math.max(hF, hR) + 15 + ju;             // jittering chassis floor
-  const hbS = Math.max(hF, hR) + 15 + ju * (1 - iso * 0.95); // isolated seat floor
-
-  const sp = proj(d + 6, 0, terrain(d));
-  ctx.fillStyle = 'rgba(2,4,9,.5)';
-  ctx.beginPath(); ctx.ellipse(sp.x, sp.y + 3, 150, 28, 0, 0, Math.PI * 2); ctx.fill();
-
-  // dump bed — tall hauler body with a raised rim rail, not a slim trailer
-  isoBox(d - 160, d - 6, -17, 17, hb, hb + 30, PAL.trailer);
-  isoBox(d - 160, d - 6, -17, 17, hb + 30, hb + 36, PAL.rail);
-  drawPayload();
-
-  function wheel(u, h, z){
-    const p = proj(u, z, h);
-    ctx.fillStyle = '#060a12'; ctx.strokeStyle = 'rgba(160,200,255,.7)'; ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.arc(p.x, p.y - 7, 13, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    ctx.save(); ctx.translate(p.x, p.y - 7); ctx.rotate(d * 0.12);
-    ctx.strokeStyle = 'rgba(160,200,255,.35)';
-    ctx.beginPath();
-    for (let a = 0; a < Math.PI * 2; a += Math.PI / 4){ ctx.moveTo(0, 0); ctx.lineTo(Math.cos(a) * 8, Math.sin(a) * 8); }
-    ctx.stroke();
-    ctx.fillStyle = '#ffb300'; ctx.beginPath(); ctx.arc(0, 0, 2.2, 0, Math.PI * 2); ctx.fill();
-    ctx.restore();
-  }
-  wheel(d + 30, hF, 21);               // front steer wheel
-  wheel(d - 16, hR, 18);               // rear duals
-  wheel(d - 16, hR, 26);
-
-  function spring(u, hRoad){
-    const a = proj(u, 20, hRoad + 2), b = proj(u, 18, hb - 4);
-    ctx.strokeStyle = 'rgba(255,179,0,.85)'; ctx.lineWidth = 1.6;
-    ctx.beginPath(); ctx.moveTo(a.x, a.y);
-    for (let i = 1; i < 5; i++){
-      const f = i / 5;
-      ctx.lineTo(a.x + (b.x - a.x) * f + (i % 2 ? 4 : -4), a.y + (b.y - a.y) * f);
+    if (model.dataset.pendingColor && model.model && model.model.materials && model.model.materials[0]) {
+      const hex = model.dataset.pendingColor;
+      let c = hex.substring(1).split('');
+      if(c.length === 3) c = [c[0], c[0], c[1], c[1], c[2], c[2]];
+      c = '0x' + c.join('');
+      const rgba = [(c>>16)&255, (c>>8)&255, c&255].map(v => v/255).concat(1);
+      model.model.materials[0].pbrMetallicRoughness.setBaseColorFactor(rgba);
     }
-    ctx.lineTo(b.x, b.y); ctx.stroke();
-  }
-  spring(d + 30, hF); spring(d - 16, hR);
-
-  isoBox(d - 152, d + 38, -14, 14, hb - 5, hb, PAL.rail);
-  isoBox(d + 2, d + 40, -18, 18, hb, hb + 40, PAL.cab);
-  drawLadder(hb);
-  drawExhaust(t, hb);
-
-  // driver + seat, anchored to the ISOLATED floor (the whole story, in one variable)
-  updateWalker();
-  const A = proj(d + 28, 8, hbS + 14 + dbobU);
-  const hideDriver = exitK > 0.04;
-  drawSeatUnit(A, t, hideDriver);
-  if (hideDriver) drawWalker(t, hF, hR);
-
-  // windshield glass drawn over the driver
-  const g = [proj(d + 40, -8, hb + 40), proj(d + 40, 14, hb + 40), proj(d + 40, 14, hb + 20), proj(d + 40, -8, hb + 20)];
-  poly(g, 'rgba(140,220,255,0.14)', 'rgba(160,220,255,0.35)', 1);
-
-  const hl = proj(d + 40, 13, hb + 8);
-  ctx.fillStyle = '#ffd98a';
-  ctx.beginPath(); ctx.arc(hl.x, hl.y, 2.8, 0, Math.PI * 2); ctx.fill();
-  if (chaos < 0.4){
-    const p1 = proj(d + 100, 4, terrain(d + 100)), p2 = proj(d + 100, 16, terrain(d + 100));
-    poly([hl, p2, p1], 'rgba(255,210,120,0.06)', null);
-  }
-  drawBullBar(hb);
-  drawBeacon(t, hb);
-
-  // dust behind the rear wheels when the road is violent
-  if (!reduced && chaos > 0.25 && particles.length < 50 && Math.random() < chaos * 0.7){
-    const p = proj(d - 20, 24, hR);
-    particles.push({ x:p.x - 4, y:p.y - 8, vx:-0.6 - Math.random(), vy:-0.3 - Math.random() * 0.8,
-      r:1.5 + Math.random() * 3, a:0.4 + Math.random() * 0.3, life:1, c:'140,170,220' });
-  }
-}
-
-/* loose aggregate payload, jiggling with chaos, riding the rim of the dump bed */
-const ROCK_U = [-148, -126, -104, -80, -56, -32];
-function drawPayload(){
-  ROCK_U.forEach(function(off, i){
-    const u = d + off;
-    const jr = ju * (0.5 + hash(i) * 0.7);
-    const z0 = -9 + hash(i + 2) * 9;
-    const base = hb2Payload() + jr;
-    const rh = 4 + hash(i + 5) * 5, rw = 7 + hash(i + 8) * 3;
-    const pts = [
-      proj(u - rw, z0 - 2, base - 2),
-      proj(u - rw * 0.5, z0 + 3, base + rh * 0.5),
-      proj(u + rw * 0.15, z0 + 4, base + rh),
-      proj(u + rw, z0 + 1, base + rh * 0.3),
-      proj(u + rw * 0.6, z0 - 3, base - 3)
-    ];
-    poly(pts, '#38496a', 'rgba(190,215,250,.4)', 1);
+  });
+  model.addEventListener('error', function() {
+    model.style.display = 'none';
+    fallback.style.display = 'block';
   });
 }
-function hb2Payload(){ return Math.max(terrain(d + 30), terrain(d - 16)) + 15 + ju + 30; }
+initViewer('heroModel', 'heroFallback');
+initViewer('cfgModel', 'cfgFallback');
 
-function drawBullBar(hb){
-  const a = proj(d + 43, -13, hb + 4), b = proj(d + 43, 13, hb + 4);
-  const c = proj(d + 47, -13, hb + 24), e = proj(d + 47, 13, hb + 24);
-  const mid1 = proj(d + 45, -13, hb + 14), mid2 = proj(d + 45, 13, hb + 14);
-  ctx.strokeStyle = 'rgba(200,222,250,.85)'; ctx.lineWidth = 2.6; ctx.lineCap = 'round';
-  ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(c.x, c.y);
-  ctx.moveTo(b.x, b.y); ctx.lineTo(e.x, e.y);
-  ctx.moveTo(c.x, c.y); ctx.lineTo(e.x, e.y);
-  ctx.moveTo(mid1.x, mid1.y); ctx.lineTo(mid2.x, mid2.y); ctx.stroke();
-}
-function drawLadder(hb){
-  ctx.strokeStyle = 'rgba(160,200,255,.4)'; ctx.lineWidth = 1.4;
-  for (let i = 0; i < 3; i++){
-    const p = proj(d + 8, 18, hb + 6 + i * 8);
-    ctx.beginPath(); ctx.moveTo(p.x - 5, p.y); ctx.lineTo(p.x + 5, p.y); ctx.stroke();
-  }
-}
-function drawExhaust(t, hb){
-  const base = proj(d + 3, -17, hb + 38), top = proj(d + 3, -17, hb + 64);
-  ctx.strokeStyle = 'rgba(190,215,250,.9)'; ctx.lineWidth = 5.5; ctx.lineCap = 'round';
-  ctx.beginPath(); ctx.moveTo(base.x, base.y); ctx.lineTo(top.x, top.y); ctx.stroke();
-  ctx.fillStyle = '#050810'; ctx.beginPath(); ctx.arc(top.x, top.y, 4, 0, Math.PI * 2); ctx.fill();
-  ctx.strokeStyle = 'rgba(190,215,250,.9)'; ctx.lineWidth = 1.4;
-  ctx.beginPath(); ctx.arc(top.x, top.y, 4, 0, Math.PI * 2); ctx.stroke();
-  if (!reduced && chaos > 0.3 && particles.length < 50 && Math.random() < chaos * 0.4){
-    particles.push({ x: top.x, y: top.y, vx: -0.2 + Math.random() * 0.4, vy: -0.5 - Math.random() * 0.6,
-      r: 2 + Math.random() * 2.5, a: 0.3, life: 1, c: '90,100,115' });
-  }
-}
-function drawBeacon(t, hb){
-  const p = proj(d + 20, 0, hb + 42);
-  const pulse = 0.4 + Math.max(0, Math.sin(t * 6)) * 0.6;
-  ctx.fillStyle = 'rgba(255,179,0,' + pulse + ')';
-  ctx.beginPath(); ctx.arc(p.x, p.y, 3.4, 0, Math.PI * 2); ctx.fill();
-  if (pulse > 0.7){
-    ctx.strokeStyle = 'rgba(255,179,0,' + (pulse - 0.6) + ')'; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.arc(p.x, p.y, 7, 0, Math.PI * 2); ctx.stroke();
-  }
-}
-
-/* the driver, out of the cab, walking ahead of the rig and pointing at whichever
-   engineering card is currently centered — reads live DOM rects, matches the brief exactly */
-function drawWalker(t, hF, hR){
-  const hbS = Math.max(hF, hR) + 15 + ju * (1 - iso * 0.95);
-  const seatU = d + 28, seatZ = 8, seatH = hbS + 14 + dbobU;
-  const standU = d + 120, standZ = 15, groundH = terrain(standU) + 1;
-  const ease = exitK;
-  const hop = Math.sin(Math.min(1, Math.max(0, ease)) * Math.PI) * 9;
-  const curU = seatU + (standU - seatU) * ease;
-  const curZ = seatZ + (standZ - seatZ) * ease;
-  const curH = seatH + (groundH - seatH) * ease + hop;
-  const P = proj(curU, curZ, curH);
-
-  const moving = ease > 0.04 && ease < 0.94;
-  const window4 = 4 * ease * (1 - ease);
-  const legSwing = moving ? Math.sin(t * 9) * 7 * window4 : 0;
-  const lean = moving ? Math.sin(t * 9) * 0.05 : 0;
-
-  ctx.save(); ctx.translate(P.x, P.y); ctx.rotate(lean);
-  ctx.strokeStyle = '#e8f1ff'; ctx.lineCap = 'round';
-  ctx.lineWidth = 2.8;
-  ctx.beginPath();
-  ctx.moveTo(0, -2); ctx.lineTo(-3 + legSwing * 0.4, 14);
-  ctx.moveTo(0, -2); ctx.lineTo(3 - legSwing * 0.4, 14);
-  ctx.stroke();
-  ctx.lineWidth = 3.4;
-  ctx.beginPath(); ctx.moveTo(0, -2); ctx.lineTo(1, -22); ctx.stroke();
-  ctx.strokeStyle = 'rgba(255,179,0,.65)'; ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.moveTo(-4, -18); ctx.lineTo(5, -8); ctx.stroke();
-
-  ctx.strokeStyle = '#e8f1ff'; ctx.lineWidth = 2.6;
-  const target = ease > 0.9 ? nearestCard() : null;
-  if (target){
-    const shoulder = { x: P.x + 1, y: P.y - 19 };
-    const ang = Math.atan2(target.y - shoulder.y, target.x - shoulder.x);
-    const hx2 = Math.cos(ang) * 24, hy2 = Math.sin(ang) * 24;
-    ctx.beginPath(); ctx.moveTo(1, -19); ctx.lineTo(hx2, -19 + hy2); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(1, -14); ctx.lineTo(9, -12); ctx.stroke();
-  } else {
-    const swing = moving ? Math.sin(t * 9 + Math.PI) * 6 : 2;
-    ctx.beginPath(); ctx.moveTo(1, -19); ctx.lineTo(-6 + swing, -6); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(1, -14); ctx.lineTo(8 - swing, -3); ctx.stroke();
-  }
-  ctx.restore();
-
-  const hx = P.x + 1, hy = P.y - 26;
-  ctx.strokeStyle = '#eef5ff'; ctx.lineWidth = 2.4;
-  ctx.beginPath(); ctx.arc(hx, hy, 5.5, 0, Math.PI * 2); ctx.stroke();
-  ctx.fillStyle = '#ffb300';
-  ctx.beginPath(); ctx.arc(hx, hy - 3, 6, Math.PI, 0); ctx.fill();
-  ctx.fillRect(hx - 7, hy - 3.6, 14, 1.8);
-}
-
-function drawSeatUnit(A, t, hideDriver){
-  const glow = iso;
-  if (glow > 0.02){
-    const rg = ctx.createRadialGradient(A.x, A.y - 14, 4, A.x, A.y - 14, 48);
-    rg.addColorStop(0, 'rgba(255,190,80,' + (0.28 * glow) + ')');
-    rg.addColorStop(1, 'rgba(255,190,80,0)');
-    ctx.fillStyle = rg;
-    ctx.beginPath(); ctx.arc(A.x, A.y - 14, 48, 0, Math.PI * 2); ctx.fill();
-  }
-  // seat
-  ctx.save();
-  ctx.strokeStyle = glow > 0.05 ? '#ffcf87' : '#44598a'; ctx.lineWidth = 3; ctx.lineCap = 'round';
-  if (glow > 0.05){ ctx.shadowColor = 'rgba(255,179,0,.9)'; ctx.shadowBlur = 10 * glow; }
-  ctx.beginPath();
-  ctx.moveTo(A.x - 8, A.y + 2); ctx.lineTo(A.x - 11, A.y - 24);   // backrest
-  ctx.moveTo(A.x - 8, A.y + 2); ctx.lineTo(A.x + 11, A.y + 3);    // pan
-  ctx.moveTo(A.x + 2, A.y + 3); ctx.lineTo(A.x + 2, A.y + 14);    // pedestal
-  ctx.moveTo(A.x - 6, A.y + 14); ctx.lineTo(A.x + 10, A.y + 14);  // base
-  ctx.moveTo(A.x - 1, A.y + 8); ctx.lineTo(A.x + 2, A.y + 10); ctx.lineTo(A.x + 5, A.y + 8);   // bellows
-  ctx.moveTo(A.x - 1, A.y + 11); ctx.lineTo(A.x + 2, A.y + 13); ctx.lineTo(A.x + 5, A.y + 11);
-  ctx.stroke();
-  ctx.restore();
-  // steering wheel
-  ctx.strokeStyle = 'rgba(200,225,255,.8)'; ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.arc(A.x + 16, A.y - 11, 5.5, 0, Math.PI * 2); ctx.stroke();
-  if (hideDriver) return;
-  // driver (crash-test-dummy stickman)
-  const lean = 0.1 + (reduced ? 0 : chaos * Math.sin(t * 9) * 0.06);
-  const headBob = dbobU * HS * 0.5;
-  ctx.save(); ctx.translate(A.x, A.y); ctx.rotate(lean);
-  ctx.strokeStyle = '#e8f1ff'; ctx.lineCap = 'round';
-  ctx.lineWidth = 3.6; ctx.beginPath(); ctx.moveTo(1, -8); ctx.lineTo(3, -26); ctx.stroke();
-  ctx.lineWidth = 2.8;
-  ctx.beginPath(); ctx.moveTo(2, -22); ctx.lineTo(15, -12); ctx.moveTo(2, -22); ctx.lineTo(14, -9); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(1, -8); ctx.lineTo(13, -2); ctx.lineTo(14, 10); ctx.stroke();
-  ctx.restore();
-  // head with crash-test cross
-  const hx = A.x + 4, hy = A.y - 34 + headBob;
-  ctx.strokeStyle = '#eef5ff'; ctx.lineWidth = 2.6;
-  ctx.beginPath(); ctx.arc(hx, hy, 6.5, 0, Math.PI * 2); ctx.stroke();
-  ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(238,245,255,.85)';
-  ctx.beginPath(); ctx.moveTo(hx - 3, hy); ctx.lineTo(hx + 3, hy);
-  ctx.moveTo(hx, hy - 3); ctx.lineTo(hx, hy + 3); ctx.stroke();
-  // frustration streaks during chaos / calm check ring at the end
-  if (chaos > 0.45 && !reduced){
-    ctx.strokeStyle = 'rgba(255,120,130,' + (chaos * 0.7) + ')'; ctx.lineWidth = 1.6;
-    ctx.beginPath(); ctx.moveTo(hx - 12, hy - 8); ctx.lineTo(hx - 18, hy - 13);
-    ctx.moveTo(hx - 10, hy); ctx.lineTo(hx - 17, hy - 1); ctx.stroke();
-  }
-  if (iso > 0.4){
-    ctx.strokeStyle = 'rgba(255,199,106,' + (iso * 0.7) + ')'; ctx.lineWidth = 1.8;
-    ctx.beginPath(); ctx.arc(hx, hy, 11, 0, Math.PI * 2); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(hx - 3, hy + 1); ctx.lineTo(hx - 0.5, hy + 4); ctx.lineTo(hx + 5, hy - 3); ctx.stroke();
-  }
-}
-
-function drawParticles(){
-  for (let i = particles.length - 1; i >= 0; i--){
-    const p = particles[i];
-    p.life -= 0.02; p.x += p.vx; p.y += p.vy;
-    if (p.life <= 0){ particles.splice(i, 1); continue; }
-    ctx.fillStyle = 'rgba(' + (p.c || '140,170,220') + ',' + (p.a * p.life) + ')';
-    ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
-  }
-}
-
-function drawCalmRings(t){
-  if (iso < 0.02) return;
-  for (let k = 0; k < 3; k++){
-    const f = (t * 0.3 + k / 3) % 1;
-    const R = 30 + f * 300;
-    ctx.strokeStyle = 'rgba(255,190,80,' + (iso * (1 - f) * 0.3) + ')'; ctx.lineWidth = 1.2;
-    ctx.beginPath();
-    for (let a = 0; a <= Math.PI * 2 + 0.01; a += 0.15){
-      const p = proj(d + Math.cos(a) * R, Math.sin(a) * R, 0);
-      (a === 0) ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y);
-    }
-    ctx.stroke();
-  }
-}
-
-function drawTelemetry(){
-  vibHist.push(Math.min(1, chaos * 0.7 + Math.abs(dbobU) * 0.1));
-  if (vibHist.length > 240) vibHist.shift();
-  curVib = 0.18 + chaos * 3.6 + Math.abs(dbobU) * 0.05;
-  const y0 = H - 56, base = y0 + 36;
-  ctx.fillStyle = 'rgba(4,7,13,.66)'; ctx.fillRect(0, y0, W, 56);
-  ctx.strokeStyle = 'rgba(127,208,255,.18)';
-  ctx.beginPath(); ctx.moveTo(0, y0 + 0.5); ctx.lineTo(W, y0 + 0.5); ctx.stroke();
-  const yL = base - 9;
-  ctx.strokeStyle = 'rgba(255,90,100,.5)'; ctx.setLineDash([4, 4]);
-  ctx.beginPath(); ctx.moveTo(0, yL); ctx.lineTo(W, yL); ctx.stroke();
-  ctx.setLineDash([]);
-  ctx.fillStyle = 'rgba(255,120,130,.7)'; ctx.font = '9px "Space Grotesk",sans-serif';
-  ctx.fillText('EU 2002/44/EC · DAILY EXPOSURE ACTION VALUE 0.5 m/s²', 14, yL - 4);
-  ctx.save();
-  ctx.strokeStyle = '#ffc76a'; ctx.lineWidth = 1.4;
-  ctx.shadowColor = 'rgba(255,179,0,.8)'; ctx.shadowBlur = 6;
-  ctx.beginPath();
-  for (let i = 0; i < vibHist.length; i++){
-    const x = W - 16 - i * ((W - 32) / 240);
-    const y = base - vibHist[i] * 26;
-    i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
-  }
-  ctx.stroke(); ctx.restore();
-  ctx.fillStyle = 'rgba(180,210,255,.8)'; ctx.font = '10px "Space Grotesk",sans-serif';
-  ctx.fillText('DRIVER WHOLE-BODY VIBRATION · LIVE', 14, y0 + 16);
-  ctx.fillStyle = curVib > 0.5 ? '#ff7a85' : '#ffc76a'; ctx.textAlign = 'right';
-  ctx.fillText(curVib.toFixed(2) + ' m/s²', W - 16, y0 + 16);
-  ctx.textAlign = 'left';
-}
-
-function computeState(t, forcedProg){
-  const maxY = Math.max(1, Math.max(document.body.scrollHeight,
-    document.documentElement.scrollHeight) - window.innerHeight);
-  curY += (window.scrollY - curY) * 0.085;
-  prog = (forcedProg != null) ? forcedProg : Math.min(1, Math.max(0, curY / maxY));
-  chaos = smoothstep(0.06, 0.30, prog) * (1 - smoothstep(0.50, 0.72, prog));
-  iso = smoothstep(0.55, 0.78, prog);
-  d = prog * 22000 + (reduced ? 0 : t * 7);
-}
-
-function updateHUD(){
-  let phase, cls;
-  if (iso > 0.5){ phase = 'SUPREMO ACTIVE · RIDE STABILISED'; cls = 'gold'; }
-  else if (chaos > 0.6){ phase = 'SURFACE: SEVERE'; cls = 'bad'; }
-  else if (chaos > 0.2){ phase = 'SURFACE: DEGRADED'; cls = 'warn'; }
-  else { phase = 'SURFACE: NOMINAL'; cls = 'ok'; }
-  byId('hudKm').textContent = (prog * 1000).toFixed(1).padStart(6, '0');
-  byId('hudVib').textContent = curVib.toFixed(2) + ' m/s²';
-  const hp = byId('hudPhase');
-  hp.textContent = phase; hp.className = 'hud-phase ' + cls;
-  byId('hudDriver').style.display = exitK > 0.5 ? 'block' : 'none';
-}
-
-function drawScene(t){
-  ctx.fillStyle = bgGrad; ctx.fillRect(0, 0, W, H);
-  const UR = Math.max((W * 0.55) / S + 40, 320);
-  const hg = ctx.createRadialGradient(W * CAM_X, H * 0.34, 10, W * CAM_X, H * 0.34, W * 0.5);
-  hg.addColorStop(0, mixC(CYANC, AMBERC, iso, 0.08));
-  hg.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.fillStyle = hg; ctx.fillRect(0, 0, W, H);
-  drawGrid(UR); drawRoad(UR); drawHazards(UR); drawTruck(t);
-  drawParticles(); drawCalmRings(t); drawTelemetry();
-}
-
-function frame(now){
-  const t = now / 1000;
-  computeState(t);
-  const atEnd = window.innerHeight + window.scrollY >=
-    document.documentElement.scrollHeight - 4 && prog > 0.995;
-  if (!atEnd) drawScene(t);
-  if ((fc++ % 5) === 0) updateHUD();
-  requestAnimationFrame(frame);
-}
-
-function renderStatic(){
-  computeState(0, 0.86);
-  drawScene(0);
-  updateHUD();
-}
-
-if (reduced){
-  setTimeout(renderStatic, 400);
-} else {
-  requestAnimationFrame(frame);
-}
 })();
 </script>
 </body>
