@@ -17,16 +17,16 @@ export default defineConfig({
       ],
       input: {
         main: resolve(__dirname, 'index.html'),
-        products: resolve(__dirname, 'products.html'),
         supremo: resolve(__dirname, 'product-supremo.html'),
         ultimo: resolve(__dirname, 'product-ultimo.html'),
         leo: resolve(__dirname, 'product-leo.html'),
-        construction: resolve(__dirname, 'product-construction.html'),
-        backhoeLoader: resolve(__dirname, 'product-backhoe-loader.html'),
-        excavator: resolve(__dirname, 'product-excavator.html'),
-        miniExcavator: resolve(__dirname, 'product-mini-excavator.html'),
-        smallWheelLoader: resolve(__dirname, 'product-small-wheel-loader.html'),
-        tractor: resolve(__dirname, 'product-tractor.html'),
+        duro: resolve(__dirname, 'product-duro.html'),
+        boss: resolve(__dirname, 'product-boss.html'),
+        ergo: resolve(__dirname, 'product-ergo.html'),
+        technology: resolve(__dirname, 'technology.html'),
+        sustainability: resolve(__dirname, 'sustainability.html'),
+        careers: resolve(__dirname, 'careers.html'),
+        contact: resolve(__dirname, 'contact.html')
       }
     }
   }
