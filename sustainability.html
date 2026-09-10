@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#c98a12">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GatorCorp">
+<link rel="apple-touch-icon" href="/images/logo-new.png">
+<title>Sustainability · GatorCorp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+:root{
+  --paper:#f1f0ec; --panel:#fbfaf8; --ink:#15171b; --grey:#8a8d94;
+  --line:#e2e0da; --amber:#c98a12; --leaf:#2f5233; --leaf2:#6b9b5e;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:Inter,ui-sans-serif,system-ui,sans-serif;color:var(--ink);
+  -webkit-font-smoothing:antialiased;line-height:1.5;background:var(--paper)}
+a{color:inherit}
+
+.pill-nav{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:60;
+  display:flex;align-items:center;padding:8px 10px 8px 20px;border-radius:999px;
+  background:rgba(255,255,255,.85);backdrop-filter:blur(18px) saturate(180%);
+  -webkit-backdrop-filter:blur(18px) saturate(180%);
+  border:1px solid rgba(255,255,255,.7);box-shadow:0 10px 30px rgba(21,23,27,.10);
+  transition:padding .35s cubic-bezier(.16,1,.3,1),box-shadow .35s ease}
+.pill-nav.scrolled{padding:6px 8px 6px 16px;box-shadow:0 8px 24px rgba(21,23,27,.16)}
+.pill-logo img{height:20px;display:block}
+.pill-links{display:flex;gap:2px;margin-left:14px}
+.pill-links a{font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--grey);text-decoration:none;padding:8px 14px;border-radius:999px;transition:color .25s}
+.pill-links a:hover,.pill-links a.current{color:var(--ink)}
+.nav-left{position:fixed;top:28px;left:6vw;z-index:60;font-weight:700;font-size:15px;letter-spacing:-.02em;color:#fff;mix-blend-mode:difference}
+.nav-right{position:fixed;top:24px;right:6vw;z-index:60}
+.get-in-touch{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;background:var(--amber);
+  color:#1a1200;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  border-radius:999px;text-decoration:none}
+@media (max-width:900px){.nav-left,.nav-right{display:none}}
+
+/* ---------- pinned 3-slide carousel ---------- */
+.sus-pin{position:relative;height:400vh}
+.sus-sticky{position:sticky;top:0;height:100vh;overflow:hidden}
+.sus-slide{position:absolute;inset:0;opacity:0;pointer-events:none}
+.sus-slide.on{opacity:1;pointer-events:auto}
+.sus-slide-bg{position:absolute;inset:0;z-index:0}
+.sus-slide-bg img{width:100%;height:100%;object-fit:cover;
+  animation:kenburns 30s ease-in-out infinite alternate;transform-origin:50% 60%}
+@keyframes kenburns{from{transform:scale(1.03)}to{transform:scale(1.16)}}
+.sus-slide-scrim{position:absolute;inset:0;z-index:1}
+.s1 .sus-slide-scrim{background:linear-gradient(100deg, rgba(246,248,240,.95) 0%, rgba(246,248,240,.85) 30%, rgba(246,248,240,.3) 55%, rgba(20,40,20,.15) 100%)}
+.s2 .sus-slide-scrim{background:linear-gradient(100deg, rgba(18,26,38,.92) 0%, rgba(18,26,38,.82) 30%, rgba(18,26,38,.4) 55%, rgba(18,26,38,.05) 100%)}
+.s3 .sus-slide-scrim{background:linear-gradient(100deg, rgba(20,32,46,.92) 0%, rgba(20,32,46,.8) 30%, rgba(30,60,50,.35) 55%, rgba(30,60,50,.05) 100%)}
+.s2 .sus-h1, .s3 .sus-h1{color:#fff}
+.s2 .sus-lede, .s3 .sus-lede{color:#c9cfd8}
+.s2 .sus-stat-label, .s3 .sus-stat-label{color:#aeb4c0}
+.s2 .sus-stat-num, .s3 .sus-stat-num{color:#fff}
+.s2 .sus-stat-icon, .s3 .sus-stat-icon{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.2)}
+.s2 .sus-stat-icon svg, .s3 .sus-stat-icon svg{color:var(--amber)}
+.s2 .sus-stat-note, .s3 .sus-stat-note{color:#98a0ac}
+
+.sus-hero-inner{position:relative;z-index:2;max-width:1500px;margin:0 auto;padding:0 6vw;
+  display:grid;grid-template-columns:1fr .9fr;gap:4vw;align-items:center;width:100%;height:100%}
+.sus-overline{font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--amber);margin-bottom:18px}
+.sus-h1{font-size:clamp(2.2rem,4.2vw,3.8rem);font-weight:800;letter-spacing:-.03em;line-height:1.05;
+  text-transform:uppercase;color:var(--leaf)}
+.sus-h1 .accent{color:var(--leaf2)}
+.s2 .sus-h1 .accent, .s3 .sus-h1 .accent{color:var(--amber)}
+.sus-lede{margin-top:20px;font-size:15px;color:#3a3d38;max-width:40ch;line-height:1.6}
+.sus-cta{display:inline-flex;align-items:center;gap:10px;margin-top:26px;padding:15px 26px;
+  background:var(--amber);color:#1a1200;font-weight:700;font-size:12px;letter-spacing:.06em;
+  text-transform:uppercase;border-radius:999px;text-decoration:none}
+
+.sus-stats{margin-top:5vh;display:flex;flex-direction:column;gap:20px;max-width:40ch}
+.sus-stat-row{display:flex;align-items:flex-start;gap:16px;opacity:0;transform:translateY(18px);
+  transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+.sus-stat-row.in{opacity:1;transform:translateY(0)}
+.sus-stat-icon{width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.85);
+  border:1px solid rgba(21,23,27,.08);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sus-stat-icon svg{width:20px;height:20px;color:var(--leaf)}
+.sus-stat-label{font-size:12.5px;color:#4a4d47}
+.sus-stat-num{font-size:clamp(1.4rem,2.3vw,1.9rem);font-weight:800;color:var(--ink);letter-spacing:-.01em;margin-top:2px}
+.sus-stat-note{margin-top:6px;font-size:12px;color:#5a5d56;line-height:1.6;max-width:44ch}
+
+.sus-badge{position:relative;justify-self:end;width:min(300px,80%);aspect-ratio:1;border-radius:50%;
+  background:rgba(20,30,20,.42);backdrop-filter:blur(6px);
+  border:1px solid rgba(255,255,255,.25);color:#fff;display:flex;flex-direction:column;
+  align-items:flex-start;justify-content:center;padding:0 14%;
+  opacity:0;transform:translateX(30px);transition:opacity 1s ease,transform 1s cubic-bezier(.16,1,.3,1)}
+.sus-badge.in{opacity:1;transform:translateX(0)}
+.sus-badge h3{font-size:clamp(.95rem,1.5vw,1.2rem);font-weight:800;letter-spacing:.02em;line-height:1.35;text-transform:uppercase}
+.sus-badge .rule{width:26px;height:2px;background:var(--amber);margin:14px 0}
+.sus-badge-item{display:flex;align-items:center;gap:10px;font-size:10px;font-weight:600;
+  letter-spacing:.04em;text-transform:uppercase;margin-bottom:9px}
+.sus-badge-item svg{width:14px;height:14px;color:var(--leaf2);flex-shrink:0}
+@media (max-width:1000px){.sus-hero-inner{grid-template-columns:1fr}.sus-badge{display:none}}
+
+.sus-tag{position:absolute;left:6vw;bottom:6vh;z-index:2;font-size:11px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:#fff;line-height:1.9;text-shadow:0 2px 10px rgba(0,0,0,.4)}
+.sus-tag .rule{width:22px;height:2px;background:var(--amber);margin-top:8px}
+.sus-progress{position:absolute;right:6vw;bottom:6vh;z-index:3;display:flex;align-items:center;gap:10px;
+  font-size:12px;font-weight:700;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.4)}
+.sus-progress .bar{width:60px;height:1px;background:rgba(255,255,255,.5);position:relative;overflow:hidden}
+.sus-progress .bar-fill{position:absolute;left:0;top:0;height:100%;width:33.3%;background:#fff;
+  transition:width .5s cubic-bezier(.16,1,.3,1)}
+.sus-dots{position:absolute;right:6vw;top:50%;transform:translateY(-50%);z-index:3;
+  display:flex;flex-direction:column;gap:14px}
+.sus-dots span{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.4);
+  transition:background .3s,transform .3s;cursor:default}
+.sus-dots span.on{background:var(--amber);transform:scale(1.6)}
+@media (max-width:900px){.sus-dots{display:none}}
+
+footer.outro{padding:6vh 6vw 5vh;text-align:center;border-top:1px solid var(--line);background:var(--paper)}
+footer.outro .legal{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
+  font-size:10px;letter-spacing:.14em;color:var(--grey);text-transform:uppercase;max-width:1200px;margin:0 auto}
+footer.outro .note{color:#b0ada5;text-transform:none;letter-spacing:0}
+
+/* mobile nav overflow fix + safe-area for notch/PWA fullscreen */
+body{padding-top:env(safe-area-inset-top)}
+@media (max-width:480px){
+  .pill-nav{max-width:92vw}
+  .pill-links{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex-wrap:nowrap}
+  .pill-links::-webkit-scrollbar{display:none}
+  .pill-links a{flex-shrink:0}
+}
+</style>
+</head>
+<body>
+
+<div class="nav-left">GATORCORP</div>
+<div class="nav-right"><a href="/contact.html" class="get-in-touch">Get in Touch <span aria-hidden="true">→</span></a></div>
+<nav class="pill-nav" aria-label="Primary">
+  <a class="pill-logo" href="/index.html"><img src="/images/logo-new.png" alt="GatorCorp"></a>
+  <span class="pill-links">
+    <a href="/index.html#products">Products</a>
+    <a href="/technology.html">Technology</a>
+    <a href="/sustainability.html" class="current">Sustainability</a>
+    <a href="/careers.html">Careers</a>
+    <a href="/contact.html">Contact</a>
+  </span>
+</nav>
+
+<div class="sus-pin">
+  <div class="sus-sticky">
+
+    <div class="sus-slide s1 on" data-slide="0">
+      <div class="sus-slide-bg"><img src="/images/sustainability-hero-tea.jpg" alt="Tea plantation at sunrise"></div>
+      <div class="sus-slide-scrim"></div>
+      <div class="sus-hero-inner">
+        <div>
+          <div class="sus-overline">— Sustainability</div>
+          <h1 class="sus-h1">Carbon Neutral<br><span class="accent">Footprint Drive</span></h1>
+          <p class="sus-lede">A cleaner tomorrow, driven by responsible actions today.</p>
+          <div class="sus-stats">
+            <div class="sus-stat-row"><div class="sus-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V10l4-3 4 3v11M13 21V6l4-3 4 3v15"/></svg></div>
+              <div><div class="sus-stat-label">Carbon footprint in MT</div><div class="sus-stat-num" data-count="2473">0</div></div></div>
+            <div class="sus-stat-row"><div class="sus-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2C9 6 6 9 6 13a6 6 0 0 0 12 0c0-4-3-7-6-11z"/></svg></div>
+              <div><div class="sus-stat-label">Tree plantation required to neutralize carbon footprint</div><div class="sus-stat-num" data-count="15111">0</div></div></div>
+            <div class="sus-stat-row"><div class="sus-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22v-9M12 13c-4 0-7-3-7-7 4 0 7 3 7 7zM12 13c4 0 7-3 7-7-4 0-7 3-7 7z"/></svg></div>
+              <div><div class="sus-stat-label">Planted by 31st March 2023</div><div class="sus-stat-num" data-count="15500">0</div>
+              <div class="sus-stat-note">As part of our environmentally responsible practices, we have started using clean fuel Piped Natural Gas.</div></div></div>
+          </div>
+        </div>
+        <div class="sus-badge">
+          <h3>Clean Energy<br>Greener Roads</h3><div class="rule"></div>
+          <div class="sus-badge-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 5.7 1 10a7 7 0 0 1-9 8z"/></svg>Lower Emissions</div>
+          <div class="sus-badge-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 2l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 22l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3"/></svg>Sustainable Operations</div>
+          <div class="sus-badge-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a13.5 13.5 0 0 1 3.5 9A13.5 13.5 0 0 1 12 21 13.5 13.5 0 0 1 8.5 12 13.5 13.5 0 0 1 12 3z"/></svg>A Healthier Tomorrow</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sus-slide s2" data-slide="1">
+      <div class="sus-slide-bg"><img src="/images/sustainability-hero-tea.jpg" alt="Manufacturing responsibly"></div>
+      <div class="sus-slide-scrim"></div>
+      <div class="sus-hero-inner">
+        <div>
+          <div class="sus-overline">— Sustainability</div>
+          <h1 class="sus-h1">Sustainable<br><span class="accent">Manufacturing</span></h1>
+          <p class="sus-lede">Sustainability is built into every decision we make — from material sourcing to manufacturing and logistics.</p>
+          <div class="sus-stats">
+            <div class="sus-stat-row"><div class="sus-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 5.7 1 10a7 7 0 0 1-9 8z"/></svg></div>
+              <div><div class="sus-stat-label">Reducing Impact</div><div class="sus-stat-note">Lower-impact materials and processes across the manufacturing line.</div></div></div>
+            <div class="sus-stat-row"><div class="sus-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 2l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 22l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3"/></svg></div>
+              <div><div class="sus-stat-label">Circular Practices</div><div class="sus-stat-note">Designing for reuse and reduced material waste.</div></div></div>
+            <div class="sus-stat-row"><div class="sus-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div>
+              <div><div class="sus-stat-label">Certified Standards</div><div class="sus-stat-note">Held to environmental and quality standards across every facility.</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sus-slide s3" data-slide="2">
+      <div class="sus-slide-bg"><img src="/images/sustainability-hero-tea.jpg" alt="Cleaner fuel transition"></div>
+      <div class="sus-slide-scrim"></div>
+      <div class="sus-hero-inner">
+        <div>
+          <div class="sus-overline">— Sustainability</div>
+          <h1 class="sus-h1">Cleaner Fuel<br><span class="accent">Transition</span></h1>
+          <p class="sus-lede">As part of our environmentally responsible practices, we've started running our facilities on clean-burning Piped Natural Gas.</p>
+          <div class="sus-stats">
+            <div class="sus-stat-row"><div class="sus-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+              <div><div class="sus-stat-label">Fuel Source</div><div class="sus-stat-note">Piped Natural Gas now powers key manufacturing operations.</div></div></div>
+            <div class="sus-stat-row"><div class="sus-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="9"/></svg></div>
+              <div><div class="sus-stat-label">A Healthier Tomorrow</div><div class="sus-stat-note">Lower emissions on the road to a cleaner manufacturing footprint.</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="sus-tag" id="susTag">People.<br>Planet.<br>Progress.<div class="rule"></div></div>
+<div class="sus-progress" id="susProgress">01 <span class="bar"><span class="bar-fill"></span></span> 03</div>
+<div class="sus-dots" id="susDots"><span class="on"></span><span></span><span></span></div>
+
+<footer class="outro">
+  <div class="legal">
+    <span>GatorCorp Automotives Pvt. Ltd. · Chennai · Since 1996</span>
+    <span class="note">Concept experience — model names and specs to be verified with GatorCorp before launch.</span>
+  </div>
+</footer>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+(function(){
+  var nav = document.querySelector('.pill-nav');
+  window.addEventListener('scroll', function(){ nav.classList.toggle('scrolled', window.scrollY > 40); }, {passive:true});
+
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var slides = document.querySelectorAll('.sus-slide');
+  var dots = document.querySelectorAll('#susDots span');
+  var barFill = document.querySelector('.bar-fill');
+  var progText = document.getElementById('susProgress');
+  var current = 0;
+
+  function revealSlideContent(slideEl){
+    slideEl.querySelectorAll('.sus-stat-row').forEach(function(r, i){
+      r.classList.remove('in');
+      setTimeout(function(){ r.classList.add('in'); }, i * 140);
+    });
+    var badge = slideEl.querySelector('.sus-badge');
+    if (badge) { badge.classList.remove('in'); setTimeout(function(){ badge.classList.add('in'); }, 200); }
+    slideEl.querySelectorAll('.sus-stat-num[data-count]').forEach(function(el){
+      var target = parseInt(el.getAttribute('data-count'), 10);
+      var obj = { val: 0 };
+      gsap.to(obj, { val: target, duration: 1.6, ease: 'power2.out', delay: .2,
+        onUpdate: function(){ el.textContent = Math.round(obj.val).toLocaleString(); } });
+    });
+  }
+
+  function goToSlide(i){
+    if (i === current) return;
+    slides.forEach(function(s){ s.classList.remove('on'); });
+    slides[i].classList.add('on');
+    dots.forEach(function(d, k){ d.classList.toggle('on', k === i); });
+    barFill.style.width = ((i + 1) / slides.length * 100) + '%';
+    progText.childNodes[0].textContent = String(i + 1).padStart(2, '0') + ' ';
+    current = i;
+    revealSlideContent(slides[i]);
+  }
+
+  revealSlideContent(slides[0]);
+
+  ScrollTrigger.create({
+    trigger: '.sus-pin',
+    start: 'top top',
+    end: 'bottom bottom',
+    onUpdate: function(self){
+      var idx = Math.min(slides.length - 1, Math.floor(self.progress * slides.length));
+      goToSlide(idx);
+    }
+  });
+})();
+</script>
+</body>
+</html>
