@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">GatorCorp</string>
+    <string name="title_activity_main">GatorCorp</string>
+    <string name="package_name">com.gatorcorp.seating</string>
+    <string name="custom_url_scheme">com.gatorcorp.seating</string>
+</resources>

@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#c98a12">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GatorCorp">
+<link rel="apple-touch-icon" href="/images/logo-new.png">
+<title>GatorCorp · Seating Systems</title>
+<meta name="description" content="GatorCorp heavy-duty seating: Supremo, Ultimo and Leo. Air suspension, ventilated design, lumbar support. Built in India since 1996, homologated for Europe.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preload" as="fetch" href="/images/supremo-seat-v4.glb" crossorigin>
+<style>
+:root{
+  --paper:#f1f0ec; --panel:#fbfaf8; --ink:#15171b; --grey:#8a8d94;
+  --line:#e2e0da; --soft:#d9d6cf; --amber:#c98a12;
+  --sw:min(1080px,84vw);          /* stage width  */
+  --sh:clamp(300px,44vh,420px);   /* stage height */
+  --sd:clamp(300px,40vh,400px);   /* stage depth  */
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{background:var(--paper);scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{font-family:Inter,ui-sans-serif,system-ui,sans-serif;color:var(--ink);
+  -webkit-font-smoothing:antialiased;line-height:1.5}
+::-moz-selection{background:rgba(201,138,18,.25)}
+::selection{background:rgba(201,138,18,.25)}
+a{color:inherit}
+
+/* ---------- liquid-glass pill nav (dead center of top) ---------- */
+.pill-nav{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:60;
+  display:flex;align-items:center;padding:8px 20px;border-radius:999px;
+  background:rgba(251,250,248,.95);
+  backdrop-filter:blur(18px) saturate(180%);
+  border:1px solid rgba(255,255,255,.7);
+  box-shadow:0 10px 30px rgba(21,23,27,.10), inset 0 1px 0 rgba(255,255,255,.85)}
+.pill-logo{display:flex}
+@media (max-width:640px){.pill-nav{padding:7px 16px}}
+
+.hero-deco-sys {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  color: rgba(255, 255, 255, 0.2);
+}
+.deco-bracket {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+}
+.top-bracket {
+  top: 38vh;
+  left: 6vw;
+}
+.bot-bracket {
+  top: 65vh;
+  left: 4vw;
+}
+.deco-line-group {
+  position: absolute;
+  top: 55vh;
+  left: 8vw;
+  width: 42vw;
+  display: flex;
+  align-items: center;
+}
+.deco-crosshair {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+}
+.deco-dashed-line {
+  flex-grow: 1;
+  height: 1px;
+  border-top: 1px dashed currentColor;
+  margin-left: 12px;
+}
+.deco-labels {
+  position: absolute;
+  top: 54px;
+  left: 0;
+  display: flex;
+  gap: 16px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--grey);
+  opacity: 0.4;
+}
+
+.hero-bottom-right {
+  position: absolute;
+  bottom: 22vh;
+  right: 6vw;
+  max-width: 22vw;
+  z-index: 4;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.hero-stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--grey);
+  margin-bottom: 12px;
+}
+.hero-stat-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.hero-stat {
+  border-bottom: 1px solid rgba(180,150,90,0.25);
+  padding-bottom: 6px;
+}
+.hero-stat span {
+  display: block;
+  font-size: clamp(1.3rem, 2vw, 1.9rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--amber);
+  white-space: nowrap;
+}
+.hero-stat b {
+  display: block;
+  font-size: 11px;
+  color: var(--grey);
+  margin-top: 4px;
+  letter-spacing: 0.05em;
+  font-weight: normal;
+}
+.hero-stat.accent span {
+  color: var(--amber);
+}
+
+/* ---------- gallery (pinned wide-slab stage) ---------- */
+.gallery{height:100svh;position:relative;overflow:hidden}
+.scene{position:absolute;inset:0;z-index:1;display:grid;place-items:center;}
+.gallery-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+.gallery-bg::before {
+  /* vignette: focuses the eye on the seat, and hides upscale softness at the edges */
+  content: '';
+  position: absolute; inset: 0; z-index: 2;
+  background: radial-gradient(ellipse at 50% 55%, rgba(10,10,12,0) 45%, rgba(10,10,12,.22) 100%);
+}
+.gallery-bg::after {
+  /* fade the photo into the page background so the section doesn't just cut off */
+  content: '';
+  position: absolute; left: 0; right: 0; bottom: 0; height: 26%; z-index: 3;
+  background: linear-gradient(to bottom, rgba(241,240,236,0) 0%, var(--paper) 92%);
+}
+.bg-wall {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  background-size: cover;
+  background-position: center 35%;
+  transition: opacity .5s ease;
+  will-change: opacity;
+}
+.bg-floor {
+  display: none; /* the studio-render backgrounds already include their own floor/reflection */
+}
+.stage{position:relative;width:var(--sw);height:var(--sh);}
+.face{position:absolute;left:50%;top:50%;width:var(--sw);height:var(--sh);
+  margin-left:calc(var(--sw) / -2);margin-top:calc(var(--sh) / -2);
+  display:grid;place-items:center;opacity:0;pointer-events:none;transform:none;
+  transition:opacity .4s ease;}
+.face.on{opacity:1;pointer-events:auto;}
+
+/* ---------- seat selector strip (replaces scroll-driven seat cycling) ---------- */
+.seat-strip{position:absolute;left:50%;bottom:19vh;transform:translateX(-50%);
+  z-index:6;display:flex;gap:10px;max-width:92vw;overflow-x:auto;
+  scroll-snap-type:x proximity;padding:20px 2px 4px;margin-top:-16px;-webkit-overflow-scrolling:touch}
+.seat-strip::-webkit-scrollbar{display:none}
+.seat-strip{scrollbar-width:none}
+.seat-strip .thumb{scroll-snap-align:center;flex:0 0 auto;display:flex;flex-direction:column;
+  align-items:center;gap:4px;background:var(--panel);border:1.5px solid var(--line);
+  border-radius:12px;padding:6px 10px 8px;cursor:pointer;transition:border-color .25s,transform .25s,box-shadow .25s;
+  font-family:inherit;box-shadow:0 8px 18px rgba(21,23,27,.1)}
+.seat-strip .thumb img{width:44px;height:32px;-o-object-fit:contain;object-fit:contain;display:block}
+.seat-strip .thumb span{font-size:10px;font-weight:600;letter-spacing:.05em;color:var(--grey)}
+.seat-strip .thumb.on{border-color:var(--amber);transform:translateY(-2px)}
+.seat-strip .thumb.on span{color:var(--ink)}
+@media (max-width:640px){
+  .seat-strip{bottom:12vh;gap:8px}
+  .seat-strip .thumb{padding:5px 8px 6px}
+  .seat-strip .thumb img{width:36px;height:26px}
+}
+/* Tablet range (e.g. a Fold5's inner screen, ~717-900px) falls between the
+   640px phone breakpoint and full desktop width, so it was getting
+   unmodified desktop offsets — right:6vw / calc(6vw+150px) — with less
+   width to work with than desktop assumes, causing the seat-strip's own
+   thumbnail images to sit across the "Explore {Seat}" / "Full details"
+   text. Same stacking fix as mobile, just less compressed since there's
+   more room here than on a phone. */
+@media (max-width:1024px) and (min-width:641px){
+  .seat-strip{bottom:20vh}
+  #fdLink{right:5vw;bottom:9vh}
+  #stageExploreBtn{right:5vw;bottom:13.5vh;left:auto}
+}
+/* Gallery footer cluster (spec counter + both explore/details links) uses
+   fixed right:6vw / calc(6vw + 150px) offsets sized for desktop's spare
+   width — on a phone these collide with each other and with the seat-strip
+   above them. Per feedback: stop trying to fit them side-by-side in
+   cramped space, stack them on their own lines instead. */
+@media (max-width:640px){
+  .counter{bottom:5.5vh;left:5vw;font-size:11px}
+  .seat-strip{bottom:12vh}
+  .fd{right:5vw;bottom:21vh;left:auto}
+  #stageExploreBtn{right:5vw;bottom:25.5vh;left:auto}
+  .spec-stack{transform:scale(0.82);transform-origin:bottom center}
+}
+.face > model-viewer{height:100%;width:100%;display:block;transform:scale(1.2) translateY(5%);}
+.face .fshadow{position:absolute;left:50%;bottom:-10%;transform:translateX(-50%);
+  width:80%;height:40px;
+  background:radial-gradient(ellipse at center,rgba(21,23,27,.35),rgba(21,23,27,0) 70%);
+  filter:blur(6px);border-radius:50%;pointer-events:none;}
+.face .ftag, .cap {display:none}
+
+/* flat overlays — 1:1 Dribbble alignment */
+.head{position:absolute;top:20vh;left:50%;transform:translateX(-50%);z-index:6;text-align:center;width:100%}
+.head-in{position:relative;height:clamp(96px,15vh,160px);display:flex;justify-content:center}
+.hb{position:absolute;top:0;opacity:0;transform:translateY(15px);
+  transition:opacity .5s,transform .5s cubic-bezier(0.2,0.8,0.2,1);pointer-events:none}
+.hb.on{opacity:1;transform:none;pointer-events:auto}
+.hb h2{font-size:clamp(2.4rem,5vw,4.2rem);font-weight:700;letter-spacing:-.03em;line-height:1;color:var(--ink)}
+.hb p{margin-top:4px;font-size:clamp(2.2rem,4.5vw,3.8rem);letter-spacing:-.02em;font-weight:700;
+  color:transparent;-webkit-text-stroke:1px rgba(21,23,27,0.3);text-transform:uppercase}
+
+.top-right-price{position:absolute;top:16vh;right:6vw;z-index:6;text-align:right}
+.price-val{font-size:1.6rem;font-weight:700;color:var(--ink);letter-spacing:-0.02em}
+.price-loc{font-size:11px;color:var(--grey);margin-top:4px;letter-spacing:0.05em}
+
+.foot{position:absolute;bottom:8vh;left:0;right:0;z-index:6;display:flex;
+  justify-content:center;align-items:flex-end}
+.tv-stack{display:none}
+.spec-stack{position:relative;height:58px;display:flex;justify-content:center;width:100%;max-width:500px}
+.specset{position:absolute;bottom:0;display:flex;gap:5vw;
+  opacity:0;transform:translateY(10px);transition:opacity .5s,transform .5s}
+.specset.on{opacity:1;transform:none}
+.spec{text-align:left}
+.spec span{display:block;font-size:1.8rem;font-weight:700;color:var(--ink);line-height:1;margin-bottom:6px;letter-spacing:-0.02em}
+.spec b{font-size:11px;color:var(--grey);font-weight:500;text-transform:capitalize}
+
+.fd{position:absolute;bottom:9vh;right:6vw;z-index:6;font-size:13px;font-weight:600;color:var(--ink);
+  text-decoration:none;border:none;border-bottom:2px solid var(--ink);padding:0 0 6px;
+  background:none;-moz-appearance:none;appearance:none;-webkit-appearance:none;font-family:inherit;cursor:pointer;
+  transition:opacity .25s}
+.fd .arr{display:inline-block;margin-left:8px;transition:transform .3s}
+.fd:hover .arr{transform:translateX(6px)}
+
+.arrows{position:absolute;left:6vw;bottom:14vh;z-index:7;
+  display:flex;flex-direction:column;gap:12px}
+.arrows button{width:48px;height:48px;border-radius:50%;border:none;
+  background:transparent;cursor:pointer;display:grid;place-items:center;
+  transition:background .25s,transform .15s}
+.arrows button:nth-child(2){background:var(--ink);color:white}
+.arrows button:nth-child(2) svg{stroke:white}
+.arrows button:hover{background:rgba(21,23,27,0.05)}
+
+/* ================================================================
+   Below ~14" tablet width: stack the hero and carousel-header into
+   normal document flow instead of the absolute-overlay + scroll-pinned
+   layout used on desktop. This is the actual fix for every seat/text
+   overlap issue reported on phone and tablet — there was never enough
+   spare width for an overlay approach below this point, so no amount of
+   resizing either side was ever going to stop them fighting for space.
+   Everything from Field Ready onward is untouched — this block only
+   targets the hero + the exposed carousel header content.
+   ================================================================ */
+@media (max-width:1280px){
+  .gallery{height:auto;min-height:0;overflow:visible;display:flex;
+    flex-direction:column;position:relative}
+
+  /* No hero to hand off from anymore — .scene is just the first block on
+     the page. Was 90svh, which left almost nothing for the name/thumbnail
+     strip/buttons below it, forcing a scroll to reach them — shrunk so
+     the whole stack (seat, name, strip, explore button) fits one screen.
+     Seat's own positioning inside .scene (ring, stage, model) is
+     untouched — this only changes how tall the box around it is. */
+  .scene{position:relative;inset:auto;height:68svh;order:0}
+  .gallery-bg{position:absolute}
+
+  .head{position:static;top:auto;left:auto;transform:none;order:3;margin:4vh 0 0;min-height:7vh}
+  .hb h2{font-size:clamp(1.8rem,4.5vw,2.8rem)}
+  .seat-strip{position:static;left:auto;bottom:auto;transform:none;order:4;
+    margin:0.5vh auto;justify-content:center;max-width:92vw}
+  .foot{position:static;bottom:auto;order:5;margin:0.8vh 0;
+    flex-direction:column;align-items:center;gap:1vh}
+  /* .specset was still position:absolute with no left/right/centering of
+     its own — harmless when .foot was absolute+centered on desktop, but
+     once .foot went static this had nothing to center it, so it rendered
+     pinned to its own default flow position (the left edge) and clipped.
+     Drop the absolute crossfade positioning here; just show/hide the
+     active one as a normal centered flex row. */
+  .spec-stack{position:static;height:auto;margin:0 auto;max-width:100%}
+  .specset{position:static;display:none;justify-content:center;
+    width:100%;gap:8vw;transform:none;opacity:1}
+  .specset.on{display:flex}
+  .counter{position:static;left:auto;bottom:auto;order:6;text-align:center;margin:0.5vh 0}
+  .fd{position:static;right:auto;bottom:auto;order:7;text-align:center;margin:0.5vh auto;display:block;width:-moz-fit-content;width:fit-content}
+  #stageExploreBtn{position:static;right:auto;bottom:auto;left:auto;order:7;
+    text-align:center;margin:0.5vh auto;display:block;width:-moz-fit-content;width:fit-content}
+  .arrows{display:none}
+}
+/* Tablet only (not phone) — the seat/stage visuals sit slightly right of
+   the ring background's visual center on this range specifically. Small
+   nudge left; flagging this as an approximation since I can't render the
+   live composition to verify the exact amount — adjust the translateX
+   values here if it's not quite enough or slightly too much. */
+@media (min-width:641px) and (max-width:1280px){
+  .stage{transform:translateX(-4vw)}
+}
+
+.arrows button:nth-child(2):hover{background:var(--amber)}
+.arrows button:active{transform:scale(.93)}
+.arrows svg{width:18px;height:18px;stroke:var(--ink);stroke-width:2;fill:none;
+  stroke-linecap:round;stroke-linejoin:round}
+
+.counter{position:absolute;bottom:8vh;left:7.2vw;z-index:6;font-size:13px;font-weight:600;color:var(--ink)}
+.counter .tot, .pbar{display:none}
+
+
+/* ---------- outro / About Us (compact single panel) ---------- */
+.outro{padding:8vh 6vw 5vh;background:var(--paper)}
+.legal{margin-top:6vh;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
+  font-size:10px;letter-spacing:.14em;color:var(--grey);text-transform:uppercase}
+.legal .note{color:#b0ada5;text-transform:none;letter-spacing:0}
+
+@media (max-width:640px){
+  :root{--sw:92vw;--sh:300px;--sd:250px}
+  .face > svg, .face > img{height:74%}
+  .head{top:14vh}
+  .hb h2{max-width:18ch}
+  .foot{flex-direction:column;align-items:flex-start;gap:20px}
+  .spec-stack{min-width:0;width:100%}
+  .specset{gap:20px}
+  .eng{grid-template-columns:1fr;gap:8vh;padding:12vh 6vw}
+}
+
+
+/* mobile nav overflow fix + safe-area for notch/PWA fullscreen */
+body{padding-top:env(safe-area-inset-top)}
+@media (max-width:480px){
+  .pill-nav{max-width:92vw}
+}
+</style>
+<style>
+#preloader{position:fixed;inset:0;z-index:99999;background:#15171b;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5vh;
+  transition:opacity .35s ease, visibility .35s ease}
+#preloader.pl-hidden{opacity:0;visibility:hidden;pointer-events:none}
+#preloader-logo{font-size:clamp(2.2rem,6vw,4.5rem);font-weight:800;letter-spacing:.02em;
+  display:flex}
+#preloader-logo .pl-letter{display:inline-block;color:#c98a12;
+  transform:translateY(0) rotate(0deg);opacity:1;
+  transition:color .5s ease, transform .5s cubic-bezier(.22,.61,.36,1), opacity .5s ease}
+#preloader-logo .pl-letter.pl-scramble{color:#8a6a3a;opacity:.55}
+#preloader-logo .pl-letter.pl-settled{color:#f1f0ec;transform:translateY(0) rotate(0deg);opacity:1}
+#preloader-pct{font-size:13px;font-weight:700;letter-spacing:.08em;color:#f1f0ec;
+  font-variant-numeric:tabular-nums}
+#preloader-bar{width:180px;height:2px;background:rgba(241,240,236,.25);position:relative}
+#preloader-bar-fill{position:absolute;left:0;top:0;height:100%;width:0%;background:#f1f0ec;
+  transition:width .2s linear}
+@media (prefers-reduced-motion: reduce){
+  #preloader-logo .pl-letter{transition:color .3s ease}
+}
+.brochure-backdrop{position:fixed;inset:0;background:rgba(21,23,27,.75);z-index:9990;
+  opacity:0;pointer-events:none;transition:opacity .35s ease}
+.brochure-backdrop.open{opacity:1;pointer-events:auto}
+.brochure-modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.92);
+  z-index:9991;opacity:0;pointer-events:none;transition:opacity .35s ease, transform .35s ease;
+  display:flex;align-items:center;justify-content:center;padding:40px}
+.brochure-modal.open{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+.brochure-close{position:fixed;top:24px;right:24px;width:44px;height:44px;border-radius:50%;
+  border:none;background:#fff;color:#15171b;font-size:22px;cursor:pointer;z-index:9992}
+.brochure-close:hover{background:var(--amber)}
+#brochureFlip{box-shadow:0 30px 80px rgba(0,0,0,.5)}
+@media (max-width:900px){
+  .brochure-modal{width:92vw;max-width:92vw}
+}
+.info-dropdown{position:fixed;top:70px;left:6vw;z-index:70;background:var(--panel);
+  border:1px solid var(--line);border-radius:16px;padding:10px;box-shadow:0 20px 50px rgba(0,0,0,.15);
+  display:none;flex-direction:column;min-width:180px}
+.info-dropdown.open{display:flex}
+.info-dropdown a{padding:12px 16px;font-size:13px;font-weight:600;color:var(--ink);text-decoration:none;border-radius:10px}
+.info-dropdown a:hover{background:var(--paper)}
+</style>
+  <script type="module" crossorigin src="/assets/modulepreload-polyfill-P2Xu9kJm.js"></script>
+</head>
+<body id="top">
+
+<div id="preloader" aria-hidden="true">
+  <div id="preloader-logo">
+    <span class="pl-letter" data-final="G">G</span><span class="pl-letter" data-final="A">A</span><span class="pl-letter" data-final="T">T</span><span class="pl-letter" data-final="O">O</span><span class="pl-letter" data-final="R">R</span><span class="pl-letter" data-final="C">C</span><span class="pl-letter" data-final="O">O</span><span class="pl-letter" data-final="R">R</span><span class="pl-letter" data-final="P">P</span>
+  </div>
+  <div id="preloader-pct">0 %</div>
+  <div id="preloader-bar"><div id="preloader-bar-fill"></div></div>
+</div>
+
+
+<nav class="pill-nav" aria-label="Primary">
+  <a class="pill-logo" href="/index.html" style="margin:0 auto">
+    <img src="/images/logo-new.png" alt="GatorCorp" style="height:20px; width:auto; display:block;" />
+  </a>
+</nav>
+
+
+<section class="gallery" id="products" aria-label="GatorCorp seat models">
+  <div class="scene">
+    <div class="gallery-bg">
+      <div class="bg-wall color-0" style="background-image:url('/images/bg-supremo.jpg'); opacity: 1;"></div>
+      <div class="bg-wall color-1" style="background-image:url('/images/bg-ultimo.jpg'); opacity: 0;"></div>
+      <div class="bg-wall color-2" style="background-image:url('/images/bg-leo.jpg'); opacity: 0;"></div>
+      <div class="bg-wall color-3" style="background-image:url('/images/bg-duro.jpg'); opacity: 0;"></div>
+      <div class="bg-wall color-4" style="background-image:url('/images/bg-boss.jpg'); opacity: 0;"></div>
+      <div class="bg-wall color-5" style="background-image:url('/images/bg-ergo.jpg'); opacity: 0;"></div>
+      <!-- No custom studio-render backdrop exists for VRS yet (the other six
+           were each hand-cut from a 3x2 grid image the user supplied) — a
+           CSS gradient stands in until a matching photo is cut, rather than
+           reusing another product's background wholesale. -->
+      <div class="bg-wall color-6" style="background-image:url('/images/bg-leo.jpg'); opacity: 0;"></div>
+      <!-- No custom studio-render backdrop exists for TLV-II yet either — same
+           situation Atlas-II was in before this, reusing an existing light
+           background rather than another placeholder gradient. -->
+      <div class="bg-wall color-7" style="background-image:url('/images/bg-duro.jpg'); opacity: 0;"></div>
+      <div class="bg-floor"></div>
+    </div>
+    <div class="stage">
+
+      <div class="face f0">
+        <i class="fshadow" aria-hidden="true"></i>
+        <span class="ftag">Supremo — 01</span>
+      </div>
+
+      <div class="face f1">
+        <i class="fshadow" aria-hidden="true"></i>
+        <span class="ftag">Ultimo — 02</span>
+      </div>
+
+      <div class="face f2">
+        <i class="fshadow" aria-hidden="true"></i>
+        <span class="ftag">Leo — 03</span>
+      </div>
+
+      <div class="face f3">
+        <i class="fshadow" aria-hidden="true"></i>
+        <span class="ftag">Duro — 04</span>
+      </div>
+
+      <div class="face f4">
+        <i class="fshadow" aria-hidden="true"></i>
+        <span class="ftag">Boss — 05</span>
+      </div>
+
+      <div class="face f5">
+        <i class="fshadow" aria-hidden="true"></i>
+        <span class="ftag">Ergo — 06</span>
+      </div>
+
+      <div class="face f6">
+        <i class="fshadow" aria-hidden="true"></i>
+        <span class="ftag">VRS — 07</span>
+      </div>
+
+      <div class="face f7">
+        <i class="fshadow" aria-hidden="true"></i>
+        <span class="ftag">TLV-II — 08</span>
+      </div>
+
+      <model-viewer id="sharedFaceModel" loading="eager" src="/images/supremo-seat-v4.glb" disable-zoom shadow-intensity="1" environment-image="neutral" exposure="1.2" interaction-prompt="none"></model-viewer>
+      <model-viewer id="preloadFaceModel" loading="eager" src="/images/ultimo-seat.glb" style="position:absolute;width:2px;height:2px;opacity:0;pointer-events:none;overflow:hidden;left:0;top:0" aria-hidden="true"></model-viewer>
+
+      <div class="cap capL" aria-hidden="true"></div>
+      <div class="cap capR" aria-hidden="true"><span>GatorCorp · Heavy-Duty Seating</span></div>
+    </div>
+  </div>
+
+  <div class="seat-strip" id="seatStrip" role="tablist" aria-label="Choose a seat model">
+    <button class="thumb on" data-idx="0" role="tab" aria-selected="true" type="button"><img src="/images/Supremo.png" alt="" aria-hidden="true"><span>Supremo</span></button>
+    <button class="thumb" data-idx="1" role="tab" aria-selected="false" type="button"><img src="/images/Ultimo.png" alt="" aria-hidden="true"><span>Ultimo</span></button>
+    <button class="thumb" data-idx="2" role="tab" aria-selected="false" type="button"><img src="/images/Leo.png" alt="" aria-hidden="true"><span>Leo</span></button>
+    <button class="thumb" data-idx="3" role="tab" aria-selected="false" type="button"><img src="/images/Duro.png" alt="" aria-hidden="true"><span>Duro</span></button>
+    <button class="thumb" data-idx="4" role="tab" aria-selected="false" type="button"><img src="/images/Excavator.png" alt="" aria-hidden="true"><span>Boss</span></button>
+    <button class="thumb" data-idx="5" role="tab" aria-selected="false" type="button"><img src="/images/Tractor.png" alt="" aria-hidden="true"><span>Ergo</span></button>
+    <button class="thumb" data-idx="6" role="tab" aria-selected="false" type="button"><img src="/images/VRS.png" alt="" aria-hidden="true"><span>Atlas - II (VRS)</span></button>
+    <button class="thumb" data-idx="7" role="tab" aria-selected="false" type="button"><img src="/images/TLV-II.png" alt="" aria-hidden="true"><span>TLV-II</span></button>
+  </div>
+
+  <div class="head">
+    <div class="head-in">
+      <div class="hb on"><h2>Supremo</h2></div>
+      <div class="hb"><h2>Ultimo</h2></div>
+      <div class="hb"><h2>Leo</h2></div>
+      <div class="hb"><h2>Duro</h2></div>
+      <div class="hb"><h2>Boss</h2></div>
+      <div class="hb"><h2>Ergo</h2></div>
+      <div class="hb"><h2>Atlas - II (VRS)</h2></div>
+      <div class="hb"><h2>TLV-II</h2></div>
+    </div>
+  </div>
+
+
+
+  <div class="foot">
+    <div class="foot-left">
+      <div class="tv-stack" aria-hidden="true"></div>
+      <div class="spec-stack">
+        <div class="specset on">
+          <div class="spec"><span>Auto</span><b>Suspension</b></div>
+          <div class="spec"><span>Active</span><b>Ventilation</b></div>
+          <div class="spec"><span>ISO</span><b>Standard</b></div>
+        </div>
+        <div class="specset">
+          <div class="spec"><span>Air</span><b>Suspension</b></div>
+          <div class="spec"><span>Lumbar</span><b>Support</b></div>
+          <div class="spec"><span>Fast</span><b>Service</b></div>
+        </div>
+        <div class="specset">
+          <div class="spec"><span>Mech</span><b>Suspension</b></div>
+          <div class="spec"><span>Strong</span><b>Frame</b></div>
+          <div class="spec"><span>Easy</span><b>Swap</b></div>
+        </div>
+        <div class="specset">
+          <div class="spec"><span>Reinforced</span><b>Frame</b></div>
+          <div class="spec"><span>All-Terrain</span><b>Mounting</b></div>
+          <div class="spec"><span>Heavy</span><b>Duty</b></div>
+        </div>
+        <div class="specset">
+          <div class="spec"><span>Vibration</span><b>Damping</b></div>
+          <div class="spec"><span>Reinforced</span><b>Frame</b></div>
+          <div class="spec"><span>Site</span><b>Rated</b></div>
+        </div>
+        <div class="specset">
+          <div class="spec"><span>Field</span><b>Ready</b></div>
+          <div class="spec"><span>Reinforced</span><b>Frame</b></div>
+          <div class="spec"><span>Long</span><b>Duty Cycle</b></div>
+        </div>
+        <div class="specset">
+          <div class="spec"><span>Magnetic</span><b>Ride Damper</b></div>
+          <div class="spec"><span>45% Less</span><b>Vibration</b></div>
+          <div class="spec"><span>Quad Chamber</span><b>Air Lumbar</b></div>
+        </div>
+        <div class="specset">
+          <div class="spec"><span>Waterfall</span><b>Front Edge</b></div>
+          <div class="spec"><span>Active</span><b>Climate System</b></div>
+          <div class="spec"><span>Multi-Stage</span><b>Lumbar</b></div>
+        </div>
+      </div>
+    </div>
+    <button class="fd" id="fdLink" type="button">Full details <span class="arr" aria-hidden="true">→</span></button>
+
+<div class="brochure-backdrop" id="brochureBackdrop"></div>
+<div class="brochure-modal" id="brochureModal" aria-hidden="true">
+  <button class="brochure-close" id="brochureClose" aria-label="Close brochure">&times;</button>
+  <div id="brochureFlip"></div>
+</div>
+    <a class="fd" id="stageExploreBtn" href="/product-supremo.html" style="right:calc(6vw + 150px)">Explore Supremo <span class="arr" aria-hidden="true">→</span></a>
+  </div>
+
+  <div class="arrows">
+    <button id="prevBtn" aria-label="Previous seat">
+      <svg viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg></button>
+    <button id="nextBtn" aria-label="Next seat">
+      <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+  </div>
+
+  <div class="counter">
+    <span class="cur" id="idxCur">01</span><span class="tot">/ 04</span>
+    <span class="pbar"><i id="pFill"></i></span>
+  </div>
+</section>
+
+<footer class="outro" id="contact">
+  <div class="legal">
+    <span>GatorCorp Automotives Pvt. Ltd. · Chennai · Since 1996</span>
+    <span class="note">Concept experience — model names and specs to be verified with GatorCorp before launch.</span>
+  </div>
+</footer>
+
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script>
+(function(){
+'use strict';
+const byId = function(id){ return document.getElementById(id); };
+const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const hasGsap = !!(window.gsap && window.ScrollTrigger);
+if (hasGsap) gsap.registerPlugin(ScrollTrigger);
+else document.documentElement.classList.add('no-anim');
+
+/* ---------- gallery product state ---------- */
+const N = 8;
+let idx = -1; let ST = null;
+const gallery = document.querySelector('.gallery');
+
+window.currentStageProduct = 'Supremo';
+function setProduct(i){
+  if (i === idx) return; idx = i;
+  document.querySelectorAll('.hb').forEach(function(el,k){ el.classList.toggle('on', k===i); });
+  document.querySelectorAll('.tv').forEach(function(el,k){ el.classList.toggle('on', k===i); });
+  document.querySelectorAll('.specset').forEach(function(el,k){ el.classList.toggle('on', k===i); });
+  document.querySelectorAll('.face').forEach(function(el,k){ el.classList.toggle('on', k===i); });
+  document.querySelectorAll('.bg-wall').forEach(function(el,k){ el.style.opacity = k===i ? 1 : 0; });
+  document.querySelectorAll('.seat-strip .thumb').forEach(function(el,k){
+    el.classList.toggle('on', k===i);
+    el.setAttribute('aria-selected', k===i ? 'true' : 'false');
+  });
+  if (byId('pFill')) byId('pFill').style.width = (N>1 ? (i/(N-1)*100).toFixed(2) : '0') + '%';
+
+  const modelSrcs = ['/images/supremo-seat-v4.glb','/images/ultimo-seat.glb','/images/Leo-opt.glb','/images/duro-seat.glb','/images/boss-seat.glb','/images/ergo-seat.glb','/images/vrs-seat-opt.glb?v=2','/images/sears-seat-optimized.glb'];
+  const modelControls = [false, false, false, false, false, false, false, false];
+  const faces = document.querySelectorAll('.face');
+  const hiddenStyle = 'position:absolute;width:2px;height:2px;opacity:0;pointer-events:none;overflow:hidden;left:0;top:0';
+
+  var curEl = byId('sharedFaceModel');
+  var preEl = byId('preloadFaceModel');
+  if (preEl && curEl && preEl.getAttribute('src') === modelSrcs[i]) {
+    // the preload model already has this product warm/parsed — swap roles
+    // instead of reloading, so advancing forward is instant.
+    preEl.id = 'sharedFaceModel';
+    curEl.id = 'preloadFaceModel';
+    curEl.setAttribute('style', hiddenStyle);
+    preEl.removeAttribute('style');
+  } else if (curEl && curEl.getAttribute('src') !== modelSrcs[i]) {
+    // Direct reassignment (this only happens when going to a product that
+    // isn't the pre-warmed "next" one — i.e. any backward click, since
+    // preloading only ever looks ahead, never behind). Clearing src first
+    // forces model-viewer through a genuine unload before the reload,
+    // rather than a same-tick attribute swap — after enough forward/back
+    // hops reusing the same two persistent elements, a same-tick src
+    // change can silently fail to re-trigger a load on some browsers.
+    var targetSrc = modelSrcs[i];
+    curEl.removeAttribute('src');
+    requestAnimationFrame(function(){ curEl.setAttribute('src', targetSrc); });
+  }
+
+  const sharedModel = byId('sharedFaceModel');
+  if (sharedModel && faces[i]) {
+    faces[i].appendChild(sharedModel);
+    if (modelControls[i]) { sharedModel.setAttribute('camera-controls', ''); }
+    else { sharedModel.removeAttribute('camera-controls'); }
+    // Rotation is driven manually further down this file (see the
+    // rotation loop near the IntersectionObserver) rather than via the
+    // native auto-rotate attribute — that attribute wasn't reliably
+    // respecting the orbit constraint on some models, and was dropped
+    // entirely on at least one product (Ultimo) after enough id-swaps.
+    // A manual loop that queries byId('sharedFaceModel') fresh every
+    // frame sidesteps both problems since it never depends on an
+    // attribute surviving a swap.
+    if (window.resetSeatRotation) window.resetSeatRotation();
+  }
+
+  // warm the next product in sequence in the background, so scrolling
+  // forward doesn't show a fresh load-in every time.
+  const nextIdx = Math.min(i + 1, modelSrcs.length - 1);
+  const preloadNow = byId('preloadFaceModel');
+  if (preloadNow && nextIdx !== i && preloadNow.getAttribute('src') !== modelSrcs[nextIdx]) {
+    preloadNow.setAttribute('src', modelSrcs[nextIdx]);
+  }
+
+  byId('idxCur').textContent = String(i+1).padStart(2,'0');
+  const names = ['Supremo','Ultimo','Leo','Duro','Boss','Ergo','VRS','TLV-II'];
+  // Internal keys (names[]) stay 'VRS' — that's what brochureImages/bookDims/
+  // urls are keyed on. displayNames[] is only for visible text, so the seat
+  // can show as "Atlas - II" without renaming any file or object key.
+  const displayNames = ['Supremo','Ultimo','Leo','Duro','Boss','Ergo','Atlas - II (VRS)','TLV-II'];
+  const urls = ['/product-supremo.html','/product-ultimo.html','/product-leo.html','/product-duro.html','/product-boss.html','/product-ergo.html','/product-vrs.html','/product-tlv-ii.html'];
+  window.currentStageProduct = names[i];
+  const exploreBtn = byId('stageExploreBtn');
+  if (exploreBtn) {
+    exploreBtn.firstChild.textContent = 'Explore ' + displayNames[i] + ' ';
+    exploreBtn.href = urls[i];
+  }
+}
+setProduct(0);
+
+document.querySelectorAll('.seat-strip .thumb').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    setProduct(parseInt(btn.dataset.idx, 10));
+    btn.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', inline: 'center', block: 'nearest' });
+  });
+});
+
+var galleryIsVisible = true;
+if ('IntersectionObserver' in window) {
+  if (byId('sharedFaceModel')) {
+    var galleryVisibilityObserver = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        galleryIsVisible = entry.isIntersecting;
+      });
+    }, { threshold: 0.05 });
+    galleryVisibilityObserver.observe(gallery);
+  }
+}
+
+// Manually-driven turntable, replacing model-viewer's native auto-rotate.
+// Queries byId('sharedFaceModel') fresh every frame rather than holding a
+// reference, so it always finds whichever physical element currently
+// holds that id — immune to the id-swap losing track of an element, and
+// immune to auto-rotate silently ignoring the orbit constraint (which is
+// exactly what was happening natively: full 360 on most models, no
+// rotation at all on Ultimo once enough swaps had happened).
+(function(){
+  var theta = 0;
+  var direction = 1;
+  var speed = 0.3;      // degrees per frame, ~18deg/sec at 60fps
+  var maxTheta = 100;    // stays within front+sides, never reaches the back
+  window.resetSeatRotation = function(){ theta = 0; direction = 1; };
+  function tick(){
+    if (galleryIsVisible) {
+      var model = byId('sharedFaceModel');
+      if (model) {
+        theta += direction * speed;
+        if (theta >= maxTheta) { theta = maxTheta; direction = -1; }
+        if (theta <= -maxTheta) { theta = -maxTheta; direction = 1; }
+        model.cameraOrbit = theta.toFixed(2) + 'deg auto auto';
+      }
+    }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
+
+if (hasGsap) {
+  buildScrollTimeline();
+}
+
+function buildScrollTimeline() {
+  gsap.from('.stage', { scale:0.94, y:26, duration:1.1, ease:'power3.out',
+    scrollTrigger:{ trigger:'.gallery', start:'top 75%', once:true } });
+}
+
+function go(i){
+  i = Math.min(N-1, Math.max(0, i));
+  setProduct(i);
+  const activeThumb = document.querySelector('.seat-strip .thumb[data-idx="' + i + '"]');
+  if (activeThumb) activeThumb.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', inline: 'center', block: 'nearest' });
+}
+byId('prevBtn').addEventListener('click', function(){ go(idx-1); });
+byId('nextBtn').addEventListener('click', function(){ go(idx+1); });
+window.addEventListener('keydown', function(e){
+  const r = gallery.getBoundingClientRect();
+  if (r.bottom < innerHeight*0.25 || r.top > innerHeight*0.75) return;
+  if (e.key === 'ArrowDown'){ e.preventDefault(); go(idx+1); }
+  else if (e.key === 'ArrowUp'){ e.preventDefault(); go(idx-1); }
+});
+})();
+</script>
+<script>
+(function(){
+'use strict';
+var preloader = document.getElementById('preloader');
+var pctEl = document.getElementById('preloader-pct');
+var barFill = document.getElementById('preloader-bar-fill');
+var letters = Array.prototype.slice.call(document.querySelectorAll('#preloader-logo .pl-letter'));
+var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var scrambleChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+var scrambleTimer = null;
+
+function startScramble(){
+  if (reduced) return;
+  scrambleTimer = setInterval(function(){
+    letters.forEach(function(el){
+      if (el.classList.contains('pl-settled')) return;
+      el.classList.add('pl-scramble');
+      el.textContent = scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
+    });
+  }, 90);
+}
+function stopScramble(){ if (scrambleTimer) clearInterval(scrambleTimer); }
+
+function setProgress(pct){
+  pct = Math.max(0, Math.min(100, Math.round(pct)));
+  pctEl.textContent = pct + ' %';
+  barFill.style.width = pct + '%';
+  // Settle letters progressively as we approach 100%, left to right —
+  // each letter locks in once overall progress passes its threshold.
+  var perLetter = 100 / letters.length;
+  letters.forEach(function(el, i){
+    if (pct >= (i + 1) * perLetter && !el.classList.contains('pl-settled')) {
+      el.classList.remove('pl-scramble');
+      el.classList.add('pl-settled');
+      el.textContent = el.getAttribute('data-final');
+    }
+  });
+  if (pct >= 100) finish();
+}
+
+var finished = false;
+function finish(){
+  if (finished) return;
+  finished = true;
+  stopScramble();
+  letters.forEach(function(el){
+    el.classList.remove('pl-scramble');
+    el.classList.add('pl-settled');
+    el.textContent = el.getAttribute('data-final');
+  });
+  setTimeout(function(){
+    preloader.classList.add('pl-hidden');
+  }, 400);
+}
+
+// Fixed-duration animation — 3 seconds, matching the reference video's own
+// pacing. Not tied to real asset load progress: that approach resolved
+// almost instantly on cached/fast loads and the scramble effect never had
+// time to play. This guarantees the quirky reveal always runs in full.
+var DURATION = 3000;
+var startTime = null;
+
+function tick(timestamp){
+  if (startTime === null) startTime = timestamp;
+  var elapsed = timestamp - startTime;
+  var pct = Math.min(100, (elapsed / DURATION) * 100);
+  setProgress(pct);
+  if (pct < 100) {
+    requestAnimationFrame(tick);
+  }
+}
+
+startScramble();
+requestAnimationFrame(tick);
+})();
+</script>
+<script>
+(function(){
+'use strict';
+
+// Local image pairs per brochure — no PDF is ever sourced directly in the browser.
+var brochureImages = {
+  Supremo: ['/images/brochure-supremo-1.jpg', '/images/brochure-supremo-2.jpg'],
+  Ultimo:  ['/images/brochure-ultimo-1.jpg',  '/images/brochure-ultimo-2.jpg'],
+  Leo:     ['/images/brochure-leo-1.jpg',     '/images/brochure-leo-2.jpg'],
+  Duro:    ['/images/brochure-duro-1.jpg',    '/images/brochure-duro-2.jpg'],
+  Boss:    ['/images/brochure-boss-1.jpg',    '/images/brochure-boss-2.jpg'],
+  Ergo:    ['/images/brochure-ergo-1.jpg',    '/images/brochure-ergo-2.jpg'],
+  VRS:     ['/images/brochure-vrs-1.jpg', '/images/brochure-vrs-2.jpg'],
+  'TLV-II': ['/images/brochure-tlv-ii-1.jpg', '/images/brochure-tlv-ii-2.jpg', '/images/brochure-tlv-ii-3.jpg', '/images/brochure-tlv-ii-4.jpg']
+};
+// Portrait-page brochures vs landscape-spread brochures need different book dims.
+var bookDims = {
+  Supremo: { width: 700, height: 505 },
+  Ultimo:  { width: 700, height: 505 },
+  Leo:     { width: 700, height: 505 },
+  Duro:    { width: 500, height: 686 },
+  Boss:    { width: 500, height: 686 },
+  Ergo:    { width: 700, height: 505 },
+  // Replaced with the Atlas II dealer brochure (LE/DLX/PC/Sentry/Air
+  // Suspension/ActiveVRS spread) — landscape pages, different proportions
+  // than the old 4-page ActiveVRS-only brochure this replaced.
+  VRS:     { width: 760, height: 427 },
+  'TLV-II': { width: 520, height: 673 }
+};
+
+var backdrop = document.getElementById('brochureBackdrop');
+var modal = document.getElementById('brochureModal');
+var closeBtn = document.getElementById('brochureClose');
+var flipEl = document.getElementById('brochureFlip');
+var flipParent = flipEl.parentNode;
+var fdBtn = document.getElementById('fdLink');
+var pageFlipInstance = null;
+
+function openBrochure(name){
+  var pages = brochureImages[name];
+  if (!pages || typeof St === 'undefined') return false;
+  var dims = bookDims[name] || { width: 700, height: 505 };
+
+  // PageFlip's destroy() removes its root element from the DOM entirely
+  // (not just its contents) — reusing that same flipEl reference afterward
+  // silently re-initializes onto a detached node, which is why the second
+  // open ever did nothing. Destroy first, then recreate flipEl if it's
+  // gone, before touching it again.
+  if (pageFlipInstance) { try { pageFlipInstance.destroy(); } catch(e){} pageFlipInstance = null; }
+  if (!flipEl.isConnected) {
+    var fresh = document.createElement('div');
+    fresh.id = 'brochureFlip';
+    flipParent.appendChild(fresh);
+    flipEl = fresh;
+  }
+
+  flipEl.innerHTML = '';
+  flipEl.style.width = dims.width + 'px';
+  flipEl.style.height = dims.height + 'px';
+
+  pageFlipInstance = new St.PageFlip(flipEl, {
+    width: dims.width,
+    height: dims.height,
+    size: 'fixed',
+    minWidth: 300,
+    maxWidth: 1000,
+    minHeight: 400,
+    maxHeight: 1200,
+    maxShadowOpacity: 0.5,
+    showCover: false,
+    mobileScrollSupport: true
+  });
+  pageFlipInstance.loadFromImages(pages);
+
+  backdrop.classList.add('open');
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden', 'false');
+  return true;
+}
+
+function closeBrochure(){
+  backdrop.classList.remove('open');
+  modal.classList.remove('open');
+  modal.setAttribute('aria-hidden', 'true');
+}
+
+if (fdBtn) {
+  fdBtn.addEventListener('click', function(){
+    openBrochure(currentStageProduct || 'Supremo');
+  });
+}
+closeBtn.addEventListener('click', closeBrochure);
+backdrop.addEventListener('click', closeBrochure);
+document.addEventListener('keydown', function(ev){
+  if (ev.key === 'Escape' && modal.classList.contains('open')) closeBrochure();
+});
+})();
+</script>
+<script>
+/* ScrollTrigger positions (start/end) get calculated the moment each
+   trigger is created — for triggers on elements containing images,
+   that's often before
+   the image has actually loaded and pushed the layout to its real
+   height. Once that happens uncorrected, the trigger zone is stuck at
+   the wrong scroll position forever, which looks exactly like "nothing
+   happens no matter how far I scroll." Force a full recalculation once
+   every image on the page has actually finished loading. */
+window.addEventListener('load', function(){
+  if (window.ScrollTrigger) window.ScrollTrigger.refresh();
+});
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('/sw.js').catch(function(err){
+      console.warn('Service worker registration failed:', err);
+    });
+  });
+}
+</script>
+</body>
+</html>

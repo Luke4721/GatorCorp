@@ -1,0 +1,22 @@
+{
+  "name": "GatorCorp Seating Systems",
+  "short_name": "GatorCorp",
+  "start_url": "/index.html",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone"],
+  "orientation": "portrait",
+  "background_color": "#f1f0ec",
+  "theme_color": "#c98a12",
+  "icons": [
+    {
+      "src": "/images/logo-new.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/logo-new.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

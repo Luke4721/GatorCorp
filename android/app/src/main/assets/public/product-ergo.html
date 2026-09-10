@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#c98a12">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GatorCorp">
+<link rel="apple-touch-icon" href="/images/logo-new.png">
+<title>Ergo · GatorCorp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+<style>
+:root{
+  --paper:#f1f0ec; --panel:#fbfaf8; --ink:#15171b; --grey:#8a8d94;
+  --line:#e2e0da; --soft:#d9d6cf; --amber:#c98a12;
+  --seat-left:38%; --seat-top:10%; --seat-w:25%; --seat-h:87%;
+  --base-left:51%; --base-top:80%; --base-w:36%; --base-h:60%;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{background:var(--paper);scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{font-family:Inter,ui-sans-serif,system-ui,sans-serif;color:var(--ink);
+  -webkit-font-smoothing:antialiased;line-height:1.5;
+  background:url(/images/hero-bg.png) center top / cover no-repeat fixed;
+  min-height:100vh}
+::-moz-selection{background:rgba(201,138,18,.25)}
+::selection{background:rgba(201,138,18,.25)}
+a{color:inherit}
+
+/* ---------- nav ---------- */
+.pill-nav{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:60;
+  display:flex;align-items:center;padding:8px 10px 8px 20px;border-radius:999px;
+  background:rgba(251,250,248,.95);
+  backdrop-filter:blur(18px) saturate(180%);
+  border:1px solid rgba(255,255,255,.7);
+  box-shadow:0 10px 30px rgba(21,23,27,.10), inset 0 1px 0 rgba(255,255,255,.85);
+  transition:padding .35s cubic-bezier(.16,1,.3,1),box-shadow .35s ease}
+.pill-nav.scrolled{padding:6px 8px 6px 16px;box-shadow:0 8px 24px rgba(21,23,27,.16)}
+.pill-nav.scrolled .pill-logo{font-size:12px;font-weight:600;letter-spacing:.22em;text-decoration:none;margin-right:14px;white-space:nowrap}
+@media (max-width:640px){
+  .pill-nav{padding:7px 8px 7px 16px}
+  .pill-logo img{height:16px !important}
+  }
+@media (max-width:400px){
+  }
+
+/* ---------- page layout ---------- */
+.wrap{max-width:1500px;margin:0 auto;padding:14vh 4vw 8vh;position:relative}
+.overline{font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);margin-bottom:14px}
+.title{font-size:clamp(2.6rem,5.5vw,4.5rem);font-weight:800;line-height:.95;letter-spacing:-.03em}
+.title .accent{color:var(--amber)}
+.tagline{margin-top:18px;font-size:15px;color:var(--grey);max-width:34ch;line-height:1.5}
+.cta-row{display:flex;gap:14px;margin-top:26px;flex-wrap:wrap}
+.btn-primary{display:inline-flex;align-items:center;gap:10px;padding:15px 24px;background:var(--amber);
+  color:var(--ink);font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+  border-radius:999px;text-decoration:none;border:none;cursor:pointer}
+
+.top-right{position:absolute;top:14vh;right:4vw;max-width:420px}
+.top-right h2{font-size:1.6rem;font-weight:700;color:var(--amber);margin-bottom:14px}
+.top-right p{font-size:14px;color:var(--grey);line-height:1.6}
+
+.stage-row{position:relative;margin-top:2vh}
+@media (max-width:1100px){.stage-row{margin-top:6vh}}
+@media (max-width:900px){.callout,.callout-line{display:none!important}}
+
+.callout{position:absolute;z-index:5;display:flex;align-items:center;gap:14px;
+  max-width:230px;cursor:pointer}
+.callout.left{flex-direction:row}
+.callout.right{flex-direction:row-reverse;text-align:right}
+.callout-dot{width:64px;height:64px;border-radius:50%;border:2px solid var(--amber);
+  overflow:hidden;flex-shrink:0;background:var(--panel);
+  animation:calloutFloat 3.6s ease-in-out infinite;animation-delay:calc(var(--float-delay, 0) * 1s)}
+.callout-dot img{width:100%;height:100%;-o-object-fit:cover;object-fit:cover}
+@keyframes calloutFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@media (prefers-reduced-motion: reduce){.callout-dot{animation:none}}
+.callout h3{font-size:13px;font-weight:700;line-height:1.25;margin-bottom:3px}
+.callout p{font-size:11.5px;color:var(--grey);line-height:1.4}
+.callout:focus-visible{outline:2px solid var(--amber);outline-offset:4px;border-radius:8px}
+.callout-svg-line{stroke:var(--amber);stroke-width:0.15;stroke-dasharray:0.8,0.8;
+  vector-effect:non-scaling-stroke}
+body.compact .callout,body.compact .callout-svg{display:none}
+
+.mobile-feature-list{display:none}
+@media (max-width:900px){
+  .mobile-feature-list{display:grid;grid-template-columns:1fr 1fr;gap:14px;
+    margin-top:5vh;padding:0 6vw}
+  .mf-item{display:flex;flex-direction:column;align-items:center;text-align:center;
+    gap:10px;padding:16px 10px;background:var(--panel);border:1px solid var(--line);
+    border-radius:16px;cursor:pointer}
+  .mf-item img{width:48px;height:48px;border-radius:50%;-o-object-fit:cover;object-fit:cover;
+    border:2px solid var(--amber)}
+  .mf-item span{font-size:12px;font-weight:600;color:var(--ink);line-height:1.3}
+}
+@media (max-width:480px){.mobile-feature-list{grid-template-columns:1fr}}
+body.compact .mobile-feature-list{display:none}
+
+.toggle-row{margin-top:22px;display:flex;align-items:center;gap:14px;background:var(--panel);
+  border:1px solid var(--line);border-radius:999px;padding:8px 8px;
+  width:-moz-fit-content;
+  width:fit-content;margin-left:auto;margin-right:auto}
+.toggle-row button{border:none;background:transparent;font-size:11px;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;padding:8px 16px;border-radius:999px;
+  color:var(--grey);cursor:pointer;transition:.2s}
+.toggle-row button.active{background:var(--ink);color:#fff}
+
+.stage-wrap{position:relative;width:min(1000px,92vw);margin:0 auto;height:600px}
+@media (max-width:700px){.stage-wrap{height:440px}}
+
+.stage-base{position:absolute;left:var(--base-left);top:var(--base-top);width:var(--base-w);height:var(--base-h);
+  transform:translate(-50%,-50%);z-index:1;--poster-color:transparent}
+.stage-seat{position:absolute;left:var(--seat-left);top:var(--seat-top);width:var(--seat-w);height:var(--seat-h);
+  z-index:2;--poster-color:transparent}
+.stage-base .hotspot, .stage-seat .hotspot{display:none}
+.model-error{position:absolute;inset:0;z-index:2;display:flex;align-items:center;
+  justify-content:center;text-align:center;color:var(--grey);font-size:13px;
+  max-width:280px;margin:0 auto;padding:20px;background:rgba(251,250,248,.85);
+  border-radius:16px;pointer-events:none}
+
+/* ---------- seat option cards ---------- */
+.options-head{text-align:center;margin:2vh 0 4vh}
+.options-head h2{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;letter-spacing:-.02em}
+.options-head p{font-size:13.5px;color:var(--grey);margin-top:10px;max-width:52ch;margin-left:auto;margin-right:auto}
+
+.option-grid{max-width:1300px;margin:0 auto;padding:0 4vw;display:grid;
+  grid-template-columns:repeat(3,1fr);gap:22px}
+@media (max-width:900px){.option-grid{grid-template-columns:1fr}}
+.option-card{background:var(--panel);border:1px solid var(--line);border-radius:20px;
+  padding:32px 26px;cursor:pointer;text-align:left;transition:transform .3s ease,box-shadow .3s ease}
+.option-card:hover{transform:translateY(-5px);box-shadow:0 16px 34px rgba(21,23,27,.10)}
+.option-card:focus-visible{outline:2px solid var(--amber);outline-offset:4px}
+.option-icon{width:44px;height:44px;color:var(--amber);margin-bottom:18px}
+.option-card h3{font-size:1.15rem;font-weight:800;letter-spacing:-.01em;margin-bottom:4px}
+.option-card .option-sub{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--grey);margin-bottom:16px}
+.option-card p{font-size:13px;color:var(--grey);line-height:1.6;margin-bottom:16px}
+.option-tap{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--amber)}
+
+/* ---------- spec comparison table ---------- */
+.spec-wrap{max-width:1100px;margin:8vh auto 0;padding:0 4vw}
+.spec-wrap h4{text-align:center;font-size:12px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--amber);margin-bottom:20px}
+.spec-table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);
+  border-radius:16px;overflow:hidden;font-size:12.5px}
+.spec-table th,.spec-table td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--line)}
+.spec-table th{background:var(--ink);color:#fff;font-weight:700;letter-spacing:.03em;font-size:11px;
+  text-transform:uppercase}
+.spec-table td:first-child{color:var(--grey);font-weight:600}
+.spec-table tr:last-child td{border-bottom:none}
+@media (max-width:700px){.spec-table{font-size:11px}.spec-table th,.spec-table td{padding:9px 8px}}
+
+/* ---------- drawer (shared pattern) ---------- */
+.drawer-backdrop{position:fixed;inset:0;background:rgba(21,23,27,.32);z-index:90;
+  opacity:0;pointer-events:none;transition:opacity .35s ease}
+.drawer-backdrop.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(440px,90vw);
+  background:var(--paper);z-index:91;box-shadow:-20px 0 50px rgba(21,23,27,.18);
+  transform:translateX(100%);transition:transform .4s cubic-bezier(.22,.61,.36,1);
+  overflow-y:auto}
+.drawer.open{transform:translateX(0)}
+.drawer-close{position:absolute;top:20px;right:20px;width:36px;height:36px;border-radius:50%;
+  border:1px solid var(--line);background:var(--panel);font-size:20px;line-height:1;
+  color:var(--ink);cursor:pointer;z-index:2}
+.drawer-close:hover{background:var(--ink);color:#fff}
+.drawer-body{padding:56px 34px 48px}
+.drawer-eyebrow{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--amber);margin-bottom:10px}
+.drawer-body h3{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px;line-height:1.2}
+.drawer-body .drawer-sub{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--grey);margin-bottom:20px}
+.drawer-body p{font-size:13.5px;color:var(--grey);line-height:1.65;margin-bottom:18px}
+.drawer-feat-title{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink);margin:22px 0 12px}
+.drawer-feats{list-style:none;font-size:13px;line-height:2}
+.drawer-feats li{display:flex;gap:10px}
+.drawer-feats li::before{content:"—";color:var(--amber);flex-shrink:0}
+.drawer-note{margin-top:20px;font-size:11px;font-style:italic;color:var(--grey);line-height:1.5}
+@media (max-width:640px){.drawer-body{padding:56px 24px 40px}}
+
+/* ---------- bottom feature strip ---------- */
+.strip{margin-top:8vh;background:var(--panel);border:1px solid var(--line);border-radius:20px;
+  padding:32px 4vw;display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+@media (max-width:800px){.strip{grid-template-columns:1fr 1fr}}
+.strip-item{display:flex;gap:14px;align-items:flex-start}
+.strip-item svg{width:26px;height:26px;color:var(--amber);flex-shrink:0}
+.strip-item h4{font-size:12.5px;font-weight:700;letter-spacing:.03em;margin-bottom:4px}
+.strip-item p{font-size:12px;color:var(--grey);line-height:1.4}
+
+/* mobile nav overflow fix + safe-area for notch/PWA fullscreen */
+body{padding-top:env(safe-area-inset-top)}
+@media (max-width:480px){
+  .pill-nav{max-width:92vw}
+      }
+
+/* mobile: stop top-right description from overlapping the hero title/CTA */
+@media (max-width:900px){
+  .top-right{position:static;max-width:100%;margin:5vh 0 0;padding:0}
+  .wrap{padding-top:16vh}
+}
+</style>
+  <script type="module" crossorigin src="/assets/modulepreload-polyfill-P2Xu9kJm.js"></script>
+</head>
+<body>
+
+<nav class="pill-nav" aria-label="Primary">
+  <a class="pill-logo" href="/index.html"><img src="/images/logo-new.png" alt="GatorCorp" style="height:20px;width:auto;display:block;"></a>
+</nav>
+
+<div class="wrap">
+  <div class="overline">Agricultural Series</div>
+  <h1 class="title">Ergo</h1>
+  <p class="tagline">Ergonomic Seats for Agricultural Vehicles.</p>
+  <div class="cta-row">
+    <a href="#options" class="btn-primary">Explore Seat Options →</a>
+  </div>
+
+  <div class="top-right">
+    <h2>Ergo</h2>
+    <p>Farmer comfort and safety are never negotiable, since food security depends on it. GatorCorp's agricultural seats are engineered with the working farmer in mind, combining field- and lab-tested design to deliver class-leading vibration absorption and all-day comfort. The Ergo range spans a reclining air-suspension seat, an under-seat suspension (USS) seat, and a behind-back suspension (BBS) seat — each built to fit a different tractor and budget.</p>
+  </div>
+
+  <div class="stage-row" id="features">
+    <div class="stage-wrap">
+
+      <div class="stage-clip" style="position:absolute;inset:0;overflow:hidden;z-index:0">
+      <model-viewer
+        id="baseModel"
+        class="stage-base"
+        src="/images/base-optimized-safe.glb"
+        alt="Ergo seat base"
+        camera-orbit="0deg 75deg auto"
+        shadow-intensity="0.6"
+        environment-image="neutral"
+        loading="eager"
+        onerror="document.getElementById('modelErr').style.display='flex'">
+      </model-viewer>
+      <model-viewer
+        id="seatModel"
+        class="stage-seat"
+        src="/images/ergo-seat.glb"
+        alt="Ergo seat, rotatable 3D model"
+        auto-rotate
+        auto-rotate-delay="0"
+        rotation-per-second="18deg"
+        camera-orbit="10deg 80deg auto"
+        shadow-intensity="0.7"
+        environment-image="neutral"
+        exposure="1.05"
+        loading="eager"
+        onerror="document.getElementById('modelErr').style.display='flex'">
+        <!-- No 3D pins placed — this is a brand-new model (Meshy-generated,
+             never test-fitted). Use ?pick=1 on THIS page to derive real
+             coordinates once positioned via ?pos=1. Same convention as
+             Duro: auto-rotate stays on, and like Duro's own callouts, these
+             fixed 2D labels only line up correctly at the default pose —
+             re-check alignment if the default camera-orbit changes. -->
+      </model-viewer>
+      </div>
+      <div class="model-error" id="modelErr" style="display:none">
+        Model didn't load — check that <code>ergo-seat.glb</code> is at
+        <code>/public/images/ergo-seat.glb</code> and you're viewing this
+        page through your dev server (http://localhost:PORT/product-ergo.html),
+        not opened directly as a file.
+      </div>
+
+      <div class="callout left" data-hotspot="seatbelt" tabindex="0" role="button" aria-haspopup="true" style="top:4%; left:2%;">
+        <div class="callout-dot" style="--float-delay:0"><img src="/images/ergo-detail-seatbelt.jpg" alt=""></div>
+        <div><h3>Two-Point Retractable<br>Seat Belt</h3><p>Homologated retractable belt keeps operators secure through rough terrain and sudden stops.</p></div>
+      </div>
+
+      <div class="callout left" data-hotspot="recline" tabindex="0" role="button" aria-haspopup="true" style="top:24%; left:-2%;">
+        <div class="callout-dot" style="--float-delay:0.5"><img src="/images/ergo-detail-recline.jpg" alt=""></div>
+        <div><h3>Seat<br>Reclining</h3><p>Full seat reclining lets operators adjust for comfort across long shifts in the field.</p></div>
+      </div>
+
+      <div class="callout left" data-hotspot="backrest" tabindex="0" role="button" aria-haspopup="true" style="top:44%; left:-3%;">
+        <div class="callout-dot" style="--float-delay:1"><img src="/images/ergo-detail-backrest.jpg" alt=""></div>
+        <div><h3>Backrest<br>Extension</h3><p>Optional backrest extension adds support for taller operators.</p></div>
+      </div>
+
+      <div class="callout left" data-hotspot="weight" tabindex="0" role="button" aria-haspopup="true" style="top:64%; left:4%;">
+        <div class="callout-dot" style="--float-delay:1.5"><img src="/images/ergo-detail-weight.jpg" alt=""></div>
+        <div><h3>Operator Weight<br>Adjustment</h3><p>Manual adjustment tunes the suspension response from 50–130kg for a personalized ride.</p></div>
+      </div>
+
+      <div class="callout right" data-hotspot="suspension" tabindex="0" role="button" aria-haspopup="true" style="top:10%; right:0;">
+        <div class="callout-dot" style="--float-delay:0.3"><img src="/images/ergo-detail-suspension.jpg" alt=""></div>
+        <div><h3>Compact Air<br>Suspension</h3><p>30-series air suspension with 130mm stroke isolates vibration for a smoother ride.</p></div>
+      </div>
+
+      <div class="callout right" data-hotspot="compressor" tabindex="0" role="button" aria-haspopup="true" style="top:34%; right:-2%;">
+        <div class="callout-dot" style="--float-delay:0.9"><img src="/images/ergo-detail-compressor.jpg" alt=""></div>
+        <div><h3>Onboard Air<br>Compressor</h3><p>Compressor rated for 12V and 24V systems, sized for the suspension's full stroke.</p></div>
+      </div>
+
+      <div class="callout right" data-hotspot="rollerslide" tabindex="0" role="button" aria-haspopup="true" style="top:58%; right:-1%;">
+        <div class="callout-dot" style="--float-delay:1.4"><img src="/images/ergo-detail-rollerslide.jpg" alt=""></div>
+        <div><h3>Roller<br>Slides</h3><p>Smooth fore/aft travel with minimal friction — available as an option to puck slides.</p></div>
+      </div>
+
+      <div class="callout right" data-hotspot="height" tabindex="0" role="button" aria-haspopup="true" style="top:80%; right:2%;">
+        <div class="callout-dot" style="--float-delay:1.9"><img src="/images/ergo-detail-height.jpg" alt=""></div>
+        <div><h3>Seat Height<br>Adjustment</h3><p>Independent height adjustment lets each operator dial in their ideal driving position.</p></div>
+      </div>
+
+      <svg class="callout-svg" viewBox="0 0 100 100" preserveAspectRatio="none"
+           style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:4">
+        <!-- Same line coordinates as product-duro.html, reused as a starting
+             approximation since both stages share the same overall proportions.
+             Verify against Ergo's actual render and adjust x2/y2 to the real
+             feature position once you can see it live — these are not
+             re-derived for this specific model/pose. -->
+        <line x1="8"  y1="9"  x2="44" y2="17" class="callout-svg-line"/>
+        <line x1="4"  y1="29" x2="37" y2="34" class="callout-svg-line"/>
+        <line x1="3"  y1="49" x2="37" y2="46" class="callout-svg-line"/>
+        <line x1="10" y1="69" x2="38.5" y2="69" class="callout-svg-line"/>
+        <line x1="94" y1="15" x2="60" y2="41" class="callout-svg-line"/>
+        <line x1="96" y1="39" x2="52" y2="59" class="callout-svg-line"/>
+        <line x1="95" y1="63" x2="57" y2="63" class="callout-svg-line"/>
+        <line x1="92" y1="85" x2="61" y2="73" class="callout-svg-line"/>
+      </svg>
+    </div>
+
+    <div class="mobile-feature-list" id="mobileFeatureList"></div>
+
+    <div class="toggle-row">
+      <button id="compactBtn">Compact View</button>
+      <button id="expandedBtn" class="active">Expanded View</button>
+    </div>
+  </div>
+
+  <div class="options-head" id="options">
+    <h2>Seat Options</h2>
+    <p>Ergo isn't one seat — it's three suspension architectures, each homologated for W1/W2/W3-type tractors. Tap a card for the full spec sheet.</p>
+  </div>
+
+  <div class="option-grid">
+    <div class="option-card" data-seat="reclining" tabindex="0" role="button" aria-haspopup="true">
+      <svg class="option-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 20V9a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M10 9h6a2 2 0 0 1 2 2v2M4 20h16M14 20v-4a2 2 0 0 1 2-2h2"/></svg>
+      <h3>Reclining Seat</h3>
+      <div class="option-sub">USS 3007 / 3008 / 3030</div>
+      <p>Compact air suspension with full seat reclining — the top-of-range Ergo variant, built around the 30 series air suspension and 3000 series seat top.</p>
+      <div class="option-tap">View full specs →</div>
+    </div>
+
+    <div class="option-card" data-seat="uss" tabindex="0" role="button" aria-haspopup="true">
+      <svg class="option-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 21h18M6 21V9l6-4 6 4v12M10 21v-6h4v6"/></svg>
+      <h3>USS Seat</h3>
+      <div class="option-sub">600 &amp; 700 Series</div>
+      <p>Under-seat mechanical suspension (07 &amp; 08 series) with a fixed seat top in 400mm or 475mm cushion widths — GatorCorp's best-in-class ride quality tier.</p>
+      <div class="option-tap">View full specs →</div>
+    </div>
+
+    <div class="option-card" data-seat="bbs" tabindex="0" role="button" aria-haspopup="true">
+      <svg class="option-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="12" cy="5" rx="7" ry="2.5"/><path d="M5 5v5c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5V5M5 10v5c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5v-5M5 15v4c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5v-4"/></svg>
+      <h3>BBS Seat</h3>
+      <div class="option-sub">600 &amp; 700 Series</div>
+      <p>Behind-back mechanical suspension — the only BBS on the market homologated to EEC 1, 2 and 3 and ISO, tuned for up to 4x less spring movement.</p>
+      <div class="option-tap">View full specs →</div>
+    </div>
+  </div>
+
+  <div class="spec-wrap">
+    <h4>BBS &amp; USS — Standard vs Delux</h4>
+    <table class="spec-table">
+      <tr>
+        <th>Feature</th>
+        <th>BBS Standard</th>
+        <th>BBS Delux</th>
+        <th>USS Standard</th>
+        <th>USS Delux</th>
+      </tr>
+      <tr><td>Suspension</td><td>Mechanical</td><td>Mechanical</td><td>Mechanical</td><td>Air Suspension</td></tr>
+      <tr><td>Suspension Stroke</td><td colspan="4">75mm / 130mm</td></tr>
+      <tr><td>Height Adjustment</td><td colspan="4">60mm (external), continuous</td></tr>
+      <tr><td>Operator Weight Range</td><td colspan="4">50–130 kg</td></tr>
+      <tr><td>Fore/Aft Adjustment</td><td colspan="4">200mm</td></tr>
+      <tr><td>Backrest Angle</td><td colspan="4">-14° to +40°, 28° dump</td></tr>
+      <tr><td>Seat Belt</td><td colspan="4">2-point, 1-anchorage buckle</td></tr>
+      <tr><td>Seat Belt Reminder</td><td>Available</td><td>Optional</td><td colspan="2">Optional</td></tr>
+      <tr><td>Lumbar Support</td><td colspan="4">Mechanical</td></tr>
+      <tr><td>Seat Heating</td><td colspan="4">2-step</td></tr>
+      <tr><td>Operator Presence Sensor</td><td colspan="4">Optional</td></tr>
+    </table>
+  </div>
+
+  <!-- Seat detail drawer -->
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <aside class="drawer" id="drawer" aria-hidden="true" aria-label="Seat option detail">
+    <button class="drawer-close" id="drawerClose" aria-label="Close">&times;</button>
+    <div class="drawer-body">
+      <div class="drawer-eyebrow" id="drawerEyebrow">Ergo</div>
+      <h3 id="drawerTitle"></h3>
+      <div class="drawer-sub" id="drawerSub"></div>
+      <p id="drawerDesc"></p>
+      <div class="drawer-feat-title">Salient Features</div>
+      <ul class="drawer-feats" id="drawerFeats"></ul>
+      <p class="drawer-note" id="drawerNote" style="display:none"></p>
+    </div>
+  </aside>
+
+  <div class="strip">
+    <div class="strip-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 20h6M12 4a4 4 0 0 0-4 4v3l-2 5h12l-2-5V8a4 4 0 0 0-4-4z"/></svg>
+      <div><h4>ALL-DAY COMFORT</h4><p>Vibration absorption tuned for full-shift field work.</p></div>
+    </div>
+    <div class="strip-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z"/><path d="M9 12l2 2 4-4"/></svg>
+      <div><h4>EEC HOMOLOGATED</h4><p>Certified for W1, W2 &amp; W3 type tractors.</p></div>
+    </div>
+    <div class="strip-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="12" cy="5" rx="7" ry="2.5"/><path d="M5 5v5c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5V5M5 10v5c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5v-5M5 15v4c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5v-4"/></svg>
+      <div><h4>THREE ARCHITECTURES</h4><p>Reclining, USS &amp; BBS suspension to fit any tractor.</p></div>
+    </div>
+    <div class="strip-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+      <div><h4>FIELD-TESTED</h4><p>Advanced design validated in lab and in the field.</p></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var nav = document.querySelector('.pill-nav');
+  function onScroll(){
+    if (window.scrollY > 40) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+})();
+
+// Coordinate picker (?pick=1) — same convention as other product pages.
+if (new URLSearchParams(location.search).get('pick')) {
+  (function(){
+    var mv = document.getElementById('seatModel');
+    mv.addEventListener('click', function(ev){
+      var rect = mv.getBoundingClientRect();
+      var hit = mv.positionAndNormalFromPoint(ev.clientX - rect.left, ev.clientY - rect.top);
+      if (!hit) { console.log('No surface hit — click directly on the model.'); return; }
+      var p = hit.position, n = hit.normal;
+      console.log(
+        'data-position="' + p.x.toFixed(3) + ' ' + p.y.toFixed(3) + ' ' + p.z.toFixed(3) + '" ' +
+        'data-normal="' + n.x.toFixed(2) + ' ' + n.y.toFixed(2) + ' ' + n.z.toFixed(2) + '"'
+      );
+    });
+    console.log('Hotspot picker active — click any point on the model.');
+  })();
+}
+
+// Live seat/base positioning tool (?pos=1) — same as product-boss.html.
+if (new URLSearchParams(location.search).get('pos')) {
+  (function(){
+    var root = document.documentElement;
+    var seatModel = document.getElementById('seatModel');
+    var fields = [
+      {key:'--seat-left', label:'seat left %', group:'Seat box', value:38},
+      {key:'--seat-top', label:'seat top %', group:'Seat box', value:10},
+      {key:'--seat-w', label:'seat width %', group:'Seat box', value:25},
+      {key:'--seat-h', label:'seat height %', group:'Seat box', value:87},
+      {key:'--base-left', label:'base left %', group:'Base box', value:51},
+      {key:'--base-top', label:'base top %', group:'Base box', value:80},
+      {key:'--base-w', label:'base width %', group:'Base box', value:36},
+      {key:'--base-h', label:'base height %', group:'Base box', value:60},
+      {key:'--orbit-theta', label:'orbit theta (deg)', group:'Seat camera-orbit', value:10},
+      {key:'--orbit-phi', label:'orbit phi (deg)', group:'Seat camera-orbit', value:80}
+    ];
+    var panel = document.createElement('div');
+    panel.style.cssText = 'position:fixed;bottom:16px;right:16px;z-index:120;background:rgba(21,23,27,.92);'
+      + 'color:#fff;border-radius:14px;padding:16px 18px;font-family:ui-monospace,Menlo,Consolas,monospace;'
+      + 'font-size:11px;width:280px;max-height:80vh;overflow-y:auto;box-shadow:0 20px 50px rgba(0,0,0,.4)';
+    var html = '', lastGroup = null;
+    fields.forEach(function(f){
+      if (f.group !== lastGroup) { html += '<h5 style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#c98a12;margin:14px 0 8px">' + f.group + '</h5>'; lastGroup = f.group; }
+      html += '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px">'
+        + '<label style="opacity:.75">' + f.label + '</label>'
+        + '<input type="number" step="1" data-key="' + f.key + '" value="' + f.value + '" '
+        + 'style="width:70px;background:#2a2d33;border:1px solid #444;color:#fff;border-radius:6px;padding:4px 6px;font-family:inherit;font-size:11px"></div>';
+    });
+    html += '<button id="posCopy" style="margin-top:12px;width:100%;padding:9px;border:none;border-radius:8px;background:#c98a12;color:#15171b;font-weight:700;font-size:11px;letter-spacing:.05em;text-transform:uppercase;cursor:pointer">Copy CSS + orbit</button>'
+      + '<div id="posFlash" style="margin-top:8px;font-size:10.5px;color:#7ee787;min-height:14px"></div>';
+    panel.innerHTML = html;
+    document.body.appendChild(panel);
+
+    function applyOrbit(){
+      var theta = panel.querySelector('[data-key="--orbit-theta"]').value;
+      var phi = panel.querySelector('[data-key="--orbit-phi"]').value;
+      seatModel.setAttribute('camera-orbit', theta + 'deg ' + phi + 'deg auto');
+    }
+    panel.querySelectorAll('input[data-key]').forEach(function(input){
+      input.addEventListener('input', function(){
+        var key = input.getAttribute('data-key');
+        if (key === '--orbit-theta' || key === '--orbit-phi') applyOrbit();
+        else root.style.setProperty(key, input.value + '%');
+      });
+    });
+    applyOrbit();
+
+    document.getElementById('posCopy').addEventListener('click', function(){
+      var get = function(k){ return panel.querySelector('[data-key="' + k + '"]').value; };
+      var css =
+        '.stage-seat{left:' + get('--seat-left') + '%;top:' + get('--seat-top') + '%;width:' + get('--seat-w') + '%;height:' + get('--seat-h') + '%;}\n' +
+        '.stage-base{left:' + get('--base-left') + '%;top:' + get('--base-top') + '%;width:' + get('--base-w') + '%;height:' + get('--base-h') + '%;}\n' +
+        'camera-orbit="' + get('--orbit-theta') + 'deg ' + get('--orbit-phi') + 'deg auto"';
+      console.log(css);
+      var flash = document.getElementById('posFlash');
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(css).then(function(){ flash.textContent = 'Copied — paste into the file.'; },
+          function(){ flash.textContent = 'Copy failed — see console instead.'; });
+      } else { flash.textContent = 'Printed to console instead.'; }
+      setTimeout(function(){ flash.textContent = ''; }, 3000);
+    });
+    console.log('Position tool active — panel bottom-right.');
+  })();
+}
+</script>
+
+<script>
+(function(){
+'use strict';
+
+// Descriptions sourced from the real ERGO brochure (GatorCorp agricultural
+// seat spec sheet), paraphrased not quoted.
+var seatDetails = {
+  reclining: {
+    title: 'Reclining Seat',
+    sub: 'USS 3007 / 3008 / 3030',
+    desc: 'A compact air suspension seat built around GatorCorp\u2019s 30 series air suspension and 3000 series seat top, available in vinyl or fabric with or without a headrest extension.',
+    feats: [
+      'Suspension stroke 130mm',
+      'Air compressor good for 12V &amp; 24V',
+      'Weight adjustment 50\u2013130kg',
+      'Seat reclining',
+      'Seat height adjustment',
+      'Two-point retractable seat belt (homologated)',
+      'Backrest extension',
+      'Roller slides',
+      'Heated cushion (optional)',
+      'Mechanical lumbar (optional)',
+      'Armrest, left &amp; right',
+      'Document pouch',
+      'Homologated as per EEC'
+    ]
+  },
+  uss: {
+    title: 'USS Seat',
+    sub: '600 & 700 Series',
+    desc: 'Under-seat mechanical suspension (07 &amp; 08 series) paired with a fixed seat top in 400mm or 475mm cushion widths \u2014 GatorCorp\u2019s best-in-class ride quality tier for the money.',
+    feats: [
+      'Fixed seat top with seat slide',
+      'Operator Presence Switch (OPS)',
+      'Mechanical USS suspension',
+      'Static or retractable seat belt',
+      'Manual operator weight adjustment',
+      'Suspension stroke 130mm',
+      'Height adjustment',
+      'Two-point retractable seat belt (homologated)',
+      'Choice of puck slide or roller slide',
+      'ECE homologation',
+      'Fabric &amp; vinyl options'
+    ]
+  },
+  bbs: {
+    title: 'BBS Seat',
+    sub: '600 & 700 Series',
+    desc: 'Behind-back mechanical suspension, EEC homologated for W1, W2 and W3 type tractors \u2014 the only BBS seat on the market homologated to EEC 1, 2 and 3 and ISO.',
+    feats: [
+      'Fixed seat top with seat slide',
+      'Operator Presence Switch (OPS)',
+      'Mechanical BBS suspension',
+      'Static or retractable seat belt',
+      'Manual operator weight adjustment',
+      'ECE homologation',
+      'Up to 4x less spring movement',
+      'Reduced spring rate for longer durability',
+      'Independent height adjustment for user comfort',
+      'Fits most current Ag &amp; Forestry tractor markets'
+    ]
+  },
+
+  seatbelt: {
+    title: 'Two-Point Retractable Seat Belt',
+    sub: 'Operator Safety',
+    desc: 'A homologated two-point retractable seat belt is standard on the Reclining Seat, keeping operators secure through rough terrain and sudden stops.',
+    feats: ['Two-point retractable, homologated', 'Standard on Reclining Seat (USS 3007/3008/3030)']
+  },
+  recline: {
+    title: 'Seat Reclining',
+    sub: 'Comfort',
+    desc: 'Full seat reclining lets operators adjust for comfort across long shifts in the field, part of the Reclining Seat\u2019s compact air suspension package.',
+    feats: ['Full seat reclining', 'Backrest extension available for taller operators']
+  },
+  backrest: {
+    title: 'Backrest Extension',
+    sub: 'Comfort',
+    desc: 'An optional backrest extension adds support for taller operators, fitted alongside the standard reclining backrest.',
+    feats: ['Optional backrest extension', 'Fits taller operators']
+  },
+  weight: {
+    title: 'Operator Weight Adjustment',
+    sub: 'Ride Quality',
+    desc: 'Manual weight adjustment tunes suspension response from 50\u2013130kg, so ride quality stays consistent regardless of operator weight.',
+    feats: ['Manual adjustment', 'Range: 50\u2013130 kg']
+  },
+  suspension: {
+    title: 'Compact Air Suspension',
+    sub: 'Ride Quality',
+    desc: '30-series compact air suspension with 130mm stroke isolates vibration for a smoother ride \u2014 the core of the Reclining Seat\u2019s suspension system.',
+    feats: ['30-series air suspension', 'Suspension stroke: 130mm']
+  },
+  compressor: {
+    title: 'Onboard Air Compressor',
+    sub: 'Ride Quality',
+    desc: 'The onboard compressor is rated for both 12V and 24V systems, sized to keep the air suspension\u2019s full stroke available on demand.',
+    feats: ['Compatible with 12V &amp; 24V systems']
+  },
+  rollerslide: {
+    title: 'Roller Slides',
+    sub: 'Ride Quality',
+    desc: 'Roller slides give smooth fore/aft travel with minimal friction, available as an option to puck slides on the Reclining Seat.',
+    feats: ['Roller slide option', 'Alternative: puck slide']
+  },
+  height: {
+    title: 'Seat Height Adjustment',
+    sub: 'Comfort',
+    desc: 'Independent seat height adjustment lets each operator dial in their ideal driving position, working alongside the seat\u2019s fore/aft slide.',
+    feats: ['Independent height adjustment']
+  }
+};
+
+var drawer = document.getElementById('drawer');
+var backdrop = document.getElementById('drawerBackdrop');
+var closeBtn = document.getElementById('drawerClose');
+var titleEl = document.getElementById('drawerTitle');
+var subEl = document.getElementById('drawerSub');
+var descEl = document.getElementById('drawerDesc');
+var featsEl = document.getElementById('drawerFeats');
+var lastFocused = null;
+
+function openDrawer(key){
+  var d = seatDetails[key];
+  if (!d) return;
+  titleEl.textContent = d.title;
+  subEl.textContent = d.sub;
+  descEl.innerHTML = d.desc;
+  featsEl.innerHTML = '';
+  d.feats.forEach(function(f){
+    var li = document.createElement('li');
+    li.innerHTML = f;
+    featsEl.appendChild(li);
+  });
+  drawer.classList.add('open');
+  backdrop.classList.add('open');
+  drawer.setAttribute('aria-hidden', 'false');
+  closeBtn.focus();
+}
+function closeDrawer(){
+  drawer.classList.remove('open');
+  backdrop.classList.remove('open');
+  drawer.setAttribute('aria-hidden', 'true');
+  if (lastFocused) lastFocused.focus();
+}
+
+document.querySelectorAll('.option-card[data-seat]').forEach(function(el){
+  el.addEventListener('click', function(){ lastFocused = el; openDrawer(el.getAttribute('data-seat')); });
+  el.addEventListener('keydown', function(ev){
+    if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); lastFocused = el; openDrawer(el.getAttribute('data-seat')); }
+  });
+});
+
+closeBtn.addEventListener('click', closeDrawer);
+backdrop.addEventListener('click', closeDrawer);
+document.addEventListener('keydown', function(ev){
+  if (ev.key === 'Escape' && drawer.classList.contains('open')) closeDrawer();
+});
+
+document.querySelectorAll('.callout[data-hotspot]').forEach(function(el){
+  el.addEventListener('click', function(){ lastFocused = el; openDrawer(el.getAttribute('data-hotspot')); });
+  el.addEventListener('keydown', function(ev){
+    if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); lastFocused = el; openDrawer(el.getAttribute('data-hotspot')); }
+  });
+});
+
+// Mobile feature list — same 8 callouts, same drawer on click, laid out as
+// a simple grid instead of floating labels (hidden below 900px).
+var mobileList = document.getElementById('mobileFeatureList');
+if (mobileList) {
+  ['seatbelt','recline','backrest','weight','suspension','compressor','rollerslide','height'].forEach(function(key){
+    var d = seatDetails[key];
+    var img = document.querySelector('.callout[data-hotspot="' + key + '"] .callout-dot img');
+    var item = document.createElement('div');
+    item.className = 'mf-item';
+    item.setAttribute('tabindex', '0');
+    item.setAttribute('role', 'button');
+    item.innerHTML = '<img src="' + (img ? img.getAttribute('src') : '') + '" alt=""><span>' + d.title + '</span>';
+    item.addEventListener('click', function(){ lastFocused = item; openDrawer(key); });
+    item.addEventListener('keydown', function(ev){
+      if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); lastFocused = item; openDrawer(key); }
+    });
+    mobileList.appendChild(item);
+  });
+}
+
+// Compact/Expanded toggle — same convention as product-duro.html.
+(function(){
+  var compactBtn = document.getElementById('compactBtn');
+  var expandedBtn = document.getElementById('expandedBtn');
+  if (!compactBtn || !expandedBtn) return;
+  function setMode(compact){
+    document.body.classList.toggle('compact', compact);
+    compactBtn.classList.toggle('active', compact);
+    expandedBtn.classList.toggle('active', !compact);
+  }
+  compactBtn.addEventListener('click', function(){ setMode(true); });
+  expandedBtn.addEventListener('click', function(){ setMode(false); });
+})();
+})();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('/sw.js').catch(function(err){
+      console.warn('Service worker registration failed:', err);
+    });
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#c98a12">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GatorCorp">
+<link rel="apple-touch-icon" href="/images/logo-new.png">
+<title>Technology · GatorCorp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+:root{
+  --paper:#f1f0ec; --panel:#fbfaf8; --ink:#15171b; --grey:#8a8d94;
+  --line:#e2e0da; --amber:#c98a12; --navy:#0d1b3d;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:Inter,ui-sans-serif,system-ui,sans-serif;color:var(--ink);
+  -webkit-font-smoothing:antialiased;line-height:1.5;background:#fff}
+a{color:inherit}
+
+.pill-nav{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:60;
+  display:flex;align-items:center;padding:8px 10px 8px 20px;border-radius:999px;
+  background:rgba(255,255,255,.85);backdrop-filter:blur(18px) saturate(180%);
+  -webkit-backdrop-filter:blur(18px) saturate(180%);
+  border:1px solid rgba(255,255,255,.7);box-shadow:0 10px 30px rgba(21,23,27,.10);
+  transition:padding .35s cubic-bezier(.16,1,.3,1),box-shadow .35s ease}
+.pill-nav.scrolled{padding:6px 8px 6px 16px;box-shadow:0 8px 24px rgba(21,23,27,.16)}
+.pill-logo img{height:20px;display:block}
+.pill-links{display:flex;gap:2px;margin-left:14px}
+.pill-links a{font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--grey);text-decoration:none;padding:8px 14px;border-radius:999px;transition:color .25s}
+.pill-links a:hover,.pill-links a.current{color:var(--ink)}
+.nav-left{position:fixed;top:28px;left:6vw;z-index:60;font-weight:700;font-size:15px;letter-spacing:-.02em}
+.nav-right{position:fixed;top:24px;right:6vw;z-index:60}
+.get-in-touch{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;background:var(--amber);
+  color:#1a1200;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  border-radius:999px;text-decoration:none}
+@media (max-width:900px){.nav-left,.nav-right{display:none}}
+
+[data-reveal]{opacity:0;transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+[data-reveal="up"]{transform:translateY(32px)}
+[data-reveal="left"]{transform:translateX(-40px)}
+[data-reveal="right"]{transform:translateX(40px)}
+[data-reveal].in{opacity:1;transform:translate(0,0)}
+@media (prefers-reduced-motion:reduce){[data-reveal]{opacity:1!important;transform:none!important}}
+
+/* hero */
+.tech-hero{position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden}
+.tech-hero-bg{position:absolute;inset:0;z-index:0}
+.tech-hero-bg img{width:100%;height:100%;-o-object-fit:cover;object-fit:cover;-o-object-position:center;object-position:center;
+  animation:techkenburns 30s ease-in-out infinite alternate;transform-origin:50% 50%}
+@keyframes techkenburns{from{transform:scale(1.02)}to{transform:scale(1.1)}}
+.tech-hero-scrim{position:absolute;inset:0;z-index:1;
+  background:linear-gradient(100deg, rgba(238,242,246,.95) 0%, rgba(238,242,246,.8) 22%, rgba(238,242,246,.25) 42%, rgba(238,242,246,0) 60%)}
+.tech-hero-inner{position:relative;z-index:2;max-width:1500px;margin:0 auto;padding:14vh 6vw 6vh;width:100%}
+.tech-hero-inner > div{max-width:44ch}
+.overline{font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);margin-bottom:16px}
+.tech-h1{font-size:clamp(2.4rem,4.4vw,3.8rem);font-weight:800;letter-spacing:-.035em;line-height:1.02;text-transform:uppercase;color:var(--navy)}
+.tech-h1 .accent{color:var(--amber)}
+.tech-lede{margin-top:18px;font-size:14px;color:#555;max-width:42ch;line-height:1.7}
+.tech-cta{display:inline-flex;align-items:center;gap:10px;margin-top:28px;padding:15px 26px;
+  background:var(--amber);color:#1a1200;font-weight:700;font-size:12px;letter-spacing:.06em;
+  text-transform:uppercase;border-radius:999px;text-decoration:none}
+.tech-dots{margin-top:32px;display:flex;gap:8px}
+.tech-dots span{width:26px;height:3px;border-radius:2px;background:var(--line)}
+.tech-dots span.on{background:var(--amber)}
+@media (max-width:900px){.tech-hero-inner{grid-template-columns:1fr;padding-top:20vh}}
+
+/* dark capability band */
+.tech-band{position:relative;min-height:440px;display:flex;align-items:center;color:#fff;overflow:hidden;
+  background-image:url('/images/tech-band-pu-strip.jpg');background-size:cover;background-position:left center}
+.tech-band::before{content:"";position:absolute;inset:0;z-index:0;
+  background:linear-gradient(90deg, rgba(13,27,61,.15) 0%, rgba(13,27,61,.55) 45%, rgba(13,27,61,.92) 62%, rgba(13,27,61,.96) 100%)}
+.tech-band-inner{max-width:1300px;margin:0 auto;padding:6vh 6vw;position:relative;z-index:2;width:100%;
+  display:flex;justify-content:flex-end}
+.tech-band-inner > div{max-width:520px}
+.tech-band h2{font-size:clamp(1.8rem,3.2vw,2.8rem);font-weight:800;letter-spacing:-.02em;line-height:1.12;text-transform:uppercase}
+.tech-band h2 .accent{color:var(--amber)}
+.tech-band p{margin-top:18px;font-size:14px;color:#c3c8d6;line-height:1.75;max-width:56ch}
+.tech-band-cta{display:inline-flex;align-items:center;gap:10px;margin-top:22px;padding:13px 22px;
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;font-size:11px;
+  font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:999px;text-decoration:none}
+.tech-band-stats{display:flex;gap:5vw;margin-top:5vh}
+.tech-band-stats b{display:block;font-size:clamp(1.6rem,2.6vw,2.2rem);font-weight:800;color:#fff}
+.tech-band-stats span{font-size:11px;color:#9aa1b5;text-transform:uppercase;letter-spacing:.05em}
+@media (max-width:900px){.tech-band-inner{justify-content:center}.tech-band-inner > div{max-width:100%}.tech-band::before{background:rgba(13,27,61,.9)}}
+
+/* Design With Purpose / Precision In Every Detail — normal contained 2-column layout, NOT full-bleed backgrounds (only the navy band above is) */
+.tech-2col{padding:8vh 6vw;background:#fff}
+.tech-2col.alt{background:#f3f6f9}
+.tech-2col-inner{max-width:1300px;margin:0 auto;display:grid;grid-template-columns:.85fr 1.15fr;gap:4vw;align-items:center}
+.tech-2col.alt .tech-2col-inner{grid-template-columns:1.15fr .85fr}
+.tech-2col.alt .tech-2col-inner > div:first-child{order:2}
+.tech-2col.alt .tech-2col-inner > div:last-child{order:1}
+.tech-2col .overline{margin-bottom:12px}
+.tech-2col h2{font-size:clamp(1.8rem,3vw,2.6rem);font-weight:800;letter-spacing:-.02em;
+  line-height:1.12;text-transform:uppercase;color:var(--navy);margin-bottom:16px}
+.tech-2col h2 .accent{color:var(--amber)}
+.tech-2col p{font-size:14px;color:#555;line-height:1.75;max-width:60ch;margin-bottom:20px}
+.tech-2col-img img{width:100%;display:block;border-radius:16px}
+.tech-checklist{list-style:none;display:flex;flex-wrap:wrap;gap:12px 28px;margin-top:8px}
+.tech-checklist li{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--navy);font-weight:600}
+.tech-checklist svg{width:16px;height:16px;color:var(--amber);flex-shrink:0}
+@media (max-width:900px){
+  .tech-2col-inner{grid-template-columns:1fr!important}
+  .tech-2col.alt .tech-2col-inner > div{order:0!important}
+}
+.tech-section-plain{padding:9vh 6vw;background:#fff}
+.tech-plain-img{border-radius:18px;overflow:hidden;box-shadow:0 30px 60px rgba(13,27,61,.12)}
+.tech-plain-img img{width:100%;display:block}
+
+
+
+footer.outro{padding:6vh 6vw 5vh;text-align:center;border-top:1px solid var(--line);background:var(--paper)}
+footer.outro .legal{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
+  font-size:10px;letter-spacing:.14em;color:var(--grey);text-transform:uppercase;max-width:1200px;margin:0 auto}
+footer.outro .note{color:#b0ada5;text-transform:none;letter-spacing:0}
+
+/* mobile nav overflow fix + safe-area for notch/PWA fullscreen */
+body{padding-top:env(safe-area-inset-top)}
+@media (max-width:480px){
+  .pill-nav{max-width:92vw}
+  .pill-links{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex-wrap:nowrap}
+  .pill-links::-webkit-scrollbar{display:none}
+  .pill-links a{flex-shrink:0}
+}
+</style>
+</head>
+<body>
+
+<div class="nav-left">GATORCORP</div>
+<div class="nav-right"><a href="/contact.html" class="get-in-touch">Get in Touch <span aria-hidden="true">→</span></a></div>
+<nav class="pill-nav" aria-label="Primary">
+  <a class="pill-logo" href="/index.html"><img src="/images/logo-new.png" alt="GatorCorp"></a>
+  <span class="pill-links">
+    <a href="/index.html#products">Products</a>
+    <a href="/technology.html" class="current">Technology</a>
+    <a href="/sustainability.html">Sustainability</a>
+    <a href="/careers.html">Careers</a>
+    <a href="/contact.html">Contact</a>
+  </span>
+</nav>
+
+<section class="tech-hero">
+  <div class="tech-hero-bg"><img src="/images/tech-hero-bg.jpg" alt="GatorCorp seat construction with hotspot callouts"></div>
+  <div class="tech-hero-scrim"></div>
+  <div class="tech-hero-inner">
+    <div data-reveal="up">
+      <div class="overline">— Truck Seating System</div>
+      <h1 class="tech-h1">Engineered<br>Inside Out</h1>
+      <p class="tech-lede"><strong>From Concept to Comfort.</strong> Advanced engineering, precision manufacturing and relentless innovation to deliver driver-first seating solutions.</p>
+    </div>
+  </div>
+</section>
+
+<section class="tech-band" id="capabilities">
+  <div class="tech-band-inner">
+    <div data-reveal="up">
+      <div class="overline">— Engineering Capabilities</div>
+      <h2>Ideas Engineered<br><span class="accent">Into Reality.</span></h2>
+      <p>Gator Corp gains pride in intensive research and development, improving products that enhance driver comfort, safety and product reliability. We follow a rigorous, internationally-aligned design process that speeds up the development cycle for every new product.</p>
+      <div class="tech-band-stats">
+        <div><b data-count="100">0</b><span>Projects Delivered</span></div>
+        <div><b data-count="20">0</b><span>Years Experience</span></div>
+        <div><span style="font-size:clamp(1.6rem,2.6vw,2.2rem);font-weight:800;color:#fff;display:block">Advanced</span><span>Tooling Capabilities</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="tech-2col">
+  <div class="tech-2col-inner">
+    <div data-reveal="up">
+      <div class="overline">— Benchmarking</div>
+      <h2>Design With <span class="accent">Purpose.</span></h2>
+      <p>We benchmark global standards to create seating solutions that are safer, stronger and more comfortable.</p>
+      <ul class="tech-checklist">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Product Benchmarking</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Market Research</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Regulatory Study</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Customer Needs</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Aesthetic Considerations</li>
+      </ul>
+    </div>
+    <div class="tech-2col-img" data-reveal="right">
+      <img src="/images/tech-cad-tight.jpg" alt="3D CAD surface model of a GatorCorp seat">
+    </div>
+  </div>
+</section>
+
+<section class="tech-2col alt">
+  <div class="tech-2col-inner">
+    <div data-reveal="up">
+      <div class="overline">— Design Engineering</div>
+      <h2>Precision <span class="accent">In Every Detail.</span></h2>
+      <p>Our design engineering process ensures optimal comfort, safety and durability through data-driven innovation and real-world validation — from concept to comfort.</p>
+      <ul class="tech-checklist">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Optimum Design</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Safety</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Durability</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Comfort</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Ergonomics</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Design for Manufacturing</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Reverse Library</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Packaging Study</li>
+      </ul>
+    </div>
+    <div class="tech-2col-img" data-reveal="left">
+      <img src="/images/tech-exploded-tight.jpg" alt="Exploded parts diagram of a GatorCorp seat mechanism">
+    </div>
+  </div>
+</section>
+
+
+<section class="tech-section-plain">
+  <div class="tech-section-inner">
+    <div class="overline" data-reveal="up">— From Cut &amp; Sew to Injection Moulding</div>
+    <h2 data-reveal="up">Manufactured <span class="accent">With Care.</span></h2>
+    <p data-reveal="up">Every trim cover is cut and sewn by hand; every plastic seat structure is precision-injection-moulded — the same rigor applied at every stage of the build.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:5vh">
+      <div class="tech-plain-img" data-reveal="left"><img src="/images/tech-detail-trimsew.jpg" alt="Trim cover being cut and sewn"></div>
+      <div class="tech-plain-img" data-reveal="right"><img src="/images/tech-detail-injection.jpg" alt="Injection moulding a seat shell"></div>
+    </div>
+  </div>
+</section>
+
+<footer class="outro">
+  <div class="legal">
+    <span>GatorCorp Automotives Pvt. Ltd. · Chennai · Since 1996</span>
+    <span class="note">Concept experience — model names and specs to be verified with GatorCorp before launch.</span>
+  </div>
+</footer>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+(function(){
+  var nav = document.querySelector('.pill-nav');
+  window.addEventListener('scroll', function(){ nav.classList.toggle('scrolled', window.scrollY > 40); }, {passive:true});
+
+  document.querySelectorAll('[data-reveal]').forEach(function(el, i){
+    ScrollTrigger.create({
+      trigger: el, start: 'top 88%', once: true,
+      onEnter: function(){ setTimeout(function(){ el.classList.add('in'); }, (i % 6) * 90); }
+    });
+  });
+
+  document.querySelectorAll('.tech-band-stats b[data-count]').forEach(function(el){
+    ScrollTrigger.create({
+      trigger: el, start: 'top 90%', once: true,
+      onEnter: function(){
+        var target = parseInt(el.getAttribute('data-count'), 10);
+        var obj = { val: 0 };
+        gsap.to(obj, { val: target, duration: 1.4, ease: 'power2.out',
+          onUpdate: function(){ el.textContent = Math.round(obj.val) + '+'; } });
+      }
+    });
+  });
+
+})();
+</script>
+</body>
+</html>

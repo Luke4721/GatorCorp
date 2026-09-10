@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#c98a12">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GatorCorp">
+<link rel="apple-touch-icon" href="/images/logo-new.png">
+<title>Boss · GatorCorp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+<style>
+:root{
+  --paper:#f1f0ec; --panel:#fbfaf8; --ink:#15171b; --grey:#8a8d94;
+  --line:#e2e0da; --soft:#d9d6cf; --amber:#c98a12;
+  --seat-left:38%; --seat-top:10%; --seat-w:25%; --seat-h:87%;
+  --base-left:51%; --base-top:80%; --base-w:36%; --base-h:60%;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{background:var(--paper);scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{font-family:Inter,ui-sans-serif,system-ui,sans-serif;color:var(--ink);
+  -webkit-font-smoothing:antialiased;line-height:1.5;
+  background:url(/images/hero-bg.png) center top / cover no-repeat fixed;
+  min-height:100vh}
+::-moz-selection{background:rgba(201,138,18,.25)}
+::selection{background:rgba(201,138,18,.25)}
+a{color:inherit}
+
+/* ---------- nav (copied from index.html) ---------- */
+.pill-nav{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:60;
+  display:flex;align-items:center;padding:8px 10px 8px 20px;border-radius:999px;
+  background:rgba(251,250,248,.95);
+  backdrop-filter:blur(18px) saturate(180%);
+  border:1px solid rgba(255,255,255,.7);
+  box-shadow:0 10px 30px rgba(21,23,27,.10), inset 0 1px 0 rgba(255,255,255,.85)}
+.pill-logo{font-size:12px;font-weight:600;letter-spacing:.22em;text-decoration:none;margin-right:14px;white-space:nowrap}
+@media (max-width:640px){
+  .pill-nav{padding:7px 8px 7px 16px}
+  .pill-logo img{height:16px !important}
+  }
+@media (max-width:400px){
+  }
+
+/* ---------- page layout ---------- */
+.wrap{max-width:1500px;margin:0 auto;padding:14vh 4vw 8vh;position:relative}
+.overline{font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);margin-bottom:14px}
+.title{font-size:clamp(2.6rem,5.5vw,4.5rem);font-weight:800;line-height:.95;letter-spacing:-.03em}
+.title .accent{color:var(--amber)}
+.tagline{margin-top:18px;font-size:15px;color:var(--grey);max-width:34ch;line-height:1.5}
+.cta-row{display:flex;gap:14px;margin-top:26px;flex-wrap:wrap}
+.btn-primary{display:inline-flex;align-items:center;gap:10px;padding:15px 24px;background:var(--amber);
+  color:var(--ink);font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+  border-radius:999px;text-decoration:none;border:none;cursor:pointer}
+.btn-ghost{display:inline-flex;align-items:center;gap:10px;padding:15px 24px;background:transparent;
+  color:var(--ink);font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+  border-radius:999px;text-decoration:none;border:1px solid var(--line);cursor:pointer}
+
+.top-right{position:absolute;top:14vh;right:4vw;max-width:420px}
+.top-right h2{font-size:1.6rem;font-weight:700;color:var(--amber);margin-bottom:14px}
+.top-right p{font-size:14px;color:var(--grey);line-height:1.6}
+
+.stage-row{position:relative;margin-top:2vh}
+@media (max-width:1100px){.stage-row{margin-top:6vh}}
+
+.stage-wrap{position:relative;width:min(1000px,92vw);margin:0 auto;
+  height:640px}
+@media (max-width:700px){.stage-wrap{height:480px}}
+@media (max-width:900px){.callout,.callout-line{display:none!important}}
+
+.stage-base{position:absolute;left:var(--base-left);top:var(--base-top);width:var(--base-w);height:var(--base-h);
+  transform:translate(-50%,-50%);z-index:1;--poster-color:transparent}
+.stage-seat{position:absolute;left:var(--seat-left);top:var(--seat-top);width:var(--seat-w);height:var(--seat-h);
+  z-index:2;--poster-color:transparent}
+.stage-base .hotspot, .stage-seat .hotspot{display:none}
+.model-error{position:absolute;inset:0;z-index:2;display:flex;align-items:center;
+  justify-content:center;text-align:center;color:var(--grey);font-size:13px;
+  max-width:280px;margin:0 auto;padding:20px;background:rgba(251,250,248,.85);
+  border-radius:16px;pointer-events:none}
+
+.callout{position:absolute;z-index:5;display:flex;align-items:center;gap:14px;
+  max-width:230px}
+.callout.left{flex-direction:row}
+.callout.right{flex-direction:row-reverse;text-align:right}
+.callout-dot{width:64px;height:64px;border-radius:50%;border:2px solid var(--amber);
+  overflow:hidden;flex-shrink:0;background:var(--panel);
+  animation:calloutFloat 3.6s ease-in-out infinite;animation-delay:calc(var(--float-delay, 0) * 1s)}
+.callout-dot img{width:100%;height:100%;-o-object-fit:cover;object-fit:cover}
+@keyframes calloutFloat{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-6px)}
+}
+@media (prefers-reduced-motion: reduce){.callout-dot{animation:none}}
+.callout h3{font-size:13px;font-weight:700;line-height:1.25;margin-bottom:3px}
+.callout p{font-size:11.5px;color:var(--grey);line-height:1.4}
+.callout-line{position:absolute;height:1px;background:repeating-linear-gradient(90deg,var(--amber) 0 4px,transparent 4px 8px);
+  z-index:4;pointer-events:none;transform-origin:0 0}
+
+.toggle-row{margin-top:22px;display:flex;align-items:center;gap:14px;background:var(--panel);
+  border:1px solid var(--line);border-radius:999px;padding:8px 8px;
+  width:-moz-fit-content;
+  width:fit-content;margin-left:auto;margin-right:auto}
+.toggle-row button{border:none;background:transparent;font-size:11px;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;padding:8px 16px;border-radius:999px;
+  color:var(--grey);cursor:pointer;transition:.2s}
+.toggle-row button.active{background:var(--ink);color:#fff}
+
+.callout{cursor:pointer}
+.callout:focus-visible{outline:2px solid var(--amber);outline-offset:4px;border-radius:8px}
+
+.drawer-backdrop{position:fixed;inset:0;background:rgba(21,23,27,.32);z-index:90;
+  opacity:0;pointer-events:none;transition:opacity .35s ease}
+.drawer-backdrop.open{opacity:1;pointer-events:auto}
+
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(420px,90vw);
+  background:var(--paper);z-index:91;box-shadow:-20px 0 50px rgba(21,23,27,.18);
+  transform:translateX(100%);transition:transform .4s cubic-bezier(.22,.61,.36,1);
+  overflow-y:auto}
+.drawer.open{transform:translateX(0)}
+.drawer-close{position:absolute;top:20px;right:20px;width:36px;height:36px;border-radius:50%;
+  border:1px solid var(--line);background:var(--panel);font-size:20px;line-height:1;
+  color:var(--ink);cursor:pointer;z-index:2}
+.drawer-close:hover{background:var(--ink);color:#fff}
+.drawer-media{position:relative;width:100%;height:280px;background:var(--ink);
+  display:flex;align-items:center;justify-content:center;overflow:hidden}
+.drawer-media-blur{position:absolute;inset:-20px;background-size:cover;background-position:center;
+  filter:blur(24px) brightness(0.6);transform:scale(1.15);z-index:0}
+.drawer-media img{position:relative;z-index:1;max-width:74%;max-height:74%;width:auto;height:auto;
+  -o-object-fit:contain;
+     object-fit:contain;border-radius:10px;box-shadow:0 16px 34px rgba(0,0,0,.35)}
+.drawer-body{padding:36px 34px 48px}
+.drawer-eyebrow{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--amber);margin-bottom:10px}
+.drawer-body h3{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:14px;line-height:1.2}
+.drawer-body p{font-size:14px;color:var(--grey);line-height:1.7;margin-bottom:26px}
+.drawer-specs{list-style:none;border-top:1px solid var(--line)}
+.drawer-specs li{display:flex;justify-content:space-between;gap:16px;padding:14px 0;
+  border-bottom:1px solid var(--line);font-size:13px}
+.drawer-specs li span:first-child{color:var(--grey)}
+.drawer-specs li span:last-child{color:var(--ink);font-weight:600;text-align:right}
+.drawer-note{margin-top:14px;font-size:11px;font-style:italic;color:var(--grey);line-height:1.5}
+@media (max-width:640px){.drawer-media{height:200px}.drawer-body{padding:28px 24px 40px}}
+body.compact .callout,body.compact .callout-line,body.compact model-viewer .hotspot{display:none}
+
+/* ---------- Features / Options spec section (BOSS brochure uses a plain
+     bullet-list format, not the icon-grid style Leo/Ultimo brochures use —
+     matching that instead of forcing an icon-grid with icons that don't
+     exist for this product). ---------- */
+.spec-section{margin-top:6vh;display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media (max-width:800px){.spec-section{grid-template-columns:1fr}}
+.spec-col{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:32px 28px}
+.spec-col h4{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--amber);margin-bottom:18px}
+.spec-col ul{list-style:none;font-size:13.5px;color:var(--ink);line-height:2.1}
+.spec-col ul li{display:flex;align-items:flex-start;gap:10px}
+.spec-col ul li::before{content:"—";color:var(--amber);flex-shrink:0}
+.spec-application{margin-top:20px;text-align:center;font-size:12.5px;color:var(--grey)}
+.spec-application strong{color:var(--ink)}
+
+/* ---------- bottom feature strip ---------- */
+.strip{margin-top:8vh;background:var(--panel);border:1px solid var(--line);border-radius:20px;
+  padding:32px 4vw;display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+@media (max-width:800px){.strip{grid-template-columns:1fr 1fr}}
+.strip-item{display:flex;gap:14px;align-items:flex-start}
+.strip-item svg{width:26px;height:26px;color:var(--amber);flex-shrink:0}
+.strip-item h4{font-size:12.5px;font-weight:700;letter-spacing:.03em;margin-bottom:4px}
+.strip-item p{font-size:12px;color:var(--grey);line-height:1.4}
+
+/* ---------- live seat/base positioning tool (?pos=1) ---------- */
+.pos-panel{position:fixed;bottom:16px;right:16px;z-index:120;background:rgba(21,23,27,.92);
+  color:#fff;border-radius:14px;padding:16px 18px;font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:11px;width:280px;max-height:80vh;overflow-y:auto;box-shadow:0 20px 50px rgba(0,0,0,.4)}
+.pos-panel h5{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--amber);
+  margin:14px 0 8px}
+.pos-panel h5:first-child{margin-top:0}
+.pos-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
+.pos-row label{opacity:.75;flex-shrink:0}
+.pos-row input{width:70px;background:#2a2d33;border:1px solid #444;color:#fff;border-radius:6px;
+  padding:4px 6px;font-family:inherit;font-size:11px}
+.pos-copy{margin-top:12px;width:100%;padding:9px;border:none;border-radius:8px;background:var(--amber);
+  color:#15171b;font-weight:700;font-size:11px;letter-spacing:.05em;text-transform:uppercase;cursor:pointer}
+.pos-copy:active{opacity:.8}
+.pos-flash{margin-top:8px;font-size:10.5px;color:#7ee787;min-height:14px}
+
+/* mobile nav overflow fix + safe-area for notch/PWA fullscreen */
+body{padding-top:env(safe-area-inset-top)}
+@media (max-width:480px){
+  .pill-nav{max-width:92vw}
+      }
+
+/* mobile: stop top-right description from overlapping the hero title/CTA */
+@media (max-width:900px){
+  .top-right{position:static;max-width:100%;margin:5vh 0 0;padding:0}
+  .wrap{padding-top:16vh}
+}
+</style>
+  <script type="module" crossorigin src="/assets/modulepreload-polyfill-P2Xu9kJm.js"></script>
+</head>
+<body>
+
+<nav class="pill-nav" aria-label="Primary">
+  <a class="pill-logo" href="/index.html"><img src="/images/logo-new.png" alt="GatorCorp" style="height:20px;width:auto;display:block;"></a>
+</nav>
+
+<div class="wrap">
+  <div class="overline">Excavator Series</div>
+  <h1 class="title">Boss</h1>
+  <p class="tagline">The Rugged Seats for Mini, Compact, Mid-Sized &amp; Large Excavators.</p>
+  <div class="cta-row">
+    <a href="#features" class="btn-primary">Explore Features →</a>
+    <button class="btn-ghost" id="expandBtn">⌘ View Expanded</button>
+  </div>
+
+  <div class="top-right">
+    <h2>Boss</h2>
+    <p>The GatorCorp Boss is a rugged excavator seat built to absorb the jolts and low-frequency vibration that come with digging and grading all day. Its high, side-bolstered backrest combines with stepper height adjustment, backrest recline, and an adjustable headrest to keep operators supported through long shifts. Sears-based mechanical and air suspension options are engineered specifically for excavator-class vibration, and the seat is available with or without pod-control mounts for machines that route joystick controls through the seat itself. The Boss series fits everything from mini and compact excavators up to large, mid-sized machines.</p>
+  </div>
+
+  <div class="stage-row" id="features">
+    <div class="stage-wrap">
+
+      <div class="stage-clip" style="position:absolute;inset:0;overflow:hidden;z-index:0">
+      <model-viewer
+        id="baseModel"
+        class="stage-base"
+        src="/images/base-optimized-safe.glb"
+        alt="Boss seat base"
+        camera-orbit="0deg 75deg auto"
+        shadow-intensity="0.6"
+        environment-image="neutral"
+        loading="eager"
+        onerror="document.getElementById('modelErr').style.display='flex'">
+      </model-viewer>
+      <model-viewer
+        id="seatModel"
+        class="stage-seat"
+        src="/images/boss-seat.glb"
+        alt="Boss seat, rotatable 3D model"
+        auto-rotate
+        auto-rotate-delay="0"
+        rotation-per-second="18deg"
+        camera-orbit="10deg 80deg auto"
+        shadow-intensity="0.7"
+        environment-image="neutral"
+        exposure="1.05"
+        loading="eager"
+        onerror="document.getElementById('modelErr').style.display='flex'">
+        <!-- No 3D pins placed yet — this is a brand-new model (Meshy-generated,
+             never test-fitted). They're hidden via CSS anyway
+             (.stage-seat .hotspot{display:none}), so this only matters if
+             re-enabled later. Use ?pick=1 on THIS page to derive real
+             coordinates by clicking the model once it's positioned. -->
+      </model-viewer>
+      </div>
+      <div class="model-error" id="modelErr" style="display:none">
+        Model didn't load — check that <code>boss-seat.glb</code> is at
+        <code>/public/images/boss-seat.glb</code> and you're viewing this
+        page through your dev server (http://localhost:PORT/product-boss.html),
+        not opened directly as a file.
+      </div>
+
+      <div class="callout left" data-hotspot="headrest" tabindex="0" role="button" aria-haspopup="true" style="top:4%; left:2%;">
+        <div class="callout-dot" style="--float-delay:0"><img src="/images/boss-detail-headrest.jpg" alt=""></div>
+        <div><h3>Adjustable<br>Headrest</h3><p>An adjustable headrest gives operators head and neck support at the height that suits them.</p></div>
+      </div>
+
+      <div class="callout left" data-hotspot="backrest" tabindex="0" role="button" aria-haspopup="true" style="top:24%; left:-2%;">
+        <div class="callout-dot" style="--float-delay:0.5"><img src="/images/boss-detail-backrest.jpg" alt=""></div>
+        <div><h3>High Backrest with<br>Bolstered Support</h3><p>Side bolsters and a high backrest keep the operator supported through long digging shifts.</p></div>
+      </div>
+
+      <div class="callout left" data-hotspot="recliner" tabindex="0" role="button" aria-haspopup="true" style="top:44%; left:-3%;">
+        <div class="callout-dot" style="--float-delay:1"><img src="/images/boss-detail-recliner.jpg" alt=""></div>
+        <div><h3>Seat<br>Recliner</h3><p>A recline lever adjusts the backrest angle to the operator's preferred driving position.</p></div>
+      </div>
+
+      <div class="callout left" data-hotspot="height" tabindex="0" role="button" aria-haspopup="true" style="top:64%; left:4%;">
+        <div class="callout-dot" style="--float-delay:1.5"><img src="/images/boss-detail-height.jpg" alt=""></div>
+        <div><h3>Stepper Height<br>Adjustment</h3><p>Stepped height adjustment sets the seat at the right level for the cab and the operator.</p></div>
+      </div>
+
+      <div class="callout right" data-hotspot="cushion" tabindex="0" role="button" aria-haspopup="true" style="top:10%; right:0;">
+        <div class="callout-dot" style="--float-delay:0.3"><img src="/images/boss-detail-cushion.jpg" alt=""></div>
+        <div><h3>Comfortable<br>Seat Cushion</h3><p>A cut-and-sew seat top cushions the operator through a full day of jolts and vibration.</p></div>
+      </div>
+
+      <div class="callout right" data-hotspot="weight" tabindex="0" role="button" aria-haspopup="true" style="top:34%; right:-2%;">
+        <div class="callout-dot" style="--float-delay:0.9"><img src="/images/boss-detail-weight.jpg" alt=""></div>
+        <div><h3>Weight Adjustment<br>Knob</h3><p>Tunes the mechanical suspension to the operator's weight for a smoother ride.</p></div>
+      </div>
+
+      <svg class="callout-svg" viewBox="0 0 100 100" preserveAspectRatio="none"
+        style="position:absolute;inset:0;width:100%;height:100%;z-index:3;pointer-events:none">
+        <!-- x1,y1 = label dot's edge (near the text); x2,y2 = the feature's real
+             position on the model, estimated from the rendered layout. Same
+             label y-positions as Leo/Ultimo (4/24/44/64% left, 10/34/58/80%
+             right), so these reuse those pages' tuned line coordinates —
+             re-check once the model is actually positioned via ?pos=1. -->
+        <line x1="8"  y1="9"  x2="44" y2="17" class="callout-svg-line"/>
+        <line x1="4"  y1="29" x2="37" y2="34" class="callout-svg-line"/>
+        <line x1="3"  y1="49" x2="37" y2="46" class="callout-svg-line"/>
+        <line x1="10" y1="69" x2="38.5" y2="69" class="callout-svg-line"/>
+        <line x1="94" y1="15" x2="60" y2="41" class="callout-svg-line"/>
+        <line x1="96" y1="39" x2="52" y2="59" class="callout-svg-line"/>
+        <line x1="95" y1="63" x2="57" y2="63" class="callout-svg-line"/>
+        <line x1="92" y1="85" x2="61" y2="73" class="callout-svg-line"/>
+      </svg>
+    </div>
+
+    <style>
+      body.compact .callout-svg{display:none}
+      .callout-svg-line{stroke:var(--amber);stroke-width:0.15;stroke-dasharray:0.8,0.8;vector-effect:non-scaling-stroke}
+      .mobile-feature-list{display:none}
+      @media (max-width:900px){
+        .mobile-feature-list{display:grid;grid-template-columns:1fr 1fr;gap:14px;
+          margin-top:5vh;padding:0 6vw}
+        .mf-item{display:flex;flex-direction:column;align-items:center;text-align:center;
+          gap:10px;padding:16px 10px;background:var(--panel);border:1px solid var(--line);
+          border-radius:16px;cursor:pointer}
+        .mf-item img{width:48px;height:48px;border-radius:50%;-o-object-fit:cover;object-fit:cover;
+          border:2px solid var(--amber)}
+        .mf-item span{font-size:12px;font-weight:600;color:var(--ink);line-height:1.3}
+      }
+      @media (max-width:480px){.mobile-feature-list{grid-template-columns:1fr}}
+      body.compact .mobile-feature-list{display:none}
+    </style>
+    <div class="mobile-feature-list" id="mobileFeatureList"></div>
+
+    <div class="toggle-row">
+      <button id="compactBtn">Compact View</button>
+      <button id="expandedBtn" class="active">Expanded View</button>
+    </div>
+
+    <!-- Features / Options / Application, straight from the BOSS brochure's
+         own bullet-list layout (paraphrased, not quoted). -->
+    <div class="spec-section">
+      <div class="spec-col">
+        <h4>Features</h4>
+        <ul>
+          <li>Time-tested mechanical suspension (Sears 08 &amp; 09 series)</li>
+          <li>Comfortable cut &amp; sew seat top, with a fabric-foam seat-pan option</li>
+          <li>Reliable, durable roller-slide mechanism</li>
+          <li>Seat reclining</li>
+          <li>Stepper height adjustment</li>
+          <li>Static &amp; retractable seat belt options</li>
+          <li>Mechanical weight adjustment</li>
+        </ul>
+      </div>
+      <div class="spec-col">
+        <h4>Options</h4>
+        <ul>
+          <li>Air suspension</li>
+          <li>2-point seat belt</li>
+          <li>Mechanical lumbar</li>
+          <li>Heated cushions</li>
+          <li>Operator Presence Switch (OPS)</li>
+          <li>Fully adjustable armrests</li>
+          <li>Pod mounts</li>
+          <li>Dual slider</li>
+          <li>Document pouch</li>
+        </ul>
+      </div>
+    </div>
+    <div class="spec-application">Application: <strong>Mini, mid-sized, compact &amp; large excavators.</strong></div>
+  </div>
+
+  <!-- Hotspot detail drawer -->
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <aside class="drawer" id="drawer" aria-hidden="true" aria-label="Feature detail">
+    <button class="drawer-close" id="drawerClose" aria-label="Close">&times;</button>
+    <div class="drawer-media"><div class="drawer-media-blur" id="drawerMediaBlur"></div><img id="drawerImg" src="" alt=""></div>
+    <div class="drawer-body">
+      <div class="drawer-eyebrow" id="drawerEyebrow">Boss</div>
+      <h3 id="drawerTitle"></h3>
+      <p id="drawerDesc"></p>
+      <ul class="drawer-specs" id="drawerSpecs"></ul>
+      <p class="drawer-note" id="drawerNote" style="display:none"></p>
+    </div>
+  </aside>
+
+  <div class="strip">
+    <div class="strip-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 20h6M12 4a4 4 0 0 0-4 4v3l-2 5h12l-2-5V8a4 4 0 0 0-4-4z"/></svg>
+      <div><h4>RUGGED COMFORT</h4><p>Bolstered support built for a full shift in the cab.</p></div>
+    </div>
+    <div class="strip-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z"/><path d="M9 12l2 2 4-4"/></svg>
+      <div><h4>OPTIONAL OPS</h4><p>Operator Presence Switch adds a layer of site safety.</p></div>
+    </div>
+    <div class="strip-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="12" cy="5" rx="7" ry="2.5"/><path d="M5 5v5c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5V5M5 10v5c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5v-5M5 15v4c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5v-4"/></svg>
+      <div><h4>SEARS SUSPENSION</h4><p>Mechanical &amp; air suspension tuned for low-frequency vibration.</p></div>
+    </div>
+    <div class="strip-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+      <div><h4>ANY EXCAVATOR</h4><p>Fits mini, compact, mid-sized &amp; large machines.</p></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var compactBtn = document.getElementById('compactBtn');
+  var expandedBtn = document.getElementById('expandedBtn');
+  var expandBtn = document.getElementById('expandBtn');
+  function setMode(compact){
+    document.body.classList.toggle('compact', compact);
+    compactBtn.classList.toggle('active', compact);
+    expandedBtn.classList.toggle('active', !compact);
+  }
+  compactBtn.addEventListener('click', function(){ setMode(true); });
+  expandedBtn.addEventListener('click', function(){ setMode(false); });
+  expandBtn.addEventListener('click', function(){ setMode(document.body.classList.contains('compact') ? false : true); });
+})();
+
+// Coordinate picker for placing hotspots precisely. Add ?pick=1 to the URL
+// to enable — click anywhere on the model and the exact 3D position/normal
+// under your cursor prints to the console, pre-formatted to paste straight
+// into a hotspot button's data-position/data-normal attributes.
+if (new URLSearchParams(location.search).get('pick')) {
+  (function(){
+    var mv = document.getElementById('seatModel');
+    mv.addEventListener('click', function(ev){
+      var rect = mv.getBoundingClientRect();
+      var hit = mv.positionAndNormalFromPoint(ev.clientX - rect.left, ev.clientY - rect.top);
+      if (!hit) { console.log('No surface hit — click directly on the model.'); return; }
+      var p = hit.position, n = hit.normal;
+      console.log(
+        'data-position="' + p.x.toFixed(3) + ' ' + p.y.toFixed(3) + ' ' + p.z.toFixed(3) + '" ' +
+        'data-normal="' + n.x.toFixed(2) + ' ' + n.y.toFixed(2) + ' ' + n.z.toFixed(2) + '"'
+      );
+    });
+    console.log('Hotspot picker active — click any point on the model.');
+  })();
+}
+
+// Live seat/base positioning tool. Add ?pos=1 to the URL to enable — drags
+// the stage-seat and stage-base boxes (position % + size %) and the seat
+// model's camera-orbit live via CSS custom properties, with a one-click
+// "Copy CSS" that assembles everything into a paste-ready block. This
+// exists because the model was never test-fitted against the shared
+// podium, and positioning it blind from here isn't reliable — this makes
+// the iteration loop live-in-browser instead of edit/refresh/repeat.
+if (new URLSearchParams(location.search).get('pos')) {
+  (function(){
+    var root = document.documentElement;
+    var seatModel = document.getElementById('seatModel');
+    var fields = [
+      {key:'--seat-left', label:'seat left %', group:'Seat box', unit:'%', value:38},
+      {key:'--seat-top', label:'seat top %', group:'Seat box', unit:'%', value:10},
+      {key:'--seat-w', label:'seat width %', group:'Seat box', unit:'%', value:25},
+      {key:'--seat-h', label:'seat height %', group:'Seat box', unit:'%', value:87},
+      {key:'--base-left', label:'base left %', group:'Base box', unit:'%', value:51},
+      {key:'--base-top', label:'base top %', group:'Base box', unit:'%', value:80},
+      {key:'--base-w', label:'base width %', group:'Base box', unit:'%', value:36},
+      {key:'--base-h', label:'base height %', group:'Base box', unit:'%', value:60},
+      {key:'--orbit-theta', label:'orbit theta (deg)', group:'Seat camera-orbit', unit:'', value:10},
+      {key:'--orbit-phi', label:'orbit phi (deg)', group:'Seat camera-orbit', unit:'', value:80}
+    ];
+
+    var panel = document.createElement('div');
+    panel.className = 'pos-panel';
+    var html = '';
+    var lastGroup = null;
+    fields.forEach(function(f){
+      if (f.group !== lastGroup) { html += '<h5>' + f.group + '</h5>'; lastGroup = f.group; }
+      html += '<div class="pos-row"><label>' + f.label + '</label>' +
+        '<input type="number" step="1" data-key="' + f.key + '" value="' + f.value + '"></div>';
+    });
+    html += '<button class="pos-copy" id="posCopy">Copy CSS + orbit</button>' +
+      '<div class="pos-flash" id="posFlash"></div>';
+    panel.innerHTML = html;
+    document.body.appendChild(panel);
+
+    function applyOrbit(){
+      var theta = panel.querySelector('[data-key="--orbit-theta"]').value;
+      var phi = panel.querySelector('[data-key="--orbit-phi"]').value;
+      seatModel.setAttribute('camera-orbit', theta + 'deg ' + phi + 'deg auto');
+    }
+
+    panel.querySelectorAll('input[data-key]').forEach(function(input){
+      input.addEventListener('input', function(){
+        var key = input.getAttribute('data-key');
+        if (key === '--orbit-theta' || key === '--orbit-phi') {
+          applyOrbit();
+        } else {
+          var unit = key.indexOf('left') > -1 || key.indexOf('top') > -1 || key.indexOf('-w') > -1 || key.indexOf('-h') > -1 ? '%' : '';
+          root.style.setProperty(key, input.value + unit);
+        }
+      });
+    });
+    applyOrbit();
+
+    document.getElementById('posCopy').addEventListener('click', function(){
+      var get = function(k){ return panel.querySelector('[data-key="' + k + '"]').value; };
+      var css =
+        '.stage-seat{left:' + get('--seat-left') + '%;top:' + get('--seat-top') + '%;width:' + get('--seat-w') + '%;height:' + get('--seat-h') + '%;}\n' +
+        '.stage-base{left:' + get('--base-left') + '%;top:' + get('--base-top') + '%;width:' + get('--base-w') + '%;height:' + get('--base-h') + '%;}\n' +
+        'camera-orbit="' + get('--orbit-theta') + 'deg ' + get('--orbit-phi') + 'deg auto"';
+      console.log(css);
+      var flash = document.getElementById('posFlash');
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(css).then(function(){
+          flash.textContent = 'Copied — paste into the file.';
+        }, function(){
+          flash.textContent = 'Copy failed — see console instead.';
+        });
+      } else {
+        flash.textContent = 'Printed to console instead.';
+      }
+      setTimeout(function(){ flash.textContent = ''; }, 3000);
+    });
+
+    console.log('Position tool active — panel bottom-right. Sliders drive --seat-*/--base-* CSS vars and the seat camera-orbit live.');
+  })();
+}
+</script>
+
+<script>
+(function(){
+'use strict';
+
+// Descriptions and spec figures sourced from the real BOSS brochure
+// (GatorCorp Boss Excavator Seat spec sheet), paraphrased not quoted.
+var hotspotDetails = {
+  headrest: {
+    title: 'Adjustable Headrest',
+    img: '/images/boss-detail-headrest.jpg',
+    desc: 'An adjustable headrest gives the operator head and neck support, set to their own height.',
+    specs: [
+      ['Headrest', 'Adjustable']
+    ]
+  },
+  backrest: {
+    title: 'High Backrest with Bolstered Support',
+    img: '/images/boss-detail-backrest.jpg',
+    desc: 'A high backrest with side bolsters keeps the operator supported and in place through long digging shifts.',
+    specs: [
+      ['Backrest', 'High, side-bolstered']
+    ]
+  },
+  recliner: {
+    title: 'Seat Recliner',
+    img: '/images/boss-detail-recliner.jpg',
+    desc: 'A recline lever adjusts the backrest angle to the operator\u2019s preferred driving position.',
+    specs: [
+      ['Backrest adjustment', 'Recline lever']
+    ]
+  },
+  height: {
+    title: 'Stepper Height Adjustment',
+    img: '/images/boss-detail-height.jpg',
+    desc: 'Stepped height adjustment sets the seat at the right level for the cab and the operator.',
+    specs: [
+      ['Height adjustment', 'Stepper type']
+    ]
+  },
+  cushion: {
+    title: 'Comfortable Seat Cushion',
+    img: '/images/boss-detail-cushion.jpg',
+    desc: 'A comfortable cut-and-sew seat top cushions the operator through a full day of jolts and vibration, with a fabric-foam seat-pan option available.',
+    specs: [
+      ['Seat top', 'Cut & sew, fabric-foam option']
+    ]
+  },
+  weight: {
+    title: 'Weight Adjustment Knob',
+    img: '/images/boss-detail-weight.jpg',
+    desc: 'A mechanical weight-adjustment knob tunes the seat\u2019s suspension to the operator for a smoother ride.',
+    specs: [
+      ['Weight adjustment', 'Mechanical'],
+      ['Suspension', 'Sears 08 & 09 series']
+    ]
+  },
+  towelbar: {
+    title: 'Roller Slides with Towel Bar',
+    img: '/images/boss-detail-towelbar.jpg',
+    desc: 'A reliable, durable roller-slide mechanism, guided by the towel bar rail, sets the operator\u2019s fore-aft distance from the controls.',
+    specs: [
+      ['Slide mechanism', 'Roller, towel-bar guided']
+    ]
+  },
+  ops: {
+    title: 'Operator Presence Switch',
+    img: '/images/boss-detail-ops.jpg',
+    desc: 'An optional Operator Presence Switch (OPS) cuts machine function when the operator leaves the seat, adding a layer of site safety.',
+    specs: [
+      ['OPS', 'Optional']
+    ],
+    note: 'Can be developed on request.'
+  }
+};
+
+var drawer = document.getElementById('drawer');
+var backdrop = document.getElementById('drawerBackdrop');
+var closeBtn = document.getElementById('drawerClose');
+var imgEl = document.getElementById('drawerImg');
+var imgBlur = document.getElementById('drawerMediaBlur');
+var titleEl = document.getElementById('drawerTitle');
+var descEl = document.getElementById('drawerDesc');
+var specsEl = document.getElementById('drawerSpecs');
+var noteEl = document.getElementById('drawerNote');
+var lastFocused = null;
+
+function openDrawer(key){
+  var d = hotspotDetails[key];
+  if (!d) return;
+  imgEl.src = d.img;
+  imgBlur.style.backgroundImage = 'url(' + d.img + ')';
+  imgEl.alt = d.title;
+  titleEl.textContent = d.title;
+  descEl.textContent = d.desc;
+  specsEl.innerHTML = '';
+  d.specs.forEach(function(row){
+    var li = document.createElement('li');
+    li.innerHTML = '<span>' + row[0] + '</span><span>' + row[1] + '</span>';
+    specsEl.appendChild(li);
+  });
+  if (d.note){
+    noteEl.textContent = d.note;
+    noteEl.style.display = 'block';
+  } else {
+    noteEl.textContent = '';
+    noteEl.style.display = 'none';
+  }
+  drawer.classList.add('open');
+  backdrop.classList.add('open');
+  drawer.setAttribute('aria-hidden', 'false');
+  closeBtn.focus();
+}
+
+function closeDrawer(){
+  drawer.classList.remove('open');
+  backdrop.classList.remove('open');
+  drawer.setAttribute('aria-hidden', 'true');
+  if (lastFocused) lastFocused.focus();
+}
+
+document.querySelectorAll('.callout[data-hotspot]').forEach(function(el){
+  el.addEventListener('click', function(){
+    lastFocused = el;
+    openDrawer(el.getAttribute('data-hotspot'));
+  });
+  el.addEventListener('keydown', function(ev){
+    if (ev.key === 'Enter' || ev.key === ' '){
+      ev.preventDefault();
+      lastFocused = el;
+      openDrawer(el.getAttribute('data-hotspot'));
+    }
+  });
+});
+
+closeBtn.addEventListener('click', closeDrawer);
+backdrop.addEventListener('click', closeDrawer);
+document.addEventListener('keydown', function(ev){
+  if (ev.key === 'Escape' && drawer.classList.contains('open')) closeDrawer();
+});
+
+// Mobile feature list — same 8 features as the desktop callouts, same
+// drawer on click, just laid out as a simple grid instead of floating
+// labels (which don't have room to work on narrow screens).
+var mobileList = document.getElementById('mobileFeatureList');
+if (mobileList) {
+  Object.keys(hotspotDetails).forEach(function(key){
+    var d = hotspotDetails[key];
+    var item = document.createElement('div');
+    item.className = 'mf-item';
+    item.setAttribute('tabindex', '0');
+    item.setAttribute('role', 'button');
+    item.innerHTML = '<img src="' + d.img + '" alt=""><span>' + d.title + '</span>';
+    item.addEventListener('click', function(){ lastFocused = item; openDrawer(key); });
+    item.addEventListener('keydown', function(ev){
+      if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); lastFocused = item; openDrawer(key); }
+    });
+    mobileList.appendChild(item);
+  });
+}
+})();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('/sw.js').catch(function(err){
+      console.warn('Service worker registration failed:', err);
+    });
+  });
+}
+</script>
+</body>
+</html>
