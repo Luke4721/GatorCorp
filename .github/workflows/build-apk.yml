@@ -1,7 +1,5 @@
 name: Build Android APK
 
-# Runs on every push to main, and can also be triggered manually from the
-# GitHub Actions tab (Run workflow button) without needing a new commit.
 on:
   push:
     branches: [ main ]
@@ -17,7 +15,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Install dependencies
         run: npm install
