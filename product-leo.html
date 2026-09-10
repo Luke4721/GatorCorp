@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#c98a12">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GatorCorp">
+<link rel="apple-touch-icon" href="/images/logo-new.png">
+<title>Leo · GatorCorp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+<style>
+:root{
+  --paper:#f1f0ec; --panel:#fbfaf8; --ink:#15171b; --grey:#8a8d94;
+  --line:#e2e0da; --soft:#d9d6cf; --amber:#c98a12;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{background:var(--paper);scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{font-family:Inter,ui-sans-serif,system-ui,sans-serif;color:var(--ink);
+  -webkit-font-smoothing:antialiased;line-height:1.5;
+  background:url(/images/hero-bg.png) center top / cover no-repeat fixed;
+  min-height:100vh}
+::selection{background:rgba(201,138,18,.25)}
+a{color:inherit}
+
+/* ---------- nav (copied from index.html) ---------- */
+.pill-nav{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:60;
+  display:flex;align-items:center;padding:8px 10px 8px 20px;border-radius:999px;
+  background:rgba(251,250,248,.95);
+  -webkit-backdrop-filter:blur(18px) saturate(180%);
+  backdrop-filter:blur(18px) saturate(180%);
+  border:1px solid rgba(255,255,255,.7);
+  box-shadow:0 10px 30px rgba(21,23,27,.10), inset 0 1px 0 rgba(255,255,255,.85)}
+.pill-logo{font-size:12px;font-weight:600;letter-spacing:.22em;text-decoration:none;margin-right:14px;white-space:nowrap}
+@media (max-width:640px){
+  .pill-nav{padding:7px 8px 7px 16px}
+  .pill-logo img{height:16px !important}
+  }
+@media (max-width:400px){
+  }
+
+/* ---------- page layout ---------- */
+.wrap{max-width:1500px;margin:0 auto;padding:14vh 4vw 8vh;position:relative}
+.overline{font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);margin-bottom:14px}
+.title{font-size:clamp(2.6rem,5.5vw,4.5rem);font-weight:800;line-height:.95;letter-spacing:-.03em}
+.title .accent{color:var(--amber)}
+.tagline{margin-top:18px;font-size:15px;color:var(--grey);max-width:34ch;line-height:1.5}
+.cta-row{display:flex;gap:14px;margin-top:26px;flex-wrap:wrap}
+.btn-primary{display:inline-flex;align-items:center;gap:10px;padding:15px 24px;background:var(--amber);
+  color:var(--ink);font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+  border-radius:999px;text-decoration:none;border:none;cursor:pointer}
+.btn-ghost{display:inline-flex;align-items:center;gap:10px;padding:15px 24px;background:transparent;
+  color:var(--ink);font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+  border-radius:999px;text-decoration:none;border:1px solid var(--line);cursor:pointer}
+
+.top-right{position:absolute;top:14vh;right:4vw;max-width:420px}
+.top-right h2{font-size:1.6rem;font-weight:700;color:var(--amber);margin-bottom:14px}
+.top-right p{font-size:14px;color:var(--grey);line-height:1.6}
+
+.stage-row{position:relative;margin-top:2vh}
+@media (max-width:1100px){.stage-row{margin-top:6vh}}
+
+/* stage-wrap holds the model + podium + all hotspots as one absolutely-
+   positioned unit, so thumbnails/lines can sit tight against the chair
+   instead of being pushed out to the far edges of a 3-column grid. */
+.stage-wrap{position:relative;width:min(1000px,92vw);margin:0 auto;
+  height:640px}
+@media (max-width:700px){.stage-wrap{height:480px}}
+/* Mobile: floating callouts overlap the model at narrow widths (percentage-
+   positioned, no reflow). Rather than guess a stacked layout untested,
+   hiding them below this breakpoint guarantees no overlap. The
+   Compact/Expanded toggle still exists but has no visible effect on
+   mobile until a real reflowed layout is built and tested on-device. */
+@media (max-width:900px){.callout,.callout-line{display:none!important}}
+
+.stage-base{position:absolute;left:51%;top:80%;width:36%;height:60%;
+  transform:translate(-50%,-50%);z-index:1;--poster-color:transparent}
+.stage-seat{position:absolute;left:38%;top:10%;width:25%;height:87%;
+  z-index:2;--poster-color:transparent}
+.stage-base .hotspot, .stage-seat .hotspot{display:none}
+.model-error{position:absolute;inset:0;z-index:2;display:flex;align-items:center;
+  justify-content:center;text-align:center;color:var(--grey);font-size:13px;
+  max-width:280px;margin:0 auto;padding:20px;background:rgba(251,250,248,.85);
+  border-radius:16px;pointer-events:none}
+
+/* floating hotspot callouts — fixed 2D positions tuned to the default
+   camera pose. These read correctly at that pose; if the model is
+   manually rotated the lines will no longer point at the right spot
+   until it's reset — same limitation the reference mockup itself has,
+   since it's a single fixed-angle shot, not a live-tracking system. */
+.callout{position:absolute;z-index:5;display:flex;align-items:center;gap:14px;
+  max-width:230px}
+.callout.left{flex-direction:row}
+.callout.right{flex-direction:row-reverse;text-align:right}
+.callout-dot{width:64px;height:64px;border-radius:50%;border:2px solid var(--amber);
+  overflow:hidden;flex-shrink:0;background:var(--panel);
+  animation:calloutFloat 3.6s ease-in-out infinite;animation-delay:calc(var(--float-delay, 0) * 1s)}
+.callout-dot img{width:100%;height:100%;object-fit:cover}
+@keyframes calloutFloat{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-6px)}
+}
+@media (prefers-reduced-motion: reduce){.callout-dot{animation:none}}
+.callout h3{font-size:13px;font-weight:700;line-height:1.25;margin-bottom:3px}
+.callout p{font-size:11.5px;color:var(--grey);line-height:1.4}
+.callout-line{position:absolute;height:1px;background:repeating-linear-gradient(90deg,var(--amber) 0 4px,transparent 4px 8px);
+  z-index:4;pointer-events:none;transform-origin:0 0}
+
+.toggle-row{margin-top:22px;display:flex;align-items:center;gap:14px;background:var(--panel);
+  border:1px solid var(--line);border-radius:999px;padding:8px 8px;
+  width:fit-content;margin-left:auto;margin-right:auto}
+.toggle-row button{border:none;background:transparent;font-size:11px;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;padding:8px 16px;border-radius:999px;
+  color:var(--grey);cursor:pointer;transition:.2s}
+.toggle-row button.active{background:var(--ink);color:#fff}
+
+.icon-grid{margin-top:6vh;display:flex;flex-direction:column;gap:5vh}
+.icon-group-title{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--amber);margin-bottom:18px;text-align:center}
+.icon-row{display:flex;flex-wrap:wrap;justify-content:center;gap:28px 22px}
+.icon-item{display:flex;flex-direction:column;align-items:center;text-align:center;width:110px}
+.icon-item img{width:56px;height:56px;object-fit:contain;margin-bottom:10px}
+.icon-item span{font-size:11px;color:var(--grey);line-height:1.35}
+body.compact .icon-grid{display:none}
+
+.callout{cursor:pointer}
+.callout:focus-visible{outline:2px solid var(--amber);outline-offset:4px;border-radius:8px}
+
+.drawer-backdrop{position:fixed;inset:0;background:rgba(21,23,27,.32);z-index:90;
+  opacity:0;pointer-events:none;transition:opacity .35s ease}
+.drawer-backdrop.open{opacity:1;pointer-events:auto}
+
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(420px,90vw);
+  background:var(--paper);z-index:91;box-shadow:-20px 0 50px rgba(21,23,27,.18);
+  transform:translateX(100%);transition:transform .4s cubic-bezier(.22,.61,.36,1);
+  overflow-y:auto}
+.drawer.open{transform:translateX(0)}
+.drawer-close{position:absolute;top:20px;right:20px;width:36px;height:36px;border-radius:50%;
+  border:1px solid var(--line);background:var(--panel);font-size:20px;line-height:1;
+  color:var(--ink);cursor:pointer;z-index:2}
+.drawer-close:hover{background:var(--ink);color:#fff}
+.drawer-media{position:relative;width:100%;height:280px;background:var(--ink);
+  display:flex;align-items:center;justify-content:center;overflow:hidden}
+.drawer-media-blur{position:absolute;inset:-20px;background-size:cover;background-position:center;
+  filter:blur(24px) brightness(0.6);transform:scale(1.15);z-index:0}
+.drawer-media img{position:relative;z-index:1;max-width:74%;max-height:74%;width:auto;height:auto;
+  object-fit:contain;border-radius:10px;box-shadow:0 16px 34px rgba(0,0,0,.35)}
+.drawer-body{padding:36px 34px 48px}
+.drawer-eyebrow{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--amber);margin-bottom:10px}
+.drawer-body h3{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:14px;line-height:1.2}
+.drawer-body p{font-size:14px;color:var(--grey);line-height:1.7;margin-bottom:26px}
+.drawer-specs{list-style:none;border-top:1px solid var(--line)}
+.drawer-specs li{display:flex;justify-content:space-between;gap:16px;padding:14px 0;
+  border-bottom:1px solid var(--line);font-size:13px}
+.drawer-specs li span:first-child{color:var(--grey)}
+.drawer-specs li span:last-child{color:var(--ink);font-weight:600;text-align:right}
+.drawer-note{margin-top:14px;font-size:11px;font-style:italic;color:var(--grey);line-height:1.5}
+@media (max-width:640px){.drawer-media{height:200px}.drawer-body{padding:28px 24px 40px}}
+body.compact .callout,body.compact .callout-line,body.compact model-viewer .hotspot{display:none}
+
+/* ---------- bottom feature strip ---------- */
+.strip{margin-top:8vh;background:var(--panel);border:1px solid var(--line);border-radius:20px;
+  padding:32px 4vw;display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+@media (max-width:800px){.strip{grid-template-columns:1fr 1fr}}
+.strip-item{display:flex;gap:14px;align-items:flex-start}
+.strip-item svg{width:26px;height:26px;color:var(--amber);flex-shrink:0}
+.strip-item h4{font-size:12.5px;font-weight:700;letter-spacing:.03em;margin-bottom:4px}
+.strip-item p{font-size:12px;color:var(--grey);line-height:1.4}
+
+/* body.compact rules for .callout/.callout-line are defined above */
+
+/* mobile nav overflow fix + safe-area for notch/PWA fullscreen */
+body{padding-top:env(safe-area-inset-top)}
+@media (max-width:480px){
+  .pill-nav{max-width:92vw}
+      }
+
+/* mobile: stop top-right description from overlapping the hero title/CTA */
+@media (max-width:900px){
+  .top-right{position:static;max-width:100%;margin:5vh 0 0;padding:0}
+  .wrap{padding-top:16vh}
+}
+</style>
+</head>
+<body>
+
+<nav class="pill-nav" aria-label="Primary">
+  <a class="pill-logo" href="/index.html"><img src="/images/logo-new.png" alt="GatorCorp" style="height:20px;width:auto;display:block;"></a>
+</nav>
+
+<div class="wrap">
+  <div class="overline">Premium Model</div>
+  <h1 class="title">Leo</h1>
+  <p class="tagline">The Premium Seats for Light &amp; Medium Duty Commercial Vehicles.</p>
+  <div class="cta-row">
+    <a href="#features" class="btn-primary">Explore Features →</a>
+    <button class="btn-ghost" id="expandBtn">⌘ View Expanded</button>
+  </div>
+
+  <div class="top-right">
+    <h2>Leo</h2>
+    <p>The GatorCorp Leo is a frugal, mechanically-suspended truck seat built for comfortable, safe driving in light and medium duty vehicles. Its mechanical suspension keeps vibration transmission low across long-duration travel, and the seat height adjusts continuously to suit each driver. The Deluxe trim adds a wider contoured seat top and mechanical lumbar support, with climate control and adjustable armrests available as options.</p>
+  </div>
+
+  <div class="stage-row" id="features">
+    <div class="stage-wrap">
+
+      <div class="stage-clip" style="position:absolute;inset:0;overflow:hidden;z-index:0">
+      <model-viewer
+        id="baseModel"
+        class="stage-base"
+        src="/images/base-optimized-safe.glb"
+        alt="Leo seat base"
+        camera-orbit="0deg 75deg auto"
+        shadow-intensity="0.6"
+        environment-image="neutral"
+        loading="eager"
+        onerror="document.getElementById('modelErr').style.display='flex'">
+      </model-viewer>
+      <model-viewer
+        id="seatModel"
+        class="stage-seat"
+        src="/images/Leo-opt.glb"
+        alt="Leo seat, rotatable 3D model"
+        auto-rotate
+        auto-rotate-delay="0"
+        rotation-per-second="18deg"
+        camera-orbit="0.2903rad 1.5627rad auto"
+        shadow-intensity="0.7"
+        environment-image="neutral"
+        exposure="1.05"
+        loading="eager"
+        onerror="document.getElementById('modelErr').style.display='flex'">
+        <!-- Hotspot coordinates below are copied from the Supremo seat and are
+             wrong for this model (Leo-opt.glb) — different mesh entirely.
+             These 3D pins are hidden via CSS anyway
+             (.stage-seat .hotspot{display:none}), so this only matters if
+             re-enabled later. Use ?pick=1 on THIS model to derive real
+             coordinates first. -->
+        <button slot="hotspot-headrest" class="hotspot" data-position="-0.034 0.744 -0.399" data-normal="0 0.3 1"></button>
+        <button slot="hotspot-backrest" class="hotspot" data-position="-0.050 0.237 -0.381" data-normal="0 0 1"></button>
+        <button slot="hotspot-cushion" class="hotspot" data-position="-0.034 -0.476 0.101" data-normal="0 1 0"></button>
+        <button slot="hotspot-base" class="hotspot" data-position="-0.034 -0.824 0.155" data-normal="0 -1 0"></button>
+        <button slot="hotspot-armrest" class="hotspot" data-position="0.429 -0.000 -0.113" data-normal="1 0 0"></button>
+      </model-viewer>
+      </div>
+      <div class="model-error" id="modelErr" style="display:none">
+        Model didn't load — check that <code>Leo-opt.glb</code> is at
+        <code>/public/images/Leo-opt.glb</code> and you're viewing this
+        page through your dev server (http://localhost:PORT/product-leo.html),
+        not opened directly as a file.
+      </div>
+
+      <!-- Labels are spaced evenly (20% apart) purely to avoid text overlap —
+           independent of where each line actually points. The SVG below draws
+           a real diagonal line from each label to its true target coordinate
+           on the model, exactly like the brochure, instead of a flat
+           horizontal line that forced label position and target to match. -->
+      <div class="callout left" data-hotspot="seatbelt" tabindex="0" role="button" aria-haspopup="true" style="top:4%; left:2%;">
+        <div class="callout-dot" style="--float-delay:0"><img src="/images/leo-detail-seatbelt.jpg" alt=""></div>
+        <div><h3>Seat Belt<br>Buckle</h3><p>A single-anchorage seat belt buckle keeps the driver secured on the road.</p></div>
+      </div>
+
+      <div class="callout left" data-hotspot="lumbar" tabindex="0" role="button" aria-haspopup="true" style="top:24%; left:-2%;">
+        <div class="callout-dot" style="--float-delay:0.5"><img src="/images/leo-detail-lumbar.png" alt=""></div>
+        <div><h3>Lumbar<br>Support</h3><p>Optional mechanical lumbar support for personalized lower-back comfort.</p></div>
+      </div>
+
+      <div class="callout left" data-hotspot="recliner" tabindex="0" role="button" aria-haspopup="true" style="top:44%; left:-3%;">
+        <div class="callout-dot" style="--float-delay:1"><img src="/images/leo-detail-recliner.jpg" alt=""></div>
+        <div><h3>Seat Recline<br>Lever</h3><p>Adjusts the backrest angle for a comfortable driving position.</p></div>
+      </div>
+
+      <div class="callout left" data-hotspot="shock" tabindex="0" role="button" aria-haspopup="true" style="top:64%; left:4%;">
+        <div class="callout-dot" style="--float-delay:1.5"><img src="/images/leo-detail-shock.jpg" alt=""></div>
+        <div><h3>Weight Adjustment<br>Knob</h3><p>Tunes the mechanical suspension to the driver’s weight for a smoother ride.</p></div>
+      </div>
+
+      <div class="callout right" data-hotspot="armrest" tabindex="0" role="button" aria-haspopup="true" style="top:10%; right:0;">
+        <div class="callout-dot" style="--float-delay:0.3"><img src="/images/leo-detail-armrest.jpg" alt=""></div>
+        <div><h3>Adjustable<br>Armrest</h3><p>Optional adjustable armrest for extra comfort on longer drives.</p></div>
+      </div>
+
+      <div class="callout right" data-hotspot="pneumatic" tabindex="0" role="button" aria-haspopup="true" style="top:34%; right:-2%;">
+        <div class="callout-dot" style="--float-delay:0.9"><img src="/images/leo-detail-pneumatic.jpg" alt=""></div>
+        <div><h3>Mechanical<br>Suspension</h3><p>A mechanical suspension system keeps vibration transmission low for safe, comfortable driving.</p></div>
+      </div>
+
+      <div class="callout right" data-hotspot="boot" tabindex="0" role="button" aria-haspopup="true" style="top:58%; right:-1%;">
+        <div class="callout-dot" style="--float-delay:1.4"><img src="/images/leo-detail-pneumatic.jpg" alt=""></div>
+        <div><h3>Long Lasting<br>Suspension Cover</h3><p>A durable cover protects the suspension mechanism from wear over time.</p></div>
+      </div>
+
+      <div class="callout right" data-hotspot="towelbar" tabindex="0" role="button" aria-haspopup="true" style="top:80%; right:2%;">
+        <div class="callout-dot" style="--float-delay:1.9"><img src="/images/leo-detail-towelbar.jpg" alt=""></div>
+        <div><h3>Seat Sliding<br>with Towel Bar</h3><p>Smooth sliding mechanism guided by the towel bar rail.</p></div>
+      </div>
+
+      <svg class="callout-svg" viewBox="0 0 100 100" preserveAspectRatio="none"
+           style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:4">
+        <!-- x1,y1 = label dot's edge (near the text); x2,y2 = the feature's real
+             position on the model, estimated from the rendered screenshot. -->
+        <line x1="8"  y1="9"  x2="44" y2="17" class="callout-svg-line"/>
+        <line x1="4"  y1="29" x2="37" y2="34" class="callout-svg-line"/>
+        <line x1="3"  y1="49" x2="37" y2="46" class="callout-svg-line"/>
+        <line x1="10" y1="69" x2="38.5" y2="69" class="callout-svg-line"/>
+        <line x1="94" y1="15" x2="60" y2="41" class="callout-svg-line"/>
+        <line x1="96" y1="39" x2="52" y2="59" class="callout-svg-line"/>
+        <line x1="95" y1="63" x2="57" y2="63" class="callout-svg-line"/>
+        <line x1="92" y1="85" x2="61" y2="73" class="callout-svg-line"/>
+      </svg>
+    </div>
+    <style>
+      body.compact .callout-svg{display:none}
+      .callout-svg-line{stroke:var(--amber);stroke-width:0.15;stroke-dasharray:0.8,0.8;vector-effect:non-scaling-stroke}
+      .mobile-feature-list{display:none}
+      @media (max-width:900px){
+        .mobile-feature-list{display:grid;grid-template-columns:1fr 1fr;gap:14px;
+          margin-top:5vh;padding:0 6vw}
+        .mf-item{display:flex;flex-direction:column;align-items:center;text-align:center;
+          gap:10px;padding:16px 10px;background:var(--panel);border:1px solid var(--line);
+          border-radius:16px;cursor:pointer}
+        .mf-item img{width:48px;height:48px;border-radius:50%;object-fit:cover;
+          border:2px solid var(--amber)}
+        .mf-item span{font-size:12px;font-weight:600;color:var(--ink);line-height:1.3}
+      }
+      @media (max-width:480px){.mobile-feature-list{grid-template-columns:1fr}}
+      body.compact .mobile-feature-list{display:none}
+    </style>
+    <div class="mobile-feature-list" id="mobileFeatureList"></div>
+
+
+    
+    <div class="toggle-row">
+      <button id="compactBtn">Compact View</button>
+      <button id="expandedBtn" class="active">Expanded View</button>
+    </div>
+
+    <!-- Icon grid, matching the brochure's Functionally Superior / Paramount
+         Safety / Class Leading Comfort layout. Only icons confirmed present
+         in supremo_blue_icons_high_res are used — the brochure also shows
+         "Suspension Quick Dump" and "Seat Back Recliner Lever" icons that
+         weren't in that folder, so those two are left out here rather than
+         guessing a filename that doesn't exist. Add them and drop a line in
+         the matching category below if you export those two later. -->
+    <div class="icon-grid">
+      <div class="icon-group">
+        <h4 class="icon-group-title">Functionally Superior</h4>
+        <div class="icon-row">
+          <div class="icon-item"><img src="/images/leo-detail-mechanical-suspension.png" alt=""><span>Mechanical<br>Suspension</span></div>
+          <div class="icon-item"><img src="/images/leo-detail-fixed-shock-absorber.png" alt=""><span>Fixed Shock<br>Absorber</span></div>
+          <div class="icon-item"><img src="/images/leo-detail-fore-aft-travel.png" alt=""><span>Fore-Aft<br>Travel</span></div>
+          <div class="icon-item"><img src="/images/leo-detail-seat-height-adjustment.png" alt=""><span>Seat Height<br>Adjustment</span></div>
+        </div>
+      </div>
+      <div class="icon-group">
+        <h4 class="icon-group-title">Paramount Safety</h4>
+        <div class="icon-row">
+          <div class="icon-item"><img src="/images/leo-detail-seat-belt-buckle.png" alt=""><span>Seat Belt<br>Buckle</span></div>
+          <div class="icon-item"><img src="/images/leo-detail-seat-belt-reminder-switch.png" alt=""><span>Seat Belt<br>Reminder Switch</span></div>
+        </div>
+      </div>
+      <div class="icon-group">
+        <h4 class="icon-group-title">Class Leading Comfort</h4>
+        <div class="icon-row">
+          <div class="icon-item"><img src="/images/leo-detail-integrated-headrest.png" alt=""><span>Integrated<br>Headrest</span></div>
+          <div class="icon-item"><img src="/images/leo-detail-multi-zone-hardness.png" alt=""><span>Multi-zone<br>Hardness</span></div>
+          <div class="icon-item"><img src="/images/leo-detail-adjustable-backrest.png" alt=""><span>Adjustable<br>Backrest</span></div>
+          <div class="icon-item"><img src="/images/leo-detail-lumbar-support.png" alt=""><span>Lumbar<br>Support</span></div>
+          <div class="icon-item"><img src="/images/leo-detail-optional-armrest.png" alt=""><span>Optional<br>Armrest</span></div>
+          <div class="icon-item"><img src="/images/leo-detail-superior-fabric-faux-leather-options.png" alt=""><span>Superior Fabric &amp;<br>Faux Leather Options</span></div>
+          <div class="icon-item"><img src="/images/leo-detail-optimum-vibration-reduction.png" alt=""><span>Optimum Vibration<br>Reduction</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hotspot detail drawer: opens on click/keyboard-select of any .callout.
+       Content per hotspot lives in the hotspotDetails object in the script
+       below, not hardcoded here — the markup below is just the shell. -->
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <aside class="drawer" id="drawer" aria-hidden="true" aria-label="Feature detail">
+    <button class="drawer-close" id="drawerClose" aria-label="Close">&times;</button>
+    <div class="drawer-media"><div class="drawer-media-blur" id="drawerMediaBlur"></div><img id="drawerImg" src="" alt=""></div>
+    <div class="drawer-body">
+      <div class="drawer-eyebrow" id="drawerEyebrow">Leo</div>
+      <h3 id="drawerTitle"></h3>
+      <p id="drawerDesc"></p>
+      <ul class="drawer-specs" id="drawerSpecs"></ul>
+      <p class="drawer-note" id="drawerNote" style="display:none"></p>
+    </div>
+  </aside>
+
+  <div class="strip">
+    <div class="strip-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 20h6M12 4a4 4 0 0 0-4 4v3l-2 5h12l-2-5V8a4 4 0 0 0-4-4z"/></svg>
+      <div><h4>SUPERIOR COMFORT</h4><p>Ergonomic design for long hours on the road.</p></div>
+    </div>
+    <div class="strip-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z"/><path d="M9 12l2 2 4-4"/></svg>
+      <div><h4>ENHANCED SAFETY</h4><p>Integrated safety features for driver protection.</p></div>
+    </div>
+    <div class="strip-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="12" cy="5" rx="7" ry="2.5"/><path d="M5 5v5c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5V5M5 10v5c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5v-5M5 15v4c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5v-4"/></svg>
+      <div><h4>ADVANCED SUSPENSION</h4><p>Patented air suspension reduces fatigue.</p></div>
+    </div>
+    <div class="strip-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+      <div><h4>BUILT TO LAST</h4><p>High durability components for tough conditions.</p></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var compactBtn = document.getElementById('compactBtn');
+  var expandedBtn = document.getElementById('expandedBtn');
+  var expandBtn = document.getElementById('expandBtn');
+  function setMode(compact){
+    document.body.classList.toggle('compact', compact);
+    compactBtn.classList.toggle('active', compact);
+    expandedBtn.classList.toggle('active', !compact);
+  }
+  compactBtn.addEventListener('click', function(){ setMode(true); });
+  expandedBtn.addEventListener('click', function(){ setMode(false); });
+  expandBtn.addEventListener('click', function(){ setMode(document.body.classList.contains('compact') ? false : true); });
+})();
+
+// Coordinate picker for placing hotspots precisely. Add ?pick=1 to the URL
+// to enable — click anywhere on the model and the exact 3D position/normal
+// under your cursor prints to the console, pre-formatted to paste straight
+// into a hotspot button's data-position/data-normal attributes.
+if (new URLSearchParams(location.search).get('pick')) {
+  (function(){
+    var mv = document.getElementById('seatModel');
+    mv.addEventListener('click', function(ev){
+      var rect = mv.getBoundingClientRect();
+      var hit = mv.positionAndNormalFromPoint(ev.clientX - rect.left, ev.clientY - rect.top);
+      if (!hit) { console.log('No surface hit — click directly on the model.'); return; }
+      var p = hit.position, n = hit.normal;
+      console.log(
+        'data-position="' + p.x.toFixed(3) + ' ' + p.y.toFixed(3) + ' ' + p.z.toFixed(3) + '" ' +
+        'data-normal="' + n.x.toFixed(2) + ' ' + n.y.toFixed(2) + ' ' + n.z.toFixed(2) + '"'
+      );
+    });
+    console.log('Hotspot picker active — click any point on the model.');
+  })();
+}
+</script>
+
+<script>
+(function(){
+'use strict';
+
+// Descriptions and spec figures sourced from the real DURO brochure
+// (GatorCorp Leo Truck Seat spec sheet), paraphrased not quoted.
+var hotspotDetails = {
+  seatbelt: {
+    title: 'Seat Belt Buckle',
+    img: '/images/leo-detail-seatbelt.jpg',
+    desc: 'A single-anchorage seat belt buckle comes standard, keeping the driver secured throughout the drive.',
+    specs: [
+      ['Anchorage', '1-point provision']
+    ],
+    note: 'Can be developed on request.'
+  },
+  lumbar: {
+    title: 'Lumbar Support',
+    img: '/images/leo-detail-lumbar.jpg',
+    desc: 'Optional mechanical lumbar support lets the driver dial in lower-back comfort for long-haul travel.',
+    specs: [
+      ['Lumbar support', 'Mechanical, optional']
+    ]
+  },
+  recliner: {
+    title: 'Seat Recline Lever',
+    img: '/images/leo-detail-recliner.jpg',
+    desc: 'A recline lever adjusts the backrest angle, available with the Deluxe trim\u2019s adjustable backrest.',
+    specs: [
+      ['Backrest angle', '-14\u00b0 to +40\u00b0 (Deluxe)'],
+      ['Dump angle', '28\u00b0 (Deluxe)']
+    ]
+  },
+  shock: {
+    title: 'Weight Adjustment Knob',
+    img: '/images/leo-detail-shock.jpg',
+    desc: 'A mechanical weight-adjustment knob tunes the seat\u2019s mechanical suspension to the driver for a smoother ride.',
+    specs: [
+      ['Weight adjustment', 'Mechanical'],
+      ['Operator weight range', '50\u2013130kg']
+    ]
+  },
+  armrest: {
+    title: 'Adjustable Armrest',
+    img: '/images/leo-detail-armrest.jpg',
+    desc: 'An optional adjustable armrest adds comfort for the driver\u2019s arms on longer routes.',
+    specs: [
+      ['Armrest', 'Optional']
+    ],
+    note: 'Can be developed on request.'
+  },
+  pneumatic: {
+    title: 'Mechanical Suspension',
+    img: '/images/leo-detail-pneumatic.jpg',
+    desc: 'Leo uses a mechanical suspension system as standard, engineered for optimum vibration transmissibility on light and medium duty routes.',
+    specs: [
+      ['Suspension', 'Mechanical, standard'],
+      ['Suspension stroke', '75mm / 130mm']
+    ]
+  },
+  boot: {
+    title: 'Long Lasting Suspension Cover',
+    img: '/images/leo-detail-boot.jpg',
+    desc: 'A durable cover shields the mechanical suspension from dust and wear, extending its working life.',
+    specs: [
+      ['Suspension cover', 'Long-lasting']
+    ]
+  },
+  towelbar: {
+    title: 'Seat Sliding with Towel Bar',
+    img: '/images/leo-detail-towelbar.jpg',
+    desc: 'A smooth sliding mechanism, guided by the towel bar rail, lets the driver set their ideal distance from the controls.',
+    specs: [
+      ['Fore/aft travel', '200mm']
+    ]
+  }
+};
+
+var drawer = document.getElementById('drawer');
+var backdrop = document.getElementById('drawerBackdrop');
+var closeBtn = document.getElementById('drawerClose');
+var imgEl = document.getElementById('drawerImg');
+var imgBlur = document.getElementById('drawerMediaBlur');
+var titleEl = document.getElementById('drawerTitle');
+var descEl = document.getElementById('drawerDesc');
+var specsEl = document.getElementById('drawerSpecs');
+var noteEl = document.getElementById('drawerNote');
+var lastFocused = null;
+
+function openDrawer(key){
+  var d = hotspotDetails[key];
+  if (!d) return;
+  imgEl.src = d.img;
+  imgBlur.style.backgroundImage = 'url(' + d.img + ')';
+  imgEl.alt = d.title;
+  titleEl.textContent = d.title;
+  descEl.textContent = d.desc;
+  specsEl.innerHTML = '';
+  d.specs.forEach(function(row){
+    var li = document.createElement('li');
+    li.innerHTML = '<span>' + row[0] + '</span><span>' + row[1] + '</span>';
+    specsEl.appendChild(li);
+  });
+  if (d.note){
+    noteEl.textContent = d.note;
+    noteEl.style.display = 'block';
+  } else {
+    noteEl.textContent = '';
+    noteEl.style.display = 'none';
+  }
+  drawer.classList.add('open');
+  backdrop.classList.add('open');
+  drawer.setAttribute('aria-hidden', 'false');
+  closeBtn.focus();
+}
+
+function closeDrawer(){
+  drawer.classList.remove('open');
+  backdrop.classList.remove('open');
+  drawer.setAttribute('aria-hidden', 'true');
+  if (lastFocused) lastFocused.focus();
+}
+
+document.querySelectorAll('.callout[data-hotspot]').forEach(function(el){
+  el.addEventListener('click', function(){
+    lastFocused = el;
+    openDrawer(el.getAttribute('data-hotspot'));
+  });
+  el.addEventListener('keydown', function(ev){
+    if (ev.key === 'Enter' || ev.key === ' '){
+      ev.preventDefault();
+      lastFocused = el;
+      openDrawer(el.getAttribute('data-hotspot'));
+    }
+  });
+});
+
+closeBtn.addEventListener('click', closeDrawer);
+backdrop.addEventListener('click', closeDrawer);
+document.addEventListener('keydown', function(ev){
+  if (ev.key === 'Escape' && drawer.classList.contains('open')) closeDrawer();
+});
+
+// Mobile feature list — same 8 features as the desktop callouts, same
+// drawer on click, just laid out as a simple grid instead of floating
+// labels (which don't have room to work on narrow screens).
+var mobileList = document.getElementById('mobileFeatureList');
+if (mobileList) {
+  Object.keys(hotspotDetails).forEach(function(key){
+    var d = hotspotDetails[key];
+    var item = document.createElement('div');
+    item.className = 'mf-item';
+    item.setAttribute('tabindex', '0');
+    item.setAttribute('role', 'button');
+    item.innerHTML = '<img src="' + d.img + '" alt=""><span>' + d.title + '</span>';
+    item.addEventListener('click', function(){ lastFocused = item; openDrawer(key); });
+    item.addEventListener('keydown', function(ev){
+      if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); lastFocused = item; openDrawer(key); }
+    });
+    mobileList.appendChild(item);
+  });
+}
+})();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('/sw.js').catch(function(err){
+      console.warn('Service worker registration failed:', err);
+    });
+  });
+}
+</script>
+</body>
+</html>
