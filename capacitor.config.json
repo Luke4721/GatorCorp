@@ -1,0 +1,9 @@
+{
+  "appId": "com.gatorcorp.seating",
+  "appName": "GatorCorp",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  }
+}
