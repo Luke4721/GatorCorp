@@ -15,6 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preload" as="fetch" href="/images/supremo-seat-v4.glb" crossorigin>
 <style>
 :root{
   --paper:#f1f0ec; --panel:#fbfaf8; --ink:#15171b; --grey:#8a8d94;
@@ -33,156 +34,14 @@ a{color:inherit}
 
 /* ---------- liquid-glass pill nav (dead center of top) ---------- */
 .pill-nav{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:60;
-  display:flex;align-items:center;padding:8px 10px 8px 20px;border-radius:999px;
+  display:flex;align-items:center;padding:8px 20px;border-radius:999px;
   background:rgba(251,250,248,.95);
   -webkit-backdrop-filter:blur(18px) saturate(180%);
   backdrop-filter:blur(18px) saturate(180%);
   border:1px solid rgba(255,255,255,.7);
-  box-shadow:0 10px 30px rgba(21,23,27,.10), inset 0 1px 0 rgba(255,255,255,.85);
-  transition:background .35s, box-shadow .35s}
-.pill-nav.scrolled{background:rgba(251,250,248,.98);
-  box-shadow:0 14px 38px rgba(21,23,27,.16), inset 0 1px 0 rgba(255,255,255,.9)}
-.pill-logo{font-size:12px;font-weight:600;letter-spacing:.22em;text-decoration:none;
-  margin-right:14px;white-space:nowrap}
-.pill-logo b{color:var(--amber);font-weight:600}
-.pill-links{position:relative;display:flex;gap:2px}
-.pill-links a{position:relative;z-index:1;font-size:11px;font-weight:500;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--grey);text-decoration:none;padding:8px 15px;
-  border-radius:999px;transition:color .25s}
-.pill-links a:hover,.pill-links a[aria-current]{color:var(--ink)}
-.pill-ind{position:absolute;top:0;left:0;height:100%;width:0;border-radius:999px;
-  background:rgba(21,23,27,.07);border:1px solid rgba(21,23,27,.08);
-  opacity:0;transition:opacity .4s}
-.pill-ind.on{opacity:1}
-.pill-ind.move{transition:transform .5s cubic-bezier(.3,1.25,.35,1),
-  width .5s cubic-bezier(.3,1.25,.35,1), opacity .4s}
-@media (prefers-reduced-motion:reduce){.pill-ind.move{transition:opacity .4s}}
-@media (max-width:640px){
-  .pill-nav{padding:7px 8px 7px 16px}
-  .pill-logo{margin-right:8px;font-size:11px}
-  .pill-links a{padding:7px 10px;font-size:10px;letter-spacing:.12em}
-}
-@media (max-width:430px){.pill-links a[data-sec="engineering"]{display:none}}
-
-/* ---------- mobile hamburger overflow for pill nav ---------- */
-.pill-hamburger{display:none;background:none;border:none;cursor:pointer;
-  padding:8px;margin-left:2px;align-items:center;justify-content:center}
-.pill-hamburger span{display:block;width:18px;height:2px;background:var(--ink);
-  margin:4px 0;border-radius:1px;transition:transform .3s,opacity .3s}
-.pill-hamburger.open span:nth-child(1){transform:translateY(6px) rotate(45deg)}
-.pill-hamburger.open span:nth-child(2){opacity:0}
-.pill-hamburger.open span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
-.pill-mobile-menu{position:fixed;top:64px;left:50%;
-  transform:translateX(-50%) translateY(-8px);width:min(280px,86vw);
-  background:rgba(251,250,248,.98);-webkit-backdrop-filter:blur(18px) saturate(180%);
-  backdrop-filter:blur(18px) saturate(180%);border:1px solid rgba(255,255,255,.7);
-  border-radius:18px;box-shadow:0 14px 38px rgba(21,23,27,.16);padding:10px;
-  z-index:59;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
-.pill-mobile-menu.open{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
-.pill-mobile-menu a{display:block;padding:12px 14px;font-size:13px;font-weight:500;
-  letter-spacing:.08em;text-transform:uppercase;color:var(--ink);text-decoration:none;
-  border-radius:10px}
-.pill-mobile-menu a:hover,.pill-mobile-menu a:active{background:rgba(21,23,27,.06)}
-@media (max-width:600px){
-  .pill-links{display:none}
-  .pill-hamburger{display:flex}
-}
-
-/* ---------- hero mask ---------- */
-.hero-mask {
-  position: absolute;
-  inset: 0;
-  z-index: 50;
-  background: url(/images/hero-bg.jpg) center center / cover no-repeat;
-  overflow: hidden;
-  pointer-events: none;
-}
-.hero-dots{display:none;}
-.hero-dark-panel{display:none;}
-.hero-blob{display:none;}
-.hero-floor-glow{display:none;}
-.hero-ring{display:none;}
-.hero-ring-1{width:38vw;height:10vw}
-.hero-ring-2{width:26vw;height:7vw;border-style:dashed}
-.hero-ring-base{display:none;}
-.hero-ref{font-size:11px;letter-spacing:0.1em;color:var(--grey);display:flex;align-items:center;gap:8px;position:absolute;bottom:26vh;left:6vw;z-index:2}
-.hero-ref .tick{width:16px;height:2px;background:var(--amber);display:inline-block}
-.hero-copy{font-size:14px;color:var(--ink);opacity:0.75;max-width:36ch;line-height:1.5;margin:14px 0}
-.hero-divider{width:32px;height:2px;background:var(--amber);margin-bottom:14px}
-.hero-cta-row{display:flex;align-items:center;gap:32px;flex-wrap:wrap;pointer-events:auto}
-.hero-cta{display:inline-flex;align-items:center;gap:10px;padding:14px 22px;background:var(--amber);color:var(--ink);font-weight:700;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;border-radius:999px;text-decoration:none}
-.hero-features{display:flex;gap:20px}
-.hero-feature{display:flex;flex-direction:column;align-items:center;text-align:center;width:70px}
-.hero-feature .ico{width:22px;height:22px;color:var(--ink);margin-bottom:8px}
-.hero-feature span{font-size:9px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink);line-height:1.3}
-.hero-glass {
-  display: none;
-}
-.mask-text-wrapper {
-  display: none;
-  position: absolute;
-  z-index: 0;
-  top: 0;
-  bottom: 0;
-  left: 2vw;
-  align-items: center;
-  width: 100%;
-}
-.mask-text {
-  font-size: clamp(4rem, 9.5vw, 15rem);
-  font-weight: 800;
-  letter-spacing: -0.05em;
-  margin: 0;
-  background: linear-gradient(135deg, #061947 0%, #e69d00 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  opacity: 0.25;
-}
-.hero-top-left {
-  position: absolute;
-  top: 22vh;
-  left: 6vw;
-  z-index: 4;
-}
-.hero-mask .hero-overline {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-    margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.tick{width:16px;height:2px;background:var(--amber);display:inline-block}
-.hero-mask .hero-heading {
-  font-size: clamp(1.8rem, 3.5vw, 3rem);
-  font-weight: 700;
-  line-height: 1.05;
-  letter-spacing: -0.03em;
-  }
-.hero-mask .hl-dark { color: var(--ink); }
-.hero-mask .hl-accent { color: var(--amber); }
-.hero-product-img{
-  position:absolute; bottom:0; right:16vw;
-  width:auto; height:clamp(65vh,90vh,95vh); max-width:62vw;
-  z-index:3; opacity:0; pointer-events:none;
-  transition:opacity 1s ease;
-  animation:idleSway 5s ease-in-out infinite alternate;
-  transform-origin:bottom center;
-}
-.hero-product-img.active{ opacity:1; }
-.hero-product-img[data-name="Duro"]{ height:clamp(45vh,58vh,62vh); }
-.hero-product-glow {
-  position: absolute;
-  bottom: 5vh;
-  right: 22vw;
-  width: 60vw;
-  height: 60vw;
-  z-index: 2;
-  background: radial-gradient(circle, rgba(201,138,18,0.3) 0%, transparent 70%);
-  pointer-events: none;
-}
+  box-shadow:0 10px 30px rgba(21,23,27,.10), inset 0 1px 0 rgba(255,255,255,.85)}
+.pill-logo{display:flex}
+@media (max-width:640px){.pill-nav{padding:7px 16px}}
 
 .hero-deco-sys {
   position: absolute;
@@ -236,25 +95,6 @@ a{color:inherit}
   opacity: 0.4;
 }
 
-.hero-product-shadow {
-  position: absolute;
-  bottom: 2vh;
-  right: 20vw;
-  width: 30vw;
-  height: 50px;
-  background: radial-gradient(ellipse at center, rgba(0,0,0,0.5), rgba(0,0,0,0) 70%);
-  filter: blur(10px);
-  z-index: 2;
-  pointer-events: none;
-}
-@keyframes idleSway {
-  0% { transform: scale(1) translate(0, 0); }
-  100% { transform: scale(1.02) translate(-1%, -1%); }
-}
-.hero-name {
-  position: absolute; left: 6vw; bottom: 6vh; z-index: 2;
-  font-size: clamp(4rem, 10vw, 9rem); font-weight: 800;
-  line-height: 0.9; letter-spacing: -0.04em; color: var(--ink); }
 .hero-bottom-right {
   position: absolute;
   bottom: 22vh;
@@ -363,6 +203,30 @@ a{color:inherit}
   .seat-strip .thumb{padding:5px 8px 6px}
   .seat-strip .thumb img{width:36px;height:26px}
 }
+/* Tablet range (e.g. a Fold5's inner screen, ~717-900px) falls between the
+   640px phone breakpoint and full desktop width, so it was getting
+   unmodified desktop offsets — right:6vw / calc(6vw+150px) — with less
+   width to work with than desktop assumes, causing the seat-strip's own
+   thumbnail images to sit across the "Explore {Seat}" / "Full details"
+   text. Same stacking fix as mobile, just less compressed since there's
+   more room here than on a phone. */
+@media (max-width:1024px) and (min-width:641px){
+  .seat-strip{bottom:20vh}
+  #fdLink{right:5vw;bottom:9vh}
+  #stageExploreBtn{right:5vw;bottom:13.5vh;left:auto}
+}
+/* Gallery footer cluster (spec counter + both explore/details links) uses
+   fixed right:6vw / calc(6vw + 150px) offsets sized for desktop's spare
+   width — on a phone these collide with each other and with the seat-strip
+   above them. Per feedback: stop trying to fit them side-by-side in
+   cramped space, stack them on their own lines instead. */
+@media (max-width:640px){
+  .counter{bottom:5.5vh;left:5vw;font-size:11px}
+  .seat-strip{bottom:12vh}
+  .fd{right:5vw;bottom:21vh;left:auto}
+  #stageExploreBtn{right:5vw;bottom:25.5vh;left:auto}
+  .spec-stack{transform:scale(0.82);transform-origin:bottom center}
+}
 .face > model-viewer{height:100%;width:100%;display:block;transform:scale(1.2) translateY(5%);}
 .face .fshadow{position:absolute;left:50%;bottom:-10%;transform:translateX(-50%);
   width:80%;height:40px;
@@ -371,7 +235,7 @@ a{color:inherit}
 .face .ftag, .cap {display:none}
 
 /* flat overlays — 1:1 Dribbble alignment */
-.head{position:absolute;top:16vh;left:50%;transform:translateX(-50%);z-index:6;text-align:center;width:100%}
+.head{position:absolute;top:20vh;left:50%;transform:translateX(-50%);z-index:6;text-align:center;width:100%}
 .head-in{position:relative;height:clamp(96px,15vh,160px);display:flex;justify-content:center}
 .hb{position:absolute;top:0;opacity:0;transform:translateY(15px);
   transition:opacity .5s,transform .5s cubic-bezier(0.2,0.8,0.2,1);pointer-events:none}
@@ -410,6 +274,61 @@ a{color:inherit}
 .arrows button:nth-child(2){background:var(--ink);color:white}
 .arrows button:nth-child(2) svg{stroke:white}
 .arrows button:hover{background:rgba(21,23,27,0.05)}
+
+/* ================================================================
+   Below ~14" tablet width: stack the hero and carousel-header into
+   normal document flow instead of the absolute-overlay + scroll-pinned
+   layout used on desktop. This is the actual fix for every seat/text
+   overlap issue reported on phone and tablet — there was never enough
+   spare width for an overlay approach below this point, so no amount of
+   resizing either side was ever going to stop them fighting for space.
+   Everything from Field Ready onward is untouched — this block only
+   targets the hero + the exposed carousel header content.
+   ================================================================ */
+@media (max-width:1280px){
+  .gallery{height:auto;min-height:0;overflow:visible;display:flex;
+    flex-direction:column;position:relative}
+
+  /* No hero to hand off from anymore — .scene is just the first block on
+     the page. Was 90svh, which left almost nothing for the name/thumbnail
+     strip/buttons below it, forcing a scroll to reach them — shrunk so
+     the whole stack (seat, name, strip, explore button) fits one screen.
+     Seat's own positioning inside .scene (ring, stage, model) is
+     untouched — this only changes how tall the box around it is. */
+  .scene{position:relative;inset:auto;height:68svh;order:0}
+  .gallery-bg{position:absolute}
+
+  .head{position:static;top:auto;left:auto;transform:none;order:3;margin:4vh 0 0;min-height:7vh}
+  .hb h2{font-size:clamp(1.8rem,4.5vw,2.8rem)}
+  .seat-strip{position:static;left:auto;bottom:auto;transform:none;order:4;
+    margin:0.5vh auto;justify-content:center;max-width:92vw}
+  .foot{position:static;bottom:auto;order:5;margin:0.8vh 0;
+    flex-direction:column;align-items:center;gap:1vh}
+  /* .specset was still position:absolute with no left/right/centering of
+     its own — harmless when .foot was absolute+centered on desktop, but
+     once .foot went static this had nothing to center it, so it rendered
+     pinned to its own default flow position (the left edge) and clipped.
+     Drop the absolute crossfade positioning here; just show/hide the
+     active one as a normal centered flex row. */
+  .spec-stack{position:static;height:auto;margin:0 auto;max-width:100%}
+  .specset{position:static;display:none;justify-content:center;
+    width:100%;gap:8vw;transform:none;opacity:1}
+  .specset.on{display:flex}
+  .counter{position:static;left:auto;bottom:auto;order:6;text-align:center;margin:0.5vh 0}
+  .fd{position:static;right:auto;bottom:auto;order:7;text-align:center;margin:0.5vh auto;display:block;width:fit-content}
+  #stageExploreBtn{position:static;right:auto;bottom:auto;left:auto;order:7;
+    text-align:center;margin:0.5vh auto;display:block;width:fit-content}
+  .arrows{display:none}
+}
+/* Tablet only (not phone) — the seat/stage visuals sit slightly right of
+   the ring background's visual center on this range specifically. Small
+   nudge left; flagging this as an approximation since I can't render the
+   live composition to verify the exact amount — adjust the translateX
+   values here if it's not quite enough or slightly too much. */
+@media (min-width:641px) and (max-width:1280px){
+  .stage{transform:translateX(-4vw)}
+}
+
 .arrows button:nth-child(2):hover{background:var(--amber)}
 .arrows button:active{transform:scale(.93)}
 .arrows svg{width:18px;height:18px;stroke:var(--ink);stroke-width:2;fill:none;
@@ -418,172 +337,12 @@ a{color:inherit}
 .counter{position:absolute;bottom:8vh;left:7.2vw;z-index:6;font-size:13px;font-weight:600;color:var(--ink)}
 .counter .tot, .pbar{display:none}
 
-/* ---------- engineering ---------- */
-/* ---------- Field Ready (engineering advantage cards) ---------- */
-.field-ready{padding:16vh 6vw}
-.field-ready-head{display:flex;justify-content:space-between;align-items:flex-end;
-  gap:6vw;flex-wrap:wrap;border-top:1px solid var(--ink);padding-top:20px;margin-bottom:6vh}
-.field-ready-head em{font-style:normal;font-size:11px;letter-spacing:.25em;color:var(--amber)}
-.field-ready-head h2{font-size:clamp(2rem,4.5vw,3.2rem);font-weight:600;letter-spacing:-.03em;margin-top:10px}
-.field-ready-head p{font-size:14px;color:var(--grey);max-width:34ch;line-height:1.6}
-.fr-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-.fr-card{position:relative;border-radius:16px;overflow:hidden;min-height:340px;
-  display:flex;flex-direction:column;justify-content:flex-end;padding:24px;
-  background-size:cover;background-position:center;color:#fff;
-  box-shadow:0 24px 48px rgba(21,23,27,.24)}
-.fr-card::before{content:'';position:absolute;inset:0;
-  background:linear-gradient(to top,rgba(10,10,12,.92) 0%,rgba(10,10,12,.5) 50%,rgba(10,10,12,.12) 100%)}
-.fr-card > *{position:relative;z-index:1}
-.fr-num{font-size:11px;letter-spacing:.2em;color:var(--amber);margin-bottom:auto}
-.fr-icon{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);
-  display:flex;align-items:center;justify-content:center;margin-bottom:14px}
-.fr-icon svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:1.5}
-.fr-card h3{font-size:1.3rem;font-weight:600;margin-bottom:6px}
-.fr-card p{font-size:13px;color:rgba(255,255,255,.85);line-height:1.6;margin-bottom:14px;max-width:28ch}
-.fr-card a{font-size:12px;font-weight:600;letter-spacing:.05em;color:var(--amber);
-  text-decoration:none;display:inline-flex;align-items:center;gap:6px}
-.fr-card a:hover{color:#fff}
-@media (max-width:1100px){
-  .fr-grid{grid-template-columns:repeat(2,1fr);gap:20px}
-  .fr-card{min-height:300px}
-}
-@media (max-width:640px){
-  .fr-grid{grid-template-columns:1fr;gap:18px}
-  .fr-card{min-height:320px;padding:22px}
-  .fr-card p{max-width:32ch}
-}
-
-/* ---------- Built for Every Terrain (staggered filmstrip — deliberately NOT a card grid) ---------- */
-.terrain{padding:14vh 6vw 4vh}
-.terrain-head{display:flex;justify-content:space-between;align-items:flex-end;
-  gap:6vw;flex-wrap:wrap;margin-bottom:8vh}
-.terrain-head em{font-style:normal;font-size:11px;letter-spacing:.25em;color:var(--amber)}
-.terrain-head h2{font-size:clamp(2rem,4.5vw,3.2rem);font-weight:600;letter-spacing:-.03em;margin-top:10px}
-.terrain-head p{font-size:14px;color:var(--grey);max-width:34ch;line-height:1.6}
-.terrain-strip{display:flex;gap:22px;overflow-x:auto;scroll-snap-type:x proximity;
-  padding:36px 2px 28px;margin:-30px -6vw 0;padding-left:6vw;padding-right:6vw;
-  -webkit-overflow-scrolling:touch;
-  -webkit-mask-image:linear-gradient(to right, black 0%, black 94%, transparent 100%);
-  mask-image:linear-gradient(to right, black 0%, black 94%, transparent 100%)}
-.terrain-strip::-webkit-scrollbar{display:none}
-.terrain-strip{scrollbar-width:none}
-.terrain-item{position:relative;flex:0 0 auto;width:min(60vw,360px);aspect-ratio:3/4;
-  border-radius:14px;overflow:hidden;background-size:cover;background-position:center;
-  scroll-snap-align:start;box-shadow:0 22px 44px rgba(21,23,27,.26)}
-.terrain-item:nth-child(2){margin-top:56px}
-.terrain-item:nth-child(4){margin-top:28px}
-.terrain-item::before{content:'';position:absolute;inset:0;
-  background:linear-gradient(to top,rgba(10,10,12,.85),rgba(10,10,12,0) 55%)}
-.terrain-item .cap{position:absolute;left:0;right:0;bottom:0;z-index:1;padding:20px;
-  color:#fff;font-size:14px;font-weight:600;letter-spacing:.01em}
-.terrain-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:2vh;
-  padding-top:4vh;border-top:1px solid var(--line)}
-.terrain-stat b{display:block;font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;
-  color:var(--ink);letter-spacing:-.02em}
-.terrain-stat b.accent{color:var(--amber)}
-.terrain-stat span{font-size:12px;color:var(--grey);letter-spacing:.03em}
-@media (max-width:900px){.terrain-stats{grid-template-columns:repeat(2,1fr)}}
-@media (max-width:640px){.terrain-item{width:76vw}.terrain-item:nth-child(2){margin-top:32px}
-  .terrain-item:nth-child(4){margin-top:16px}}
-
-
-/* ---------- quote / testimonial band ---------- */
-.quote-band{position:relative;margin-top:10vh;height:clamp(280px,32vw,420px);display:flex;
-  align-items:flex-end;background-size:cover;background-position:center;color:#fff;
-  padding:4vh 6vw;overflow:hidden}
-.quote-band::before{content:'';position:absolute;inset:0;
-  background:linear-gradient(to top,rgba(10,10,12,.72),rgba(10,10,12,.1) 65%)}
-.quote-band-in{position:relative;z-index:1;max-width:52ch}
-.quote-mark{font-size:2rem;color:var(--amber);line-height:1;margin-bottom:6px}
-.quote-band h3{font-size:clamp(1.15rem,2.1vw,1.6rem);font-weight:600;line-height:1.3;letter-spacing:-.02em}
-.quote-band img{position:relative;z-index:1;height:22px;margin-top:14px;opacity:.85}
-@media (max-width:600px){.quote-band{height:clamp(220px,60vw,320px)}}
 
 /* ---------- outro / About Us (compact single panel) ---------- */
-.outro{padding:8vh 6vw 5vh;background:var(--panel)}
+.outro{padding:8vh 6vw 5vh;background:var(--paper)}
 .legal{margin-top:6vh;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
   font-size:10px;letter-spacing:.14em;color:var(--grey);text-transform:uppercase}
 .legal .note{color:#b0ada5;text-transform:none;letter-spacing:0}
-
-.au-row{display:grid;grid-template-columns:0.95fr 1.05fr;gap:6vw;align-items:center;
-  max-width:1300px;margin:0 auto;padding:2vh 6vw 4vh}
-
-.au-intro{text-align:left}
-.au-overline{font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;
-  color:var(--amber);margin-bottom:14px}
-.au-intro h2{font-size:clamp(1.9rem,3.2vw,2.5rem);font-weight:800;letter-spacing:-.03em;
-  line-height:1.15;color:var(--ink)}
-.au-accent{color:var(--amber)}
-.au-lede{font-size:14px;color:var(--grey);line-height:1.75;margin-top:18px;max-width:46ch}
-
-.au-stats-band{display:grid;grid-template-columns:repeat(4,1fr);
-  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
-  padding:3.5vh 6vw;margin:0 6vw}
-.au-stat{text-align:center;padding:0 1.5vw;position:relative}
-.au-stat:not(:last-child)::after{content:'';position:absolute;right:0;top:12%;bottom:12%;
-  width:1px;background:var(--line)}
-.au-num{font-size:clamp(1.7rem,3vw,2.3rem);font-weight:800;color:var(--ink);
-  letter-spacing:-.02em;line-height:1}
-.au-lbl{font-size:11px;font-weight:600;color:var(--grey);text-transform:uppercase;
-  letter-spacing:.05em;margin-top:8px}
-.au-stat{opacity:0;transform:translateY(20px);transition:opacity .7s ease,transform .7s ease}
-.au-stat.au-in{opacity:1;transform:translateY(0)}
-
-.au-tagline-band{text-align:center;padding:4vh 6vw 1vh}
-.au-tagline{display:inline-block;font-size:clamp(1rem,1.7vw,1.25rem);font-weight:700;
-  color:var(--ink);line-height:1.5;border-left:3px solid var(--amber);padding-left:20px;
-  text-align:left}
-
-.au-map-feature{display:flex;flex-direction:column;gap:2.5vh;align-items:flex-start}
-.au-map-wrap{position:relative;width:100%;max-width:420px;margin:0 0 0 auto}
-.au-india-map{width:100%;display:block}
-
-.au-hotspot{position:absolute;transform:translate(-50%,-50%);display:flex;align-items:center;
-  gap:6px;background:none;border:none;padding:4px;cursor:pointer;z-index:2}
-.au-hotspot .dot{width:9px;height:9px;border-radius:50%;background:var(--amber);
-  box-shadow:0 0 0 0 rgba(201,138,18,.55);flex-shrink:0;
-  animation:hotspotPulse 2.2s ease-out infinite}
-.au-hotspot:nth-child(3) .dot{animation-delay:.3s}
-.au-hotspot:nth-child(4) .dot{animation-delay:.6s}
-.au-hotspot:nth-child(5) .dot{animation-delay:.9s}
-.au-hotspot:nth-child(6) .dot{animation-delay:1.2s}
-.au-hotspot:nth-child(7) .dot{animation-delay:1.5s}
-@keyframes hotspotPulse{
-  0%{box-shadow:0 0 0 0 rgba(201,138,18,.55)}
-  70%{box-shadow:0 0 0 10px rgba(201,138,18,0)}
-  100%{box-shadow:0 0 0 0 rgba(201,138,18,0)}
-}
-.au-hotspot .label{font-size:9.5px;font-weight:700;letter-spacing:.02em;color:var(--ink);
-  background:rgba(251,250,248,.85);padding:2px 6px;border-radius:5px;white-space:nowrap;
-  opacity:.85;transition:opacity .2s,background .2s}
-.au-hotspot:hover .label,.au-hotspot.active .label{opacity:1;background:var(--amber);color:#fff}
-.au-hotspot:hover .dot,.au-hotspot.active .dot{background:var(--ink)}
-
-.au-map-panel{position:relative;min-height:70px;width:100%;max-width:420px;margin-left:auto}
-.au-where-title{font-size:10px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;
-  color:var(--amber);margin-bottom:8px}
-.au-map-hint{font-size:11.5px;color:var(--grey)}
-.au-map-panel-city{display:flex;align-items:center;gap:14px}
-.au-map-panel-city img{width:72px;height:90px;object-fit:cover;border-radius:8px;
-  box-shadow:0 10px 22px rgba(21,23,27,.16);flex-shrink:0}
-.au-map-panel-name{font-size:clamp(1rem,1.6vw,1.2rem);font-weight:800;color:var(--ink);
-  letter-spacing:-.02em}
-.au-map-panel-sub{font-size:11px;color:var(--grey);margin-top:2px;letter-spacing:.03em}
-@media (max-width:900px){
-  .au-row{grid-template-columns:1fr;text-align:center;padding:2vh 6vw 3vh;gap:4vh}
-  .au-intro{text-align:center}
-  .au-lede{margin-left:auto;margin-right:auto}
-  .au-stats-band{grid-template-columns:repeat(2,1fr);gap:5vh 0;margin:0 6vw}
-  .au-stat:nth-child(2)::after{display:none}
-  .au-map-feature{align-items:center}
-  .au-map-wrap{max-width:320px;margin:0 auto}
-  .au-map-panel{max-width:340px;margin:0 auto;text-align:center}
-  .au-tagline{border-left:none;border-top:3px solid var(--amber);padding-left:0;padding-top:18px;
-    max-width:40ch;margin:0 auto;text-align:center}
-  .au-map-hint{text-align:center}
-  .au-map-panel-city{justify-content:center}
-}
-@media (max-width:480px){.au-hotspot .label{font-size:8.5px;padding:1px 4px}}
 
 @media (max-width:640px){
   :root{--sw:92vw;--sh:300px;--sd:250px}
@@ -596,16 +355,11 @@ a{color:inherit}
   .eng{grid-template-columns:1fr;gap:8vh;padding:12vh 6vw}
 }
 
-/* .reels rules removed — section replaced by .terrain and .quote-band */
-
 
 /* mobile nav overflow fix + safe-area for notch/PWA fullscreen */
 body{padding-top:env(safe-area-inset-top)}
 @media (max-width:480px){
   .pill-nav{max-width:92vw}
-  .pill-links{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex-wrap:nowrap}
-  .pill-links::-webkit-scrollbar{display:none}
-  .pill-links a{flex-shrink:0}
 }
 </style>
 <style>
@@ -661,81 +415,14 @@ body{padding-top:env(safe-area-inset-top)}
 </div>
 
 
-<div class="nav-left" style="position:fixed; top:28px; left:6vw; z-index:60; display:flex; align-items:center; gap:32px; color:var(--ink);">
-  <span style="font-weight:600; font-size:15px; letter-spacing:-0.03em;">GATORCORP</span>
-</div>
-<div class="nav-right" style="position:fixed; top:28px; right:6vw; z-index:60; display:flex; align-items:center; gap:32px; color:var(--ink); font-size:12px; font-weight:500;">
-  <span style="display:flex; align-items:center; gap:6px; cursor:pointer;">ENG <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"><path d="M6 9l6 6 6-6"/></svg></span>
-  <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="1.5" fill="none" style="cursor:pointer;"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
-</div>
-
 <nav class="pill-nav" aria-label="Primary">
-  <a class="pill-logo" href="#top">
+  <a class="pill-logo" href="/index.html" style="margin:0 auto">
     <img src="/images/logo-new.png" alt="GatorCorp" style="height:20px; width:auto; display:block;" />
   </a>
-  <span class="pill-links" id="pillLinks">
-    <span class="pill-ind" id="pillInd" aria-hidden="true"></span>
-    <a href="#products" data-sec="products">Products</a>
-    <a href="/technology.html">Technology</a>
-    <a href="/sustainability.html">Sustainability</a>
-    <a href="/careers.html">Careers</a>
-    <a href="/contact.html">Contact</a>
-  </span>
-  <button class="pill-hamburger" id="pillHamburger" aria-label="Menu" aria-expanded="false" aria-controls="pillMobileMenu" type="button">
-    <span></span><span></span><span></span>
-  </button>
 </nav>
-<div class="pill-mobile-menu" id="pillMobileMenu" role="menu">
-  <a href="#products" data-sec="products">Products</a>
-  <a href="/technology.html">Technology</a>
-  <a href="/sustainability.html">Sustainability</a>
-  <a href="/careers.html">Careers</a>
-  <a href="/contact.html">Contact</a>
-</div>
 
 
 <section class="gallery" id="products" aria-label="GatorCorp seat models">
-  <div class="hero-mask">
-    <div class="mask-text-wrapper">
-      <h1 class="mask-text">GAT<span class="zoom-target">O</span>RCORP</h1>
-    </div>
-    <div class="hero-glass"></div>
-    <div class="hero-dots"></div>
-    <div class="hero-blob"></div>
-    <div class="hero-floor-glow"></div>
-    <div class="hero-dark-panel"></div>
-    <div class="hero-top-left">
-      <div class="hero-overline"><span class="tick"></span>TRUCK SEATING SYSTEMS</div>
-      <div class="hero-heading">
-        <span class="hl-dark">Built for Driver's Pride.</span><br>
-        <span class="hl-accent">Engineered for Driver's Comfort.</span>
-      </div>
-      <p class="hero-copy"></p>
-      <div class="hero-divider"></div>
-      <div class="hero-cta-row">
-        <div class="hero-features">
-          <div class="hero-feature"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3v1.5L15 6l-3 1.5 3 1.5-3 1.5 3 1.5-3 1.5 3 1.5-3 1.5v1.5"/></svg><span></span></div>
-          <div class="hero-feature"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z"/><path d="M9 12l2 2 4-4"/></svg><span></span></div>
-          <div class="hero-feature"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M4 12h3l2-6 4 12 2-6h5"/></svg><span></span></div>
-        </div>
-      </div>
-    </div>
-    <div class="hero-ref"><span class="tick"></span>REF-01 &nbsp; SCALE 1:4</div>
-    <div class="hero-ring-base"></div>
-    <div class="hero-ring hero-ring-1"></div>
-    <div class="hero-ring hero-ring-2"></div>
-    <div class="hero-product-glow"></div>
-    <div class="hero-product-shadow"></div>
-    <div class="hero-product-stack" style="position:absolute; inset:0; z-index:3; pointer-events:none;">
-<img src="/images/Supremo.png" class="hero-product-img active" data-name="Supremo" alt="Supremo" />
-      <img src="/images/Ultimo.png" class="hero-product-img" data-name="Ultimo" alt="Ultimo" />
-      <img src="/images/Leo.png" class="hero-product-img" data-name="Leo" alt="Leo" />
-      <img src="/images/Duro.png" class="hero-product-img" data-name="Duro" alt="Backhoe Loader" />
-      <img src="/images/Excavator.png" class="hero-product-img" data-name="Boss" alt="Excavator" />
-      <img src="/images/Tractor.png" class="hero-product-img" data-name="Ergo" alt="Tractor" />
-      </div>
-    <div class="hero-name">Supremo</div>
-  </div>
   <div class="scene">
     <div class="gallery-bg">
       <div class="bg-wall color-0" style="background-image:url('/images/bg-supremo.jpg'); opacity: 1;"></div>
@@ -744,6 +431,15 @@ body{padding-top:env(safe-area-inset-top)}
       <div class="bg-wall color-3" style="background-image:url('/images/bg-duro.jpg'); opacity: 0;"></div>
       <div class="bg-wall color-4" style="background-image:url('/images/bg-boss.jpg'); opacity: 0;"></div>
       <div class="bg-wall color-5" style="background-image:url('/images/bg-ergo.jpg'); opacity: 0;"></div>
+      <!-- No custom studio-render backdrop exists for VRS yet (the other six
+           were each hand-cut from a 3x2 grid image the user supplied) — a
+           CSS gradient stands in until a matching photo is cut, rather than
+           reusing another product's background wholesale. -->
+      <div class="bg-wall color-6" style="background-image:url('/images/bg-leo.jpg'); opacity: 0;"></div>
+      <!-- No custom studio-render backdrop exists for TLV-II yet either — same
+           situation Atlas-II was in before this, reusing an existing light
+           background rather than another placeholder gradient. -->
+      <div class="bg-wall color-7" style="background-image:url('/images/bg-duro.jpg'); opacity: 0;"></div>
       <div class="bg-floor"></div>
     </div>
     <div class="stage">
@@ -778,7 +474,17 @@ body{padding-top:env(safe-area-inset-top)}
         <span class="ftag">Ergo — 06</span>
       </div>
 
-      <model-viewer id="sharedFaceModel" loading="eager" src="/images/supremo-seat-v2.glb" disable-zoom auto-rotate shadow-intensity="1" environment-image="neutral" exposure="1.2" interaction-prompt="none"></model-viewer>
+      <div class="face f6">
+        <i class="fshadow" aria-hidden="true"></i>
+        <span class="ftag">VRS — 07</span>
+      </div>
+
+      <div class="face f7">
+        <i class="fshadow" aria-hidden="true"></i>
+        <span class="ftag">TLV-II — 08</span>
+      </div>
+
+      <model-viewer id="sharedFaceModel" loading="eager" src="/images/supremo-seat-v4.glb" disable-zoom shadow-intensity="1" environment-image="neutral" exposure="1.2" interaction-prompt="none"></model-viewer>
       <model-viewer id="preloadFaceModel" loading="eager" src="/images/ultimo-seat.glb" style="position:absolute;width:2px;height:2px;opacity:0;pointer-events:none;overflow:hidden;left:0;top:0" aria-hidden="true"></model-viewer>
 
       <div class="cap capL" aria-hidden="true"></div>
@@ -793,6 +499,8 @@ body{padding-top:env(safe-area-inset-top)}
     <button class="thumb" data-idx="3" role="tab" aria-selected="false" type="button"><img src="/images/Duro.png" alt="" aria-hidden="true"><span>Duro</span></button>
     <button class="thumb" data-idx="4" role="tab" aria-selected="false" type="button"><img src="/images/Excavator.png" alt="" aria-hidden="true"><span>Boss</span></button>
     <button class="thumb" data-idx="5" role="tab" aria-selected="false" type="button"><img src="/images/Tractor.png" alt="" aria-hidden="true"><span>Ergo</span></button>
+    <button class="thumb" data-idx="6" role="tab" aria-selected="false" type="button"><img src="/images/VRS.png" alt="" aria-hidden="true"><span>Atlas - II (VRS)</span></button>
+    <button class="thumb" data-idx="7" role="tab" aria-selected="false" type="button"><img src="/images/TLV-II.png" alt="" aria-hidden="true"><span>TLV-II</span></button>
   </div>
 
   <div class="head">
@@ -803,6 +511,8 @@ body{padding-top:env(safe-area-inset-top)}
       <div class="hb"><h2>Duro</h2></div>
       <div class="hb"><h2>Boss</h2></div>
       <div class="hb"><h2>Ergo</h2></div>
+      <div class="hb"><h2>Atlas - II (VRS)</h2></div>
+      <div class="hb"><h2>TLV-II</h2></div>
     </div>
   </div>
 
@@ -842,6 +552,16 @@ body{padding-top:env(safe-area-inset-top)}
           <div class="spec"><span>Reinforced</span><b>Frame</b></div>
           <div class="spec"><span>Long</span><b>Duty Cycle</b></div>
         </div>
+        <div class="specset">
+          <div class="spec"><span>Magnetic</span><b>Ride Damper</b></div>
+          <div class="spec"><span>45% Less</span><b>Vibration</b></div>
+          <div class="spec"><span>Quad Chamber</span><b>Air Lumbar</b></div>
+        </div>
+        <div class="specset">
+          <div class="spec"><span>Waterfall</span><b>Front Edge</b></div>
+          <div class="spec"><span>Active</span><b>Climate System</b></div>
+          <div class="spec"><span>Multi-Stage</span><b>Lumbar</b></div>
+        </div>
       </div>
     </div>
     <button class="fd" id="fdLink" type="button">Full details <span class="arr" aria-hidden="true">→</span></button>
@@ -867,120 +587,7 @@ body{padding-top:env(safe-area-inset-top)}
   </div>
 </section>
 
-<section class="field-ready" id="engineering">
-  <div class="field-ready-head">
-    <div>
-      <em>— ENGINEERED ADVANTAGES</em>
-      <h2>Field Ready.<br><span style="color:var(--amber)">Reinforced for Real Life.</span></h2>
-    </div>
-    <p>Every detail is designed to keep operators comfortable, productive and in control — no matter the terrain.</p>
-  </div>
-  <div class="fr-grid">
-    <div class="fr-card" style="background-image:url('/images/air-suspension.jpg')">
-      <span class="fr-num">01</span>
-      <div class="fr-icon"><svg viewBox="0 0 24 24"><path d="M12 3v1.5L15 6l-3 1.5 3 1.5-3 1.5 3 1.5-3 1.5 3 1.5-3 1.5v1.5"/></svg></div>
-      <h3>Air suspension</h3>
-      <p>Auto-levelling pneumatic suspension. The chassis answers to the road; the seat answers to the driver.</p>
-      <a href="/technology.html">Learn More <span aria-hidden="true">→</span></a>
-    </div>
-    <div class="fr-card" style="background-image:url('/images/ventilated-design.jpg')">
-      <span class="fr-num">02</span>
-      <div class="fr-icon"><svg viewBox="0 0 24 24"><path d="M2 8c2 0 3 2 5 2s3-2 5-2 3 2 5 2 3-2 5-2M2 14c2 0 3 2 5 2s3-2 5-2 3 2 5 2 3-2 5-2"/></svg></div>
-      <h3>Ventilated design</h3>
-      <p>Engineered airflow through backrest and cushion, so hour ten of a shift arrives feeling like hour two.</p>
-      <a href="/technology.html">Learn More <span aria-hidden="true">→</span></a>
-    </div>
-    <div class="fr-card" style="background-image:url('/images/lumbar-support.jpg')">
-      <span class="fr-num">03</span>
-      <div class="fr-icon"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></div>
-      <h3>Lumbar support</h3>
-      <p>Adjustable support holds the spine's natural curve — not the road's opinion of it.</p>
-      <a href="/technology.html">Learn More <span aria-hidden="true">→</span></a>
-    </div>
-  </div>
-</section>
-
-<section class="terrain" id="terrain">
-  <div class="terrain-head">
-    <div>
-      <em>— IN THE FIELD</em>
-      <h2>Built for <span style="color:var(--amber)">Every Terrain.</span></h2>
-    </div>
-    <p>From highways to harsh job sites, Gator seats keep operators comfortable, productive and in control.</p>
-  </div>
-  <div class="terrain-strip">
-    <div class="terrain-item" style="background-image:url('/images/vehicle-commercial.jpg')">
-      <div class="cap">Commercial Vehicles</div>
-    </div>
-    <div class="terrain-item" style="background-image:url('/images/vehicle-construction.jpg')">
-      <div class="cap">Construction Equipment</div>
-    </div>
-    <div class="terrain-item" style="background-image:url('/images/vehicle-industrial.jpg')">
-      <div class="cap">Industrial &amp; Special Equipment</div>
-    </div>
-    <div class="terrain-item" style="background-image:url('/images/vehicle-agriculture.jpg')">
-      <div class="cap">Agriculture</div>
-    </div>
-  </div>
-  <div class="terrain-stats">
-    <div class="terrain-stat"><b class="accent">30+</b><span>Years of Expertise</span></div>
-    <div class="terrain-stat"><b>13+</b><span>Manufacturing Plants</span></div>
-    <div class="terrain-stat"><b class="accent">Millions</b><span>Seats on the Move</span></div>
-    <div class="terrain-stat"><b>Global</b><span>OEM Partnerships</span></div>
-  </div>
-</section>
-
-<section class="quote-band" style="background-image:url('/images/vehicle-commercial.jpg')">
-  <div class="quote-band-in">
-    <div class="quote-mark" aria-hidden="true">&ldquo;</div>
-    <h3>Tough roads. Longer days.<br>A more comfortable tomorrow.</h3>
-  </div>
-  <img src="/images/logo-new.png" alt="GatorCorp">
-</section>
-
 <footer class="outro" id="contact">
-  <div class="au-row">
-    <div class="au-intro">
-      <div class="au-overline">— About GatorCorp</div>
-      <h2>Built in India.<br>Trusted across <span class="au-accent">five continents.</span></h2>
-      <p class="au-lede">Gator Corp has been engineering seating systems for highway trucks, mining and construction equipment, and agricultural and material-handling vehicles since 1996. What started as a single facility has grown into a multi-location manufacturing network supplying OEMs and Tier-1 partners across India, Brazil, the United States, the United Kingdom, and China.</p>
-    </div>
-
-    <div class="au-map-feature">
-      <div class="au-map-wrap">
-        <img class="au-india-map" src="/images/india-map-glow.png" alt="Map of GatorCorp manufacturing and plant locations across India">
-        <button class="au-hotspot" style="left:41.85%;top:81.88%" data-city="Chennai" data-img="/images/chennai.jpg" aria-label="Chennai plant"><span class="dot"></span><span class="label">Chennai</span></button>
-        <button class="au-hotspot" style="left:33.17%;top:82.20%" data-city="Bengaluru" data-img="/images/bengaluru.jpg" aria-label="Bengaluru plant"><span class="dot"></span><span class="label">Bengaluru</span></button>
-        <button class="au-hotspot" style="left:21.17%;top:63.69%" data-city="Pune" data-img="/images/pune.jpg" aria-label="Pune plant"><span class="dot"></span><span class="label">Pune</span></button>
-        <button class="au-hotspot" style="left:20.84%;top:58.67%" data-city="Nashik" data-img="/images/nashik.jpg" aria-label="Nashik plant"><span class="dot"></span><span class="label">Nashik</span></button>
-        <button class="au-hotspot" style="left:29.93%;top:31.61%" data-city="Bawal" data-img="/images/bawal.jpg" aria-label="Bawal plant"><span class="dot"></span><span class="label">Bawal</span></button>
-        <button class="au-hotspot" style="left:32.85%;top:30.27%" data-city="Greater Noida" data-img="/images/greater-noida.jpg" aria-label="Greater Noida plant"><span class="dot"></span><span class="label">Greater Noida</span></button>
-        <button class="au-hotspot" style="left:39.02%;top:28.63%" data-city="Rudrapur" data-img="/images/rudrapur.jpg" aria-label="Rudrapur plant"><span class="dot"></span><span class="label">Rudrapur</span></button>
-      </div>
-      <div class="au-map-panel" id="auMapPanel">
-        <div class="au-map-panel-default" id="auMapPanelDefault">
-          <div class="au-where-title">— Where We Build</div>
-          <p class="au-map-hint">Tap a city on the map to see it.</p>
-        </div>
-        <div class="au-map-panel-city" id="auMapPanelCity" hidden>
-          <img id="auMapPanelImg" src="" alt="">
-          <div class="au-map-panel-name" id="auMapPanelName"></div>
-          <div class="au-map-panel-sub">India</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="au-stats-band">
-    <div class="au-stat"><div class="au-num" data-count="1996" data-suffix="">0</div><div class="au-lbl">Founded</div></div>
-    <div class="au-stat"><div class="au-num" data-count="7" data-suffix="">0</div><div class="au-lbl">Manufacturing Locations</div></div>
-    <div class="au-stat"><div class="au-num" data-count="5" data-suffix="">0</div><div class="au-lbl">Countries Served</div></div>
-    <div class="au-stat"><div class="au-num" data-count="500" data-suffix="+">0</div><div class="au-lbl">OEM &amp; Tier-1 Partners</div></div>
-  </div>
-
-  <div class="au-tagline-band">
-    <div class="au-tagline">People move the world.<br>We keep them comfortable.</div>
-  </div>
   <div class="legal">
     <span>GatorCorp Automotives Pvt. Ltd. · Chennai · Since 1996</span>
     <span class="note">Concept experience — model names and specs to be verified with GatorCorp before launch.</span>
@@ -1000,79 +607,8 @@ const hasGsap = !!(window.gsap && window.ScrollTrigger);
 if (hasGsap) gsap.registerPlugin(ScrollTrigger);
 else document.documentElement.classList.add('no-anim');
 
-/* ---------- liquid-glass pill nav ---------- */
-const pill = document.querySelector('.pill-nav');
-const ind = byId('pillInd');
-const links = Array.prototype.slice.call(document.querySelectorAll('.pill-links a'));
-let activeLink = links[0];
-
-function moveInd(el){
-  ind.style.width = el.offsetWidth + 'px';
-  ind.style.transform = 'translateX(' + el.offsetLeft + 'px)';
-}
-function setActive(el){
-  activeLink = el;
-  links.forEach(function(a){ a.removeAttribute('aria-current'); });
-  el.setAttribute('aria-current','true');
-  ind.classList.add('move');
-  moveInd(el);
-}
-links.forEach(function(a){
-  a.addEventListener('mouseenter', function(){ ind.classList.add('move'); moveInd(a); });
-  a.addEventListener('focus', function(){ ind.classList.add('move'); moveInd(a); });
-});
-byId('pillLinks').addEventListener('mouseleave', function(){ moveInd(activeLink); });
-
-const secs = ['products'].map(function(id){ return byId(id); }).filter(Boolean);
-function checkSection(){
-  const mid = innerHeight * 0.45;
-  let target = null;
-  secs.forEach(function(s){
-    const r = s.getBoundingClientRect();
-    if (r.top <= mid && r.bottom >= mid) {
-      target = links.find(function(a){ return a.dataset.sec === s.id; }) || target;
-    }
-  });
-  if (!target) target = links[0];
-  if (target !== activeLink) setActive(target);
-}
-window.addEventListener('scroll', function(){
-  pill.classList.toggle('scrolled', window.scrollY > 60);
-  checkSection();
-}, { passive:true });
-window.addEventListener('resize', function(){ moveInd(activeLink); }, { passive:true });
-
-/* ---------- mobile hamburger menu ---------- */
-(function(){
-  const hamburger = byId('pillHamburger');
-  const mobileMenu = byId('pillMobileMenu');
-  if (!hamburger || !mobileMenu) return;
-  function closeMobileMenu(){
-    hamburger.classList.remove('open');
-    hamburger.setAttribute('aria-expanded','false');
-    mobileMenu.classList.remove('open');
-  }
-  hamburger.addEventListener('click', function(){
-    const willOpen = !mobileMenu.classList.contains('open');
-    hamburger.classList.toggle('open', willOpen);
-    hamburger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
-    mobileMenu.classList.toggle('open', willOpen);
-  });
-  mobileMenu.querySelectorAll('a').forEach(function(a){ a.addEventListener('click', closeMobileMenu); });
-  document.addEventListener('click', function(e){
-    if (!mobileMenu.contains(e.target) && !hamburger.contains(e.target)) closeMobileMenu();
-  });
-  window.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeMobileMenu(); });
-})();
-
-setActive(links[0]);                    /* place the bubble */
-ind.classList.add('on');                /* then fade it in  */
-if (document.fonts && document.fonts.ready){
-  document.fonts.ready.then(function(){ moveInd(activeLink); });  /* re-measure after fonts load */
-}
-
 /* ---------- gallery product state ---------- */
-const N = 6;
+const N = 8;
 let idx = -1; let ST = null;
 const gallery = document.querySelector('.gallery');
 
@@ -1090,8 +626,8 @@ function setProduct(i){
   });
   if (byId('pFill')) byId('pFill').style.width = (N>1 ? (i/(N-1)*100).toFixed(2) : '0') + '%';
 
-  const modelSrcs = ['/images/supremo-seat-v2.glb','/images/ultimo-seat.glb','/images/Leo-opt.glb','/images/duro-seat.glb','/images/boss-seat.glb','/images/ergo-seat.glb'];
-  const modelControls = [false, true, true, true, true, true];
+  const modelSrcs = ['/images/supremo-seat-v4.glb','/images/ultimo-seat.glb','/images/Leo-opt.glb','/images/duro-seat.glb','/images/boss-seat.glb','/images/ergo-seat.glb','/images/vrs-seat-opt.glb?v=2','/images/sears-seat-optimized.glb'];
+  const modelControls = [false, false, false, false, false, false, false, false];
   const faces = document.querySelectorAll('.face');
   const hiddenStyle = 'position:absolute;width:2px;height:2px;opacity:0;pointer-events:none;overflow:hidden;left:0;top:0';
 
@@ -1105,7 +641,16 @@ function setProduct(i){
     curEl.setAttribute('style', hiddenStyle);
     preEl.removeAttribute('style');
   } else if (curEl && curEl.getAttribute('src') !== modelSrcs[i]) {
-    curEl.setAttribute('src', modelSrcs[i]);
+    // Direct reassignment (this only happens when going to a product that
+    // isn't the pre-warmed "next" one — i.e. any backward click, since
+    // preloading only ever looks ahead, never behind). Clearing src first
+    // forces model-viewer through a genuine unload before the reload,
+    // rather than a same-tick attribute swap — after enough forward/back
+    // hops reusing the same two persistent elements, a same-tick src
+    // change can silently fail to re-trigger a load on some browsers.
+    var targetSrc = modelSrcs[i];
+    curEl.removeAttribute('src');
+    requestAnimationFrame(function(){ curEl.setAttribute('src', targetSrc); });
   }
 
   const sharedModel = byId('sharedFaceModel');
@@ -1113,6 +658,15 @@ function setProduct(i){
     faces[i].appendChild(sharedModel);
     if (modelControls[i]) { sharedModel.setAttribute('camera-controls', ''); }
     else { sharedModel.removeAttribute('camera-controls'); }
+    // Rotation is driven manually further down this file (see the
+    // rotation loop near the IntersectionObserver) rather than via the
+    // native auto-rotate attribute — that attribute wasn't reliably
+    // respecting the orbit constraint on some models, and was dropped
+    // entirely on at least one product (Ultimo) after enough id-swaps.
+    // A manual loop that queries byId('sharedFaceModel') fresh every
+    // frame sidesteps both problems since it never depends on an
+    // attribute surviving a swap.
+    if (window.resetSeatRotation) window.resetSeatRotation();
   }
 
   // warm the next product in sequence in the background, so scrolling
@@ -1124,12 +678,16 @@ function setProduct(i){
   }
 
   byId('idxCur').textContent = String(i+1).padStart(2,'0');
-  const names = ['Supremo','Ultimo','Leo','Duro','Boss','Ergo'];
-  const urls = ['/product-supremo.html','/product-ultimo.html','/product-leo.html','/product-duro.html','/product-boss.html','/product-ergo.html'];
+  const names = ['Supremo','Ultimo','Leo','Duro','Boss','Ergo','VRS','TLV-II'];
+  // Internal keys (names[]) stay 'VRS' — that's what brochureImages/bookDims/
+  // urls are keyed on. displayNames[] is only for visible text, so the seat
+  // can show as "Atlas - II" without renaming any file or object key.
+  const displayNames = ['Supremo','Ultimo','Leo','Duro','Boss','Ergo','Atlas - II (VRS)','TLV-II'];
+  const urls = ['/product-supremo.html','/product-ultimo.html','/product-leo.html','/product-duro.html','/product-boss.html','/product-ergo.html','/product-vrs.html','/product-tlv-ii.html'];
   window.currentStageProduct = names[i];
   const exploreBtn = byId('stageExploreBtn');
   if (exploreBtn) {
-    exploreBtn.firstChild.textContent = 'Explore ' + names[i] + ' ';
+    exploreBtn.firstChild.textContent = 'Explore ' + displayNames[i] + ' ';
     exploreBtn.href = urls[i];
   }
 }
@@ -1142,167 +700,53 @@ document.querySelectorAll('.seat-strip .thumb').forEach(function(btn){
   });
 });
 
+var galleryIsVisible = true;
 if ('IntersectionObserver' in window) {
   if (byId('sharedFaceModel')) {
     var galleryVisibilityObserver = new IntersectionObserver(function(entries){
       entries.forEach(function(entry){
-        var liveModel = byId('sharedFaceModel');
-        if (!liveModel) return;
-        if (entry.isIntersecting) { liveModel.setAttribute('auto-rotate', ''); }
-        else { liveModel.removeAttribute('auto-rotate'); }
+        galleryIsVisible = entry.isIntersecting;
       });
     }, { threshold: 0.05 });
     galleryVisibilityObserver.observe(gallery);
   }
 }
 
+// Manually-driven turntable, replacing model-viewer's native auto-rotate.
+// Queries byId('sharedFaceModel') fresh every frame rather than holding a
+// reference, so it always finds whichever physical element currently
+// holds that id — immune to the id-swap losing track of an element, and
+// immune to auto-rotate silently ignoring the orbit constraint (which is
+// exactly what was happening natively: full 360 on most models, no
+// rotation at all on Ultimo once enough swaps had happened).
 (function(){
-  const imgs = Array.from(document.querySelectorAll('.hero-product-img'));
-  const nameEl = document.querySelector('.hero-name');
-  const ctaLabel = document.querySelector('.hero-cta-label');
-  const copyEl = document.querySelector('.hero-copy');
-  const featureSpans = document.querySelectorAll('.hero-feature span');
-  const statEls = document.querySelectorAll('.hero-stat');
-  const heroData = [
-    { paragraph:"Supremo is designed to deliver unmatched comfort, safety and performance for every mile.", url:"/product-supremo.html", features:[{w:'Auto',c:'Air Suspension'},{w:'Euro',c:'Homologation'},{w:'Isolated',c:'Vibration Ride'}] },
-    { paragraph:"Ultimo is a premium-engineered seat built for long-haul, heavy-load driving, keeping vibration low so drivers stay comfortable for the whole journey.", url:"/product-ultimo.html", features:[{w:'Air',c:'Suspension'},{w:'Lumbar',c:'Support'},{w:'Fast',c:'Service'}] },
-    { paragraph:"Leo is a frugal, mechanically-suspended seat built for safe, comfortable driving in light and medium duty commercial vehicles.", url:"/product-leo.html", features:[{w:'Mech',c:'Suspension'},{w:'Strong',c:'Frame'},{w:'Easy',c:'Swap'}] },
-    { paragraph:"Duro is built for durability, ergonomics and comfort — protecting operators from harsh vibration and long shifts in tough field conditions.", url:"/product-duro.html", features:[{w:'Reinforced',c:'Frame'},{w:'All-Terrain',c:'Mounting'},{w:'Heavy',c:'Duty'}] },
-    { paragraph:"Boss delivers outstanding seating comfort and effective isolation of vibrations and jolts, with a high bolstered backrest built for excavator operators.", url:"/product-boss.html", features:[{w:'Vibration',c:'Damping'},{w:'Reinforced',c:'Frame'},{w:'Site',c:'Rated'}] },
-    { paragraph:"Ergo brings industry-leading vibration absorption and seating comfort to agricultural vehicles, designed with the farmer's long working hours in mind.", url:"/product-ergo.html", features:[{w:'Field',c:'Ready'},{w:'Reinforced',c:'Frame'},{w:'Long',c:'Duty Cycle'}] }
-  ];
-  let si = 0;
-  window.currentHeroProduct = 'Supremo';
-  function applyData(i){
-    const d = heroData[i];
-    if (!d) return;
-    if (copyEl) copyEl.textContent = d.paragraph;
-    if (featureSpans && featureSpans.length) {
-      featureSpans.forEach(function(el, k){ if (d.features[k]) el.textContent = d.features[k].w + ' ' + d.features[k].c; });
+  var theta = 0;
+  var direction = 1;
+  var speed = 0.3;      // degrees per frame, ~18deg/sec at 60fps
+  var maxTheta = 100;    // stays within front+sides, never reaches the back
+  window.resetSeatRotation = function(){ theta = 0; direction = 1; };
+  function tick(){
+    if (galleryIsVisible) {
+      var model = byId('sharedFaceModel');
+      if (model) {
+        theta += direction * speed;
+        if (theta >= maxTheta) { theta = maxTheta; direction = -1; }
+        if (theta <= -maxTheta) { theta = -maxTheta; direction = 1; }
+        model.cameraOrbit = theta.toFixed(2) + 'deg auto auto';
+      }
     }
-    if (statEls && statEls.length) {
-      statEls.forEach(function(el, k){
-        if (!d.features[k]) return;
-        const spanEl = el.querySelector('span');
-        const bEl = el.querySelector('b');
-        if (spanEl) spanEl.textContent = d.features[k].w;
-        if (bEl) bEl.textContent = d.features[k].c;
-      });
-    }
+    requestAnimationFrame(tick);
   }
-  function fitHeroName(el){
-    if (!el) return;
-    const maxWidth = window.innerWidth * 0.5;
-    el.style.fontSize = '';
-    let size = parseFloat(getComputedStyle(el).fontSize);
-    let guard = 0;
-    while (el.scrollWidth > maxWidth && size > 40 && guard < 40) {
-      size -= 3;
-      el.style.fontSize = size + 'px';
-      guard++;
-    }
-  }
-  function nextSeat(){
-    imgs[si].classList.remove('active');
-    si = (si + 1) % imgs.length;
-    imgs[si].classList.add('active');
-    if (nameEl) { nameEl.textContent = imgs[si].getAttribute('data-name'); fitHeroName(nameEl); }
-    window.currentHeroProduct = imgs[si].getAttribute('data-name');
-    applyData(si);
-  }
-  fitHeroName(nameEl);
-  applyData(0);
-  if (imgs.length > 1 && !reduced) {
-    setInterval(nextSeat, 3500);
-  }
+  requestAnimationFrame(tick);
 })();
 
-
 if (hasGsap) {
-  if (!reduced) {
-    const intro = gsap.timeline({ defaults: { ease: 'power3.out' }, onComplete: buildScrollTimeline });
-    intro.from('.hero-overline', { y: 20, autoAlpha: 0, duration: 0.6 })
-         .from('.hero-heading', { y: 30, autoAlpha: 0, duration: 0.7 }, '-=0.4')
-         .from('.hero-product-img.active', { y: 40, autoAlpha: 0, scale: 0.96, duration: 0.9, clearProps: 'all' }, '-=0.5')
-         .from('.hero-stat-label', { y: 15, autoAlpha: 0, duration: 0.5 }, '-=0.6')
-         .from('.hero-stat', { y: 15, autoAlpha: 0, duration: 0.5, stagger: 0.08 }, '-=0.4')
-         .from('.mask-text', { autoAlpha: 0, duration: 1.2, ease: 'power2.out' }, 0);
-  } else {
-    gsap.set('.hero-overline, .hero-heading, .hero-product-img.active, .hero-stat-label, .hero-stat, .mask-text', { autoAlpha: 1, y: 0, scale: 1 });
-  }
+  buildScrollTimeline();
 }
 
 function buildScrollTimeline() {
-  /* This pin now covers ONLY the hero zoom-mask reveal (~1.15 viewport-heights
-     of scroll). Seat switching is handled separately by the click/swipe
-     thumbnail strip (.seat-strip) via setProduct(), not by scroll position. */
-  const tl = gsap.timeline({ defaults:{ ease:'none' },
-    scrollTrigger:{
-      trigger:'.gallery', start:'top top',
-      end:function(){ return '+=' + Math.round(window.innerHeight * 1.15); },
-      scrub:0.8, pin:true, anticipatePin:1, invalidateOnRefresh:true
-    }});
-
-  const target = document.querySelector('.zoom-target');
-  const text = document.querySelector('.mask-text');
-  if (target && text) {
-    const tr = target.getBoundingClientRect();
-    const textr = text.getBoundingClientRect();
-    const originX = ((tr.left + tr.width / 2) - textr.left) / textr.width * 100;
-    const originY = ((tr.top + tr.height / 2) - textr.top) / textr.height * 100;
-    gsap.set(text, { transformOrigin: `${originX}% ${originY}%` });
-  }
-
-  tl.to('.mask-text', { scale: 200, duration: 1.0, ease: 'power3.in' }, 0);
-  tl.to('.hero-product-stack', { x: '10vw', autoAlpha: 0, duration: 0.6, ease: 'power2.in' }, 0);
-  tl.to('.hero-top-left', { x: '-5vw', autoAlpha: 0, duration: 0.6, ease: 'power2.in' }, 0);
-  tl.to('.hero-bottom-right', { x: '5vw', autoAlpha: 0, duration: 0.6, ease: 'power2.in' }, 0);
-  tl.to('.hero-mask', { autoAlpha: 0, duration: 0.2, ease: 'none' }, 0.8);
-
-  ST = tl.scrollTrigger;
-
   gsap.from('.stage', { scale:0.94, y:26, duration:1.1, ease:'power3.out',
     scrollTrigger:{ trigger:'.gallery', start:'top 75%', once:true } });
-  gsap.from('.field-ready-head > *', {
-    scrollTrigger: { trigger: '.field-ready-head', start: 'top 85%', once: true },
-    y: 24, autoAlpha: 0, duration: 0.8, stagger: 0.08, ease: 'power3.out'
-  });
-  gsap.from('.fr-card', {
-    scrollTrigger: { trigger: '.fr-grid', start: 'top 85%', once: true },
-    y: 36, scale: 0.97, autoAlpha: 0, duration: 0.9, stagger: 0.12, ease: 'power3.out'
-  });
-  gsap.from('.terrain-head > *', {
-    scrollTrigger: { trigger: '.terrain-head', start: 'top 85%', once: true },
-    y: 24, autoAlpha: 0, duration: 0.8, stagger: 0.08, ease: 'power3.out'
-  });
-  gsap.from('.terrain-item', {
-    scrollTrigger: { trigger: '.terrain-strip', start: 'top 88%', once: true },
-    y: 30, autoAlpha: 0, duration: 0.9, stagger: 0.1, ease: 'power3.out'
-  });
-  gsap.from('.terrain-stat', {
-    scrollTrigger: { trigger: '.terrain-stats', start: 'top 92%', once: true },
-    y: 18, autoAlpha: 0, duration: 0.7, stagger: 0.08, ease: 'power3.out'
-  });
-  gsap.from('.quote-band-in > *', {
-    scrollTrigger: { trigger: '.quote-band', start: 'top 78%', once: true },
-    y: 26, autoAlpha: 0, duration: 0.9, stagger: 0.1, ease: 'power3.out'
-  });
-  gsap.from('.quote-band img', {
-    scrollTrigger: { trigger: '.quote-band', start: 'top 78%', once: true },
-    autoAlpha: 0, duration: 0.9, delay: 0.25, ease: 'power2.out'
-  });
-  gsap.from('.au-intro > *', {
-    scrollTrigger: { trigger: '.au-intro', start: 'top 85%', once: true },
-    y: 24, autoAlpha: 0, duration: 0.8, stagger: 0.08, ease: 'power3.out'
-  });
-  gsap.from('.au-india-map', {
-    scrollTrigger: { trigger: '.au-map-feature', start: 'top 85%', once: true },
-    x: 30, autoAlpha: 0, duration: 1, ease: 'power3.out'
-  });
-  gsap.from('.au-tagline', {
-    scrollTrigger: { trigger: '.au-tagline-band', start: 'top 88%', once: true },
-    y: 20, autoAlpha: 0, duration: 0.9, ease: 'power3.out'
-  });
 }
 
 function go(i){
@@ -1318,71 +762,6 @@ window.addEventListener('keydown', function(e){
   if (r.bottom < innerHeight*0.25 || r.top > innerHeight*0.75) return;
   if (e.key === 'ArrowDown'){ e.preventDefault(); go(idx+1); }
   else if (e.key === 'ArrowUp'){ e.preventDefault(); go(idx-1); }
-});
-})();
-</script>
-<script>
-(function(){
-'use strict';
-const hasGsap = !!(window.gsap && window.ScrollTrigger);
-const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const nums = Array.prototype.slice.call(document.querySelectorAll('.au-num'));
-const hotspots = Array.prototype.slice.call(document.querySelectorAll('.au-hotspot'));
-if (hotspots.length) {
-  const panelDefault = document.getElementById('auMapPanelDefault');
-  const panelCity = document.getElementById('auMapPanelCity');
-  const panelImg = document.getElementById('auMapPanelImg');
-  const panelName = document.getElementById('auMapPanelName');
-  function selectCity(btn){
-    hotspots.forEach(function(b){ b.classList.remove('active'); });
-    btn.classList.add('active');
-    panelImg.src = btn.getAttribute('data-img');
-    panelImg.alt = btn.getAttribute('data-city') + ', India';
-    panelName.textContent = btn.getAttribute('data-city');
-    panelDefault.hidden = true;
-    panelCity.hidden = false;
-  }
-  hotspots.forEach(function(btn){
-    btn.addEventListener('click', function(){ selectCity(btn); });
-  });
-  /* Chennai is where GatorCorp was founded (see legal line) — show it selected by default */
-  const homeCity = hotspots.find(function(b){ return b.getAttribute('data-city') === 'Chennai'; });
-  if (homeCity) selectCity(homeCity);
-  if (hasGsap) {
-    ScrollTrigger.create({
-      trigger: '.au-map-wrap', start: 'top 85%', once: true,
-      onEnter: function(){
-        gsap.from(hotspots, { autoAlpha: 0, scale: 0.4, duration: 0.5, stagger: 0.08, ease: 'back.out(2)' });
-      }
-    });
-  }
-}
-if (!nums.length) return;
-
-if (!hasGsap) {
-  nums.forEach(function(el){ el.textContent = el.getAttribute('data-count') + (el.getAttribute('data-suffix') || ''); });
-  document.querySelectorAll('.au-stat').forEach(function(el){ el.classList.add('au-in'); });
-  return;
-}
-
-ScrollTrigger.create({
-  trigger: '.au-stats-band',
-  start: 'top 80%',
-  once: true,
-  onEnter: function(){
-    nums.forEach(function(el){
-      const target = parseInt(el.getAttribute('data-count'), 10);
-      const suffix = el.getAttribute('data-suffix') || '';
-      const obj = { val: 0 };
-      gsap.to(obj, {
-        val: target, duration: 1.6, ease: 'power2.out',
-        onUpdate: function(){ el.textContent = Math.round(obj.val) + suffix; }
-      });
-    });
-    document.querySelectorAll('.au-stat').forEach(function(el, i){
-      setTimeout(function(){ el.classList.add('au-in'); }, i * 90);
-    });
-  }
 });
 })();
 </script>
@@ -1473,7 +852,9 @@ var brochureImages = {
   Leo:     ['/images/brochure-leo-1.jpg',     '/images/brochure-leo-2.jpg'],
   Duro:    ['/images/brochure-duro-1.jpg',    '/images/brochure-duro-2.jpg'],
   Boss:    ['/images/brochure-boss-1.jpg',    '/images/brochure-boss-2.jpg'],
-  Ergo:    ['/images/brochure-ergo-1.jpg',    '/images/brochure-ergo-2.jpg']
+  Ergo:    ['/images/brochure-ergo-1.jpg',    '/images/brochure-ergo-2.jpg'],
+  VRS:     ['/images/brochure-vrs-1.jpg', '/images/brochure-vrs-2.jpg'],
+  'TLV-II': ['/images/brochure-tlv-ii-1.jpg', '/images/brochure-tlv-ii-2.jpg', '/images/brochure-tlv-ii-3.jpg', '/images/brochure-tlv-ii-4.jpg']
 };
 // Portrait-page brochures vs landscape-spread brochures need different book dims.
 var bookDims = {
@@ -1482,13 +863,19 @@ var bookDims = {
   Leo:     { width: 700, height: 505 },
   Duro:    { width: 500, height: 686 },
   Boss:    { width: 500, height: 686 },
-  Ergo:    { width: 700, height: 505 }
+  Ergo:    { width: 700, height: 505 },
+  // Replaced with the Atlas II dealer brochure (LE/DLX/PC/Sentry/Air
+  // Suspension/ActiveVRS spread) — landscape pages, different proportions
+  // than the old 4-page ActiveVRS-only brochure this replaced.
+  VRS:     { width: 760, height: 427 },
+  'TLV-II': { width: 520, height: 673 }
 };
 
 var backdrop = document.getElementById('brochureBackdrop');
 var modal = document.getElementById('brochureModal');
 var closeBtn = document.getElementById('brochureClose');
 var flipEl = document.getElementById('brochureFlip');
+var flipParent = flipEl.parentNode;
 var fdBtn = document.getElementById('fdLink');
 var pageFlipInstance = null;
 
@@ -1497,10 +884,22 @@ function openBrochure(name){
   if (!pages || typeof St === 'undefined') return false;
   var dims = bookDims[name] || { width: 700, height: 505 };
 
+  // PageFlip's destroy() removes its root element from the DOM entirely
+  // (not just its contents) — reusing that same flipEl reference afterward
+  // silently re-initializes onto a detached node, which is why the second
+  // open ever did nothing. Destroy first, then recreate flipEl if it's
+  // gone, before touching it again.
+  if (pageFlipInstance) { try { pageFlipInstance.destroy(); } catch(e){} pageFlipInstance = null; }
+  if (!flipEl.isConnected) {
+    var fresh = document.createElement('div');
+    fresh.id = 'brochureFlip';
+    flipParent.appendChild(fresh);
+    flipEl = fresh;
+  }
+
   flipEl.innerHTML = '';
   flipEl.style.width = dims.width + 'px';
   flipEl.style.height = dims.height + 'px';
-  if (pageFlipInstance) { try { pageFlipInstance.destroy(); } catch(e){} }
 
   pageFlipInstance = new St.PageFlip(flipEl, {
     width: dims.width,
@@ -1539,6 +938,28 @@ document.addEventListener('keydown', function(ev){
   if (ev.key === 'Escape' && modal.classList.contains('open')) closeBrochure();
 });
 })();
+</script>
+<script>
+/* ScrollTrigger positions (start/end) get calculated the moment each
+   trigger is created — for triggers on elements containing images,
+   that's often before
+   the image has actually loaded and pushed the layout to its real
+   height. Once that happens uncorrected, the trigger zone is stuck at
+   the wrong scroll position forever, which looks exactly like "nothing
+   happens no matter how far I scroll." Force a full recalculation once
+   every image on the page has actually finished loading. */
+window.addEventListener('load', function(){
+  if (window.ScrollTrigger) window.ScrollTrigger.refresh();
+});
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('/sw.js').catch(function(err){
+      console.warn('Service worker registration failed:', err);
+    });
+  });
+}
 </script>
 </body>
 </html>

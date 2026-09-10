@@ -23,6 +23,8 @@ export default defineConfig({
         duro: resolve(__dirname, 'product-duro.html'),
         boss: resolve(__dirname, 'product-boss.html'),
         ergo: resolve(__dirname, 'product-ergo.html'),
+        vrs : resolve(__dirname, 'product-vrs.html'),
+        tlvii : resolve(__dirname, 'product-tlv-ii.html'),
         technology: resolve(__dirname, 'technology.html'),
         sustainability: resolve(__dirname, 'sustainability.html'),
         careers: resolve(__dirname, 'careers.html'),
