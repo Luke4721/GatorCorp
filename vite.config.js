@@ -28,7 +28,11 @@ export default defineConfig({
         technology: resolve(__dirname, 'technology.html'),
         sustainability: resolve(__dirname, 'sustainability.html'),
         careers: resolve(__dirname, 'careers.html'),
-        contact: resolve(__dirname, 'contact.html')
+        contact: resolve(__dirname, 'contact.html'),
+	technology: resolve(__dirname, 'technology.html'),
+	sustainability: resolve(__dirname, 'sustainability.html'),
+	careers: resolve(__dirname, 'careers.html'),
+	contact: resolve(__dirname, 'contact.html')
       }
     }
   }
